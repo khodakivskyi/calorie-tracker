@@ -1,0 +1,38 @@
+# ===============================
+# Backend (ASP.NET Core)
+# ===============================
+/backend/bin/
+/backend/obj/
+/backend/*.user
+/backend/*.suo
+/backend/*.vsp
+/backend/*.vspscc
+/backend/launchSettings.json
+/backend/.vs/
+/backend/*.db
+/backend/*.log
+
+# ===============================
+# Frontend (React + TypeScript)
+# ===============================
+/frontend/node_modules/
+/frontend/dist/
+/frontend/build/
+/frontend/.env
+/frontend/.cache
+
+# ===============================
+# OS Files
+# ===============================
+.DS_Store
+Thumbs.db
+
+# ===============================
+# Logs
+# ===============================
+*.log
+
+# ===============================
+# JetBrains IDE (WebStorm, Rider)
+# ===============================
+.idea/
