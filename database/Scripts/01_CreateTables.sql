@@ -89,8 +89,9 @@ CREATE INDEX IX_meals_owner_id ON dbo.meals (owner_id)
 
 CREATE TABLE dbo.meals_dishes
 (
-    meal_id INT NOT NULL REFERENCES dbo.meals,
-    dish_id INT NOT NULL REFERENCES dbo.dishes,
+    meal_id  INT                        NOT NULL REFERENCES dbo.meals,
+    dish_id  INT                        NOT NULL REFERENCES dbo.dishes,
+    quantity DECIMAL(10, 2) DEFAULT 1.0 NOT NULL,
     primary key (meal_id, dish_id)
 )
     GO
