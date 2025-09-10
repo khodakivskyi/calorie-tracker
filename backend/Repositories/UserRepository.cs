@@ -39,5 +39,24 @@ namespace backend.Repositories
 
             return await GetUserByIdAsync(userId);
         }
+          public async Task<bool> UpdateUserAsync(User user)
+        {
+            using var connection = new SqlConnection(_connectionString);
+            const string sql = @"
+                UPDATE users
+                SET name = @Name, email = @Email, password_hash = @PasswordHash, salt = @Salt
+                WHERE id = @Id";
+
+            var affectedRows = await connection.ExecuteAsync(sql, user);
+            return affectedRows > 0;
+        }
+
+        public async Task<bool> DeleteUserAsync(int id)
+        {
+            using var connection = new SqlConnection(_connectionString);
+            const string sql = "DELETE FROM users WHERE id = @Id";
+            var affectedRows = await connection.ExecuteAsync(sql, new { Id = id });
+            return affectedRows > 0;
+        }
     }
 }

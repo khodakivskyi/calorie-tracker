@@ -25,14 +25,26 @@ namespace backend.Services
 
         public async Task<bool> UpdateUserAsync(User user)
         {
-            throw new NotImplementedException();
-            //return await _userRepository.UpdateUserAsync(user);
+            try
+            {
+                return await _userRepository.UpdateUserAsync(user);
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Error updating user: {ex.Message}");
+            }
         }
 
         public async Task<bool> DeleteUserAsync(int id)
         {
-            throw new NotImplementedException();
-            //return await _userRepository.DeleteUserAsync(id);
+            try
+            {
+                return await _userRepository.DeleteUserAsync(id);
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Error deleting user: {ex.Message}");
+            }
         }
 
         public async Task<User?> CreateUserAsync(string email, string password, string? name)
