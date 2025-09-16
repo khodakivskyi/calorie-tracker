@@ -13,6 +13,7 @@ namespace backend.Services
         {
             _userRepository = userRepository;
         }
+
         public async Task<User?> GetUserByIdAsync(int id)
         {
             return await _userRepository.GetUserByIdAsync(id);
