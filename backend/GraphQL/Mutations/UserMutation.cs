@@ -55,16 +55,6 @@ namespace backend.GraphQL.Mutations
                     var id = context.GetArgument<int>("id");
                     return await userService.DeleteUserAsync(id);
                 });
-
-            Field<UserType>("authenticateUser")
-                .Argument<NonNullGraphType<StringGraphType>>("email")
-                .Argument<NonNullGraphType<StringGraphType>>("password")
-                .ResolveAsync(async context =>
-                {
-                    var email = context.GetArgument<string>("email");
-                    var password = context.GetArgument<string>("password");
-                    return await userService.AuthenticateUserAsync(email, password);
-                });
         }
     }
 }

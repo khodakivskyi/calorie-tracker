@@ -16,14 +16,14 @@ namespace backend.Repositories
         public async Task<User?> GetUserByIdAsync(int id)
         {
             using var connection = new SqlConnection(_connectionString);
-            const string sql = "SELECT id, name, email, password_hash, salt FROM users WHERE id = @Id";
+            const string sql = "SELECT id, name, email, password_hash AS PasswordHash, salt FROM users WHERE id = @Id";
             return await connection.QueryFirstOrDefaultAsync<User>(sql, new { Id = id });
         }
 
         public async Task<User?> GetUserByEmailAsync(string email)
         {
             using var connection = new SqlConnection(_connectionString);
-            const string sql = "SELECT id, name, email, password_hash, salt FROM users WHERE email = @Email";
+            const string sql = "SELECT id, name, email, password_hash AS PasswordHash, salt FROM users WHERE email = @Email";
             return await connection.QueryFirstOrDefaultAsync<User>(sql, new { Email = email });
         }
 
