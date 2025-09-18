@@ -42,13 +42,10 @@ namespace backend.GraphQL.Mutations
                     if (!string.IsNullOrEmpty(email))
                         user.Email = email;
 
-                    if (!string.IsNullOrEmpty(password))
-                        user.Password = password;           // ЗАВОРКАТИ ХЕШУВАННЯ ТУТ?
-
                     if (!string.IsNullOrEmpty(name))
                         user.Name = name;
 
-                    return await userService.UpdateUserAsync(user);
+                    return await userService.UpdateUserAsync(user, password);
                 });
 
             Field<BooleanGraphType>("deleteUser")
