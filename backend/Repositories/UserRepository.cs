@@ -39,7 +39,7 @@ namespace backend.Repositories
 
             return await GetUserByIdAsync(userId);
         }
-          public async Task<bool> UpdateUserAsync(User user)
+        public async Task<bool> UpdateUserAsync(User user)
         {
             using var connection = new SqlConnection(_connectionString);
             const string sql = @"

@@ -13,6 +13,7 @@ namespace backend.Services
         {
             _userRepository = userRepository;
         }
+
         public async Task<User?> GetUserByIdAsync(int id)
         {
             return await _userRepository.GetUserByIdAsync(id);
@@ -23,10 +24,19 @@ namespace backend.Services
             return await _userRepository.GetUserByEmailAsync(email);
         }
 
-        public async Task<bool> UpdateUserAsync(User user)
+        public async Task<bool> UpdateUserAsync(User user, string? newPassword)
         {
             try
             {
+                if (!string.IsNullOrEmpty(newPassword))
+                {
+                    string newSalt = GenerateSalt();
+                    string newPasswordHash = HashPassword(newPassword, newSalt);
+
+                    user.Salt = newSalt;
+                    user.PasswordHash = newPasswordHash;
+                }
+
                 return await _userRepository.UpdateUserAsync(user);
             }
             catch (Exception ex)
