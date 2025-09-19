@@ -1,5 +1,5 @@
 using backend.Repositories;
-
+using backend.Services;
 using backend.GraphQL;
 using backend.GraphQL.Mutations;
 using backend.GraphQL.Queries;
@@ -32,12 +32,13 @@ namespace backend
                 });
             });
 
-            builder.Services.AddSingleton<UserType>();
+            builder.Services.AddScoped<UserType>();
+            builder.Services.AddScoped<UserService>();
 
-            builder.Services.AddSingleton<RootQuery>();
-            builder.Services.AddSingleton<RootMutation>();
+            builder.Services.AddScoped<RootQuery>();
+            builder.Services.AddScoped<RootMutation>();
 
-            builder.Services.AddSingleton<ISchema, AppSchema>();
+            builder.Services.AddScoped<ISchema, AppSchema>();
 
             builder.Services.AddGraphQL(options =>
             {
