@@ -19,8 +19,6 @@ namespace backend
             builder.Services.AddScoped<UserRepository>(provider => new UserRepository(connectionString!));
 
             builder.Services.AddControllers();
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
 
             builder.Services.AddCors(options =>
             {
@@ -52,14 +50,12 @@ namespace backend
 
             if (app.Environment.IsDevelopment())
             {
-                app.UseSwagger();
-                app.UseSwaggerUI();
+                app.UseGraphQLGraphiQL("/ui/graphiql");
             }
 
-            app.UseAuthorization();
             app.UseCors();
+            app.UseAuthorization();
             app.UseGraphQL<ISchema>("/graphql");
-            app.UseGraphQLGraphiQL("/ui/graphiql");
 
             app.MapControllers();
 
