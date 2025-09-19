@@ -24,7 +24,7 @@ namespace backend.GraphQL.Mutations
                     return await userService.CreateUserAsync(email, password, name);
                 });
 
-            Field<BooleanGraphType>("updateUser")
+            Field<UserType>("updateUser")
                 .Argument<NonNullGraphType<IntGraphType>>("id")
                 .Argument<StringGraphType>("email")
                 .Argument<StringGraphType>("password")
@@ -43,7 +43,7 @@ namespace backend.GraphQL.Mutations
                         user.Email = email;
 
                     if (!string.IsNullOrEmpty(name))
-                        user.Name = name;
+                        user.Name = name;   
 
                     return await userService.UpdateUserAsync(user, password);
                 });

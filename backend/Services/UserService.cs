@@ -24,7 +24,7 @@ namespace backend.Services
             return await _userRepository.GetUserByEmailAsync(email);
         }
 
-        public async Task<bool> UpdateUserAsync(User user, string? newPassword)
+        public async Task<User?> UpdateUserAsync(User user, string? newPassword)
         {
             try
             {

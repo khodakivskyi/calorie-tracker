@@ -39,7 +39,7 @@ namespace backend.Repositories
 
             return await GetUserByIdAsync(userId);
         }
-        public async Task<bool> UpdateUserAsync(User user)
+        public async Task<User?> UpdateUserAsync(User user)
         {
             using var connection = new SqlConnection(_connectionString);
             const string sql = @"
@@ -48,7 +48,10 @@ namespace backend.Repositories
                 WHERE id = @Id";
 
             var affectedRows = await connection.ExecuteAsync(sql, user);
-            return affectedRows > 0;
+
+            if (affectedRows > 0)
+                return await GetUserByIdAsync(user.Id);
+            else return null;
         }
 
         public async Task<bool> DeleteUserAsync(int id)
