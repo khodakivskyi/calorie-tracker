@@ -26,8 +26,6 @@ namespace backend.Services
 
         public async Task<User?> UpdateUserAsync(User user, string? newPassword)
         {
-            try
-            {
                 if (!string.IsNullOrEmpty(newPassword))
                 {
                     string newSalt = GenerateSalt();
@@ -38,29 +36,15 @@ namespace backend.Services
                 }
 
                 return await _userRepository.UpdateUserAsync(user);
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidOperationException($"Error updating user: {ex.Message}");
-            }
         }
 
         public async Task<bool> DeleteUserAsync(int id)
         {
-            try
-            {
                 return await _userRepository.DeleteUserAsync(id);
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidOperationException($"Error deleting user: {ex.Message}");
-            }
         }
 
         public async Task<User?> CreateUserAsync(string email, string password, string? name)
         {
-            try
-            {
                 var existingUser = await _userRepository.GetUserByEmailAsync(email);
                 if (existingUser != null) return null;
 
@@ -70,17 +54,10 @@ namespace backend.Services
                 var newUser = new User(email, passwordHash, salt, name);
 
                 return await _userRepository.CreateUserAsync(newUser);
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidOperationException($"Error creating user: {ex.Message}");
-            }
         }
 
         public async Task<User?> AuthenticateUserAsync(string email, string password)
         {
-            try
-            {
                 var user = await _userRepository.GetUserByEmailAsync(email);
                 if (user == null) return null;
 
@@ -90,11 +67,6 @@ namespace backend.Services
                     return user;
 
                 return null;
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidOperationException($"Error authentication user: {ex.Message}");
-            }
         }
 
         private string HashPassword(string password, string salt)
