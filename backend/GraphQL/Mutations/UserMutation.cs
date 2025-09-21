@@ -2,19 +2,14 @@
 using backend.Services;
 using GraphQL;
 using GraphQL.Types;
-using Microsoft.Extensions.Logging;
 
 namespace backend.GraphQL.Mutations
 {
     public class UserMutation : ObjectGraphType
     {
-		private readonly ILogger<UserMutation> _logger; 
-
-        public UserMutation(UserService userService, ILogger<UserQuery> logger)
+        public UserMutation(UserService userService)
         {
             Name = "UserMutations";
-
-_logger=logger;
 
             Field<UserType>("createUser")
                 .Argument<NonNullGraphType<StringGraphType>>("email")
@@ -28,7 +23,7 @@ _logger=logger;
                     var password = context.GetArgument<string>("password");
                     var name = context.GetArgument<string?>("name");
                     
-                        return await userService.CreateUserAsync(email, password, name);
+                    return await userService.CreateUserAsync(email, password, name);
                     }
                     catch (ArgumentException ex)
                     {

@@ -2,26 +2,21 @@
 using backend.Services;
 using GraphQL;
 using GraphQL.Types;
-using Microsoft.Extensions.Logging;
 
 namespace backend.GraphQL.Queries
 {
     public class UserQuery : ObjectGraphType
     {
-		private readonly ILogger<UserQuery> _logger; 
-
-        public UserQuery(UserService userService, ILogger<UserQuery> logger)
+        public UserQuery(UserService userService)
         {
-_logger=logger;
-
             Field<UserType>("getUserById")
             .Argument<IntGraphType>("id")
             .ResolveAsync(async context =>
             {
                 try
                 {
- var id = context.GetArgument<int>("id");
-                return await userService.GetUserByIdAsync(id);
+ 					var id = context.GetArgument<int>("id");
+                	return await userService.GetUserByIdAsync(id);
                 }
                 catch (ArgumentException ex)
                 {
@@ -41,7 +36,7 @@ _logger=logger;
            {
                try
                {
-  var email = context.GetArgument<string>("email");
+  				var email = context.GetArgument<string>("email");
                return await userService.GetUserByEmailAsync(email);
                }
                catch (ArgumentException ex)
@@ -62,7 +57,7 @@ _logger=logger;
                 {
                     try
                     {
-var email = context.GetArgument<string>("email");
+					var email = context.GetArgument<string>("email");
                     var password = context.GetArgument<string>("password");
                     return await userService.AuthenticateUserAsync(email, password);
                     }
