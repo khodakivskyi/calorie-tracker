@@ -26,47 +26,56 @@ namespace backend.Services
 
         public async Task<User?> UpdateUserAsync(User user, string? newPassword)
         {
-                if (!string.IsNullOrEmpty(newPassword))
-                {
-                    string newSalt = GenerateSalt();
-                    string newPasswordHash = HashPassword(newPassword, newSalt);
+            var existingUser = await _userRepository.GetUserByEmailAsync(user.Email);
+            if (existingUser != null && existingUser.Id != user.Id)
+            {
+                throw new ArgumentException($"User with email '{user.Email}' already exists");
+            }
 
-                    user.Salt = newSalt;
-                    user.PasswordHash = newPasswordHash;
-                }
+            if (!string.IsNullOrEmpty(newPassword))
+            {
+                string newSalt = GenerateSalt();
+                string newPasswordHash = HashPassword(newPassword, newSalt);
 
-                return await _userRepository.UpdateUserAsync(user);
+                user.Salt = newSalt;
+                user.PasswordHash = newPasswordHash;
+            }
+
+            return await _userRepository.UpdateUserAsync(user);
         }
 
         public async Task<bool> DeleteUserAsync(int id)
         {
-                return await _userRepository.DeleteUserAsync(id);
+            return await _userRepository.DeleteUserAsync(id);
         }
 
         public async Task<User?> CreateUserAsync(string email, string password, string? name)
         {
-                var existingUser = await _userRepository.GetUserByEmailAsync(email);
-                if (existingUser != null) return null;
+            var existingUser = await _userRepository.GetUserByEmailAsync(email);
+            if (existingUser != null)
+            {
+                throw new ArgumentException($"User with email '{email}' already exists");
+            }
 
-                string salt = GenerateSalt();
-                string passwordHash = HashPassword(password, salt);
+            string salt = GenerateSalt();
+            string passwordHash = HashPassword(password, salt);
 
-                var newUser = new User(email, passwordHash, salt, name);
+            var newUser = new User(email, passwordHash, salt, name);
 
-                return await _userRepository.CreateUserAsync(newUser);
+            return await _userRepository.CreateUserAsync(newUser);
         }
 
         public async Task<User?> AuthenticateUserAsync(string email, string password)
         {
-                var user = await _userRepository.GetUserByEmailAsync(email);
-                if (user == null) return null;
+            var user = await _userRepository.GetUserByEmailAsync(email);
+            if (user == null) return null;
 
-                var hashedPassword = HashPassword(password, user.Salt);
+            var hashedPassword = HashPassword(password, user.Salt);
 
-                if (hashedPassword == user.PasswordHash)
-                    return user;
+            if (hashedPassword == user.PasswordHash)
+                return user;
 
-                return null;
+            return null;
         }
 
         private string HashPassword(string password, string salt)

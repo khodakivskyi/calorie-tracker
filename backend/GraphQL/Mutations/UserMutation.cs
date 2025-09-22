@@ -19,22 +19,18 @@ namespace backend.GraphQL.Mutations
                 {
                     try
                     {
-                    var email = context.GetArgument<string>("email");
-                    var password = context.GetArgument<string>("password");
-                    var name = context.GetArgument<string?>("name");
-                    
-                    return await userService.CreateUserAsync(email, password, name);
+                        var email = context.GetArgument<string>("email");
+                        var password = context.GetArgument<string>("password");
+                        var name = context.GetArgument<string?>("name");
+
+                        return await userService.CreateUserAsync(email, password, name);
                     }
                     catch (ArgumentException ex)
                     {
                         context.Errors.Add(new ExecutionError($"Validation error: {ex.Message}"));
                         return null;
                     }
-                    catch (InvalidOperationException ex)
-                    {
-                        throw;
-                    }
-                    catch (Exception ex)
+                    catch
                     {
                         throw;
                     }
@@ -55,7 +51,7 @@ namespace backend.GraphQL.Mutations
                         var name = context.GetArgument<string?>("name");
 
                         var user = await userService.GetUserByIdAsync(id);
-                        if (user == null) 
+                        if (user == null)
                         {
                             context.Errors.Add(new ExecutionError($"User with id {id} not found"));
                             return null;
@@ -75,18 +71,25 @@ namespace backend.GraphQL.Mutations
                         if (!string.IsNullOrEmpty(name))
                             user.Name = name;
 
-                        return await userService.UpdateUserAsync(user, password);
+                        string oldPasswordHash = user.PasswordHash;
+
+                        var updatedUser = await userService.UpdateUserAsync(user, password);
+
+                        if (!string.IsNullOrEmpty(password) && updatedUser!.PasswordHash == oldPasswordHash)
+                        {
+                            context.Errors.Add(new ExecutionError($"Password changed error"));
+                            return null;
+                        }
+
+                        return updatedUser;
+
                     }
                     catch (ArgumentException ex)
                     {
                         context.Errors.Add(new ExecutionError($"Validation error: {ex.Message}"));
                         return null;
                     }
-                    catch (InvalidOperationException ex)
-                    {
-                        throw;
-                    }
-                    catch (Exception ex)
+                    catch
                     {
                         throw;
                     }
@@ -98,8 +101,8 @@ namespace backend.GraphQL.Mutations
                 {
                     try
                     {
-                    var id = context.GetArgument<int>("id");
-                    
+                        var id = context.GetArgument<int>("id");
+
                         return await userService.DeleteUserAsync(id);
                     }
                     catch (ArgumentException ex)
@@ -107,11 +110,7 @@ namespace backend.GraphQL.Mutations
                         context.Errors.Add(new ExecutionError($"Validation error: {ex.Message}"));
                         return false;
                     }
-                    catch (InvalidOperationException ex)
-                    {
-                        throw;
-                    }
-                    catch (Exception ex)
+                    catch
                     {
                         throw;
                     }

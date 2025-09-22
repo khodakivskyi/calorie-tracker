@@ -15,36 +15,36 @@ namespace backend.GraphQL.Queries
             {
                 try
                 {
- 					var id = context.GetArgument<int>("id");
-                	return await userService.GetUserByIdAsync(id);
+                    var id = context.GetArgument<int>("id");
+                    return await userService.GetUserByIdAsync(id);
                 }
                 catch (ArgumentException ex)
                 {
                     context.Errors.Add(new ExecutionError($"Validation error: {ex.Message}"));
                     return null;
                 }
-                catch (Exception ex)
+                catch
                 {
                     throw;
                 }
-               
+
             });
 
             Field<UserType>("getUserByEmail")
-           .Argument<StringGraphType>("email")
-           .ResolveAsync(async context =>
-           {
+            .Argument<StringGraphType>("email")
+            .ResolveAsync(async context =>
+            {
                try
                {
-  				var email = context.GetArgument<string>("email");
-               return await userService.GetUserByEmailAsync(email);
+                   var email = context.GetArgument<string>("email");
+                   return await userService.GetUserByEmailAsync(email);
                }
                catch (ArgumentException ex)
                {
                    context.Errors.Add(new ExecutionError($"Validation error: {ex.Message}"));
                    return null;
                }
-               catch (Exception ex)
+               catch
                {
                    throw;
                }
@@ -57,16 +57,16 @@ namespace backend.GraphQL.Queries
                 {
                     try
                     {
-					var email = context.GetArgument<string>("email");
-                    var password = context.GetArgument<string>("password");
-                    return await userService.AuthenticateUserAsync(email, password);
+                        var email = context.GetArgument<string>("email");
+                        var password = context.GetArgument<string>("password");
+                        return await userService.AuthenticateUserAsync(email, password);
                     }
                     catch (ArgumentException ex)
                     {
                         context.Errors.Add(new ExecutionError($"Validation error: {ex.Message}"));
                         return null;
                     }
-                    catch (Exception ex)
+                    catch
                     {
                         throw;
                     }
