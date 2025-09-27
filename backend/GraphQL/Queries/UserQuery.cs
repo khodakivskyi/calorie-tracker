@@ -7,7 +7,7 @@ namespace backend.GraphQL.Queries
 {
     public class UserQuery : ObjectGraphType
     {
-        public UserQuery(UserService userService)
+        public UserQuery(UserService userService, JwtService jwtService)
         {
             Field<NonNullGraphType<UserType>>("getUserById")
             .Argument<IntGraphType>("id")
@@ -25,14 +25,22 @@ namespace backend.GraphQL.Queries
                 return await userService.GetUserByEmailAsync(email);
             });
 
-            Field<NonNullGraphType<UserType>>("authenticateUser")
+            Field<NonNullGraphType<AuthPayloadType>>("authenticateUser")
                 .Argument<NonNullGraphType<StringGraphType>>("email")
                 .Argument<NonNullGraphType<StringGraphType>>("password")
                 .ResolveAsync(async context =>
                 {
                     var email = context.GetArgument<string>("email");
                     var password = context.GetArgument<string>("password");
-                    return await userService.AuthenticateUserAsync(email, password);
+
+                    var user = await userService.AuthenticateUserAsync(email, password);
+                    var token = jwtService.GenerateToken(user.Email, "USER");
+
+                    return new
+                    {
+                        user,
+                        token
+                    };
                 });
         }
     }
