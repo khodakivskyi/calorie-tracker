@@ -1,10 +1,13 @@
-using backend.Repositories;
-using backend.Services;
+using backend.Exceptions;
 using backend.GraphQL;
 using backend.GraphQL.Mutations;
 using backend.GraphQL.Queries;
 using backend.GraphQL.Types;
+using backend.Repositories;
+using backend.Repositories.Interfaces;
+using backend.Services;
 using GraphQL;
+using GraphQL.Execution;
 using GraphQL.Types;
 
 namespace backend
@@ -15,8 +18,10 @@ namespace backend
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            builder.Logging.AddConsole();
+
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-            builder.Services.AddScoped<UserRepository>(provider => new UserRepository(connectionString!));
+            builder.Services.AddScoped<IUserRepository>(provider => new UserRepository(connectionString!));
 
             builder.Services.AddControllers();
 
@@ -30,21 +35,21 @@ namespace backend
                 });
             });
 
+            builder.Services.AddSingleton<IErrorInfoProvider, MyErrorInfoProvider>();
             builder.Services.AddScoped<UserType>();
             builder.Services.AddScoped<UserService>();
-
             builder.Services.AddScoped<RootQuery>();
             builder.Services.AddScoped<RootMutation>();
-
             builder.Services.AddScoped<ISchema, AppSchema>();
-
             builder.Services.AddGraphQL(options =>
             {
                 options.AddSystemTextJson();
-                options.AddErrorInfoProvider(opt => opt.ExposeExceptionDetails = true);
+                options.AddErrorInfoProvider(opt =>
+                {
+                    opt.ExposeExceptionDetails = false;
+                });
                 options.AddGraphTypes(typeof(RootQuery).Assembly);
             });
-
 
             var app = builder.Build();
 

@@ -1,10 +1,11 @@
 ﻿using backend.Models;
+using backend.Repositories.Interfaces;
 using Dapper;
 using Microsoft.Data.SqlClient;
 
 namespace backend.Repositories
 {
-    public class UserRepository
+    public class UserRepository : IUserRepository
     {
         private readonly string _connectionString;
 

@@ -9,69 +9,31 @@ namespace backend.GraphQL.Queries
     {
         public UserQuery(UserService userService)
         {
-            Field<UserType>("getUserById")
+            Field<NonNullGraphType<UserType>>("getUserById")
             .Argument<IntGraphType>("id")
             .ResolveAsync(async context =>
             {
-                try
-                {
-                    var id = context.GetArgument<int>("id");
-                    return await userService.GetUserByIdAsync(id);
-                }
-                catch (ArgumentException ex)
-                {
-                    context.Errors.Add(new ExecutionError($"Validation error: {ex.Message}"));
-                    return null;
-                }
-                catch
-                {
-                    throw;
-                }
-
+                var id = context.GetArgument<int>("id");
+                return await userService.GetUserByIdAsync(id);
             });
 
-            Field<UserType>("getUserByEmail")
+            Field<NonNullGraphType<UserType>>("getUserByEmail")
             .Argument<StringGraphType>("email")
             .ResolveAsync(async context =>
             {
-               try
-               {
-                   var email = context.GetArgument<string>("email");
-                   return await userService.GetUserByEmailAsync(email);
-               }
-               catch (ArgumentException ex)
-               {
-                   context.Errors.Add(new ExecutionError($"Validation error: {ex.Message}"));
-                   return null;
-               }
-               catch
-               {
-                   throw;
-               }
-           });
+                var email = context.GetArgument<string>("email");
+                return await userService.GetUserByEmailAsync(email);
+            });
 
-            Field<UserType>("authenticateUser")
+            Field<NonNullGraphType<UserType>>("authenticateUser")
                 .Argument<NonNullGraphType<StringGraphType>>("email")
                 .Argument<NonNullGraphType<StringGraphType>>("password")
                 .ResolveAsync(async context =>
                 {
-                    try
-                    {
-                        var email = context.GetArgument<string>("email");
-                        var password = context.GetArgument<string>("password");
-                        return await userService.AuthenticateUserAsync(email, password);
-                    }
-                    catch (ArgumentException ex)
-                    {
-                        context.Errors.Add(new ExecutionError($"Validation error: {ex.Message}"));
-                        return null;
-                    }
-                    catch
-                    {
-                        throw;
-                    }
+                    var email = context.GetArgument<string>("email");
+                    var password = context.GetArgument<string>("password");
+                    return await userService.AuthenticateUserAsync(email, password);
                 });
         }
     }
-
 }

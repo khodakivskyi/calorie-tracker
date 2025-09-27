@@ -1,81 +1,112 @@
 ﻿using System.Text;
 using backend.Models;
-using backend.Repositories;
+using backend.Exceptions;
 using System.Security.Cryptography;
+using backend.Repositories.Interfaces;
 
 namespace backend.Services
 {
     public class UserService
     {
-        private readonly UserRepository _userRepository;
+        private readonly IUserRepository _userRepository;
 
-        public UserService(UserRepository userRepository)
+        public UserService(IUserRepository userRepository)
         {
             _userRepository = userRepository;
         }
 
-        public async Task<User?> GetUserByIdAsync(int id)
+        public async Task<User> GetUserByIdAsync(int id)
         {
-            return await _userRepository.GetUserByIdAsync(id);
+            var user = await _userRepository.GetUserByIdAsync(id);
+            if (user == null)
+            {
+                throw new NotFoundException($"User with id {id} not found");
+            }
+            return user;
         }
 
-        public async Task<User?> GetUserByEmailAsync(string email)
+        public async Task<User> GetUserByEmailAsync(string email)
         {
-            return await _userRepository.GetUserByEmailAsync(email);
+            var user = await _userRepository.GetUserByEmailAsync(email);
+            if (user == null)
+            {
+                throw new NotFoundException($"User with email '{email}' not found");
+            }
+            return user;
         }
 
-        public async Task<User?> UpdateUserAsync(User user, string? newPassword)
+        public async Task<User> UpdateUserAsync(int id, string? email, string? password, string? name)
         {
-            var existingUser = await _userRepository.GetUserByEmailAsync(user.Email);
-            if (existingUser != null && existingUser.Id != user.Id)
+            var user = await this.GetUserByIdAsync(id);
+
+            if (!string.IsNullOrEmpty(email) && email != user.Email)
             {
-                throw new ArgumentException($"User with email '{user.Email}' already exists");
+                var userWithSameEmail = await _userRepository.GetUserByEmailAsync(email);
+                if (userWithSameEmail != null)
+                    throw new ConflictException($"User with email '{email}' already exists");
+
+                user.Email = email;
             }
 
-            if (!string.IsNullOrEmpty(newPassword))
+            if (!string.IsNullOrEmpty(password))
             {
-                string newSalt = GenerateSalt();
-                string newPasswordHash = HashPassword(newPassword, newSalt);
+                string newPasswordHash = HashPassword(password, user.Salt);
 
-                user.Salt = newSalt;
-                user.PasswordHash = newPasswordHash;
+                if (user.PasswordHash != newPasswordHash)
+                {
+                    string newSalt = GenerateSalt();
+                    newPasswordHash = HashPassword(password, newSalt);
+
+                    user.Salt = newSalt;
+                    user.PasswordHash = newPasswordHash;
+                }
             }
 
-            return await _userRepository.UpdateUserAsync(user);
+            if (!string.IsNullOrEmpty(name) && user.Name != name)
+                user.Name = name;
+
+            var updatedUser = await _userRepository.UpdateUserAsync(user);
+            if (updatedUser == null)
+                throw new NotFoundException($"Failed to update user with id {user.Id}");
+
+            return updatedUser;
         }
 
         public async Task<bool> DeleteUserAsync(int id)
         {
+            await this.GetUserByIdAsync(id);
+
             return await _userRepository.DeleteUserAsync(id);
         }
 
-        public async Task<User?> CreateUserAsync(string email, string password, string? name)
+        public async Task<User> CreateUserAsync(string email, string password, string? name)
         {
             var existingUser = await _userRepository.GetUserByEmailAsync(email);
             if (existingUser != null)
-            {
-                throw new ArgumentException($"User with email '{email}' already exists");
-            }
+                throw new ConflictException($"User with email '{email}' already exists");
 
             string salt = GenerateSalt();
             string passwordHash = HashPassword(password, salt);
 
             var newUser = new User(email, passwordHash, salt, name);
 
-            return await _userRepository.CreateUserAsync(newUser);
+            var createdUser = await _userRepository.CreateUserAsync(newUser);
+            if (createdUser == null)
+                throw new InvalidOperationException("Failed to create user");
+
+            return createdUser;
         }
 
-        public async Task<User?> AuthenticateUserAsync(string email, string password)
+        public async Task<User> AuthenticateUserAsync(string email, string password)
         {
-            var user = await _userRepository.GetUserByEmailAsync(email);
-            if (user == null) return null;
+            var user = await this.GetUserByEmailAsync(email);
 
             var hashedPassword = HashPassword(password, user.Salt);
 
-            if (hashedPassword == user.PasswordHash)
-                return user;
+            if (hashedPassword != user.PasswordHash)
+                throw new ValidationException("Invalid password");
 
-            return null;
+            return user;
         }
 
         private string HashPassword(string password, string salt)
