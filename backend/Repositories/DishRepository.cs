@@ -19,22 +19,78 @@ namespace backend.Repositories
             const string sql = "SELECT id, owner_id, name, weight, image_id, created_at FROM dishes WHERE id = @Id";
             return await connection.QueryFirstOrDefaultAsync<Dish>(sql, new { Id = id });
         }
-        public async Task<IEnumerable<Dish?>> GetAllDishesAsync(int ownerId)
+        public async Task<IEnumerable<Dish?>> GetAllDishesByUserAsync(int ownerId)
         {
             using var connection = new SqlConnection(_connectionString);
             const string sql = @"SELECT id, owner_id, name, weight, image_id, created_at FROM dishes WHERE owner_id = @OwnerId
-                        ORDER BY created_at DESC";
+                                ORDER BY created_at DESC";
             return await connection.QueryAsync<Dish>(sql, new { OwnerId = ownerId });
         }
         public async Task<Dish?> CreateDishAsync(Dish dish)
         {
-            throw new NotImplementedException();
+            using var connection = new SqlConnection(_connectionString);
+            const string sql = @"INSERT INTO dishes (owner_id, name, weight, created_at, image_id)
+                                OUTPUT INSERTED.id, INSERTED.owner_id, INSERTED.name, INSERTED.weight, INSERTED.image_id, INSERTED.created_at
+                                VALUES (@OwnerId, @Name, @Weight, SYSUTCDATETIME(), @ImageId);";
+            return await connection.QueryFirstOrDefaultAsync<Dish>(sql, dish);
         }
         public async Task<Dish?> UpdateDishAsync(Dish dish)
         {
-            throw new NotImplementedException();
+            using var connection = new SqlConnection(_connectionString);
+            const string sql = @"UPDATE dishes SET name = @Name, weight = @Weight, image_id = @ImageId
+                                OUTPUT INSERTED.id, INSERTED.owner_id, INSERTED.name, INSERTED.weight, INSERTED.image_id, INSERTED.created_at
+                                WHERE id = @Id AND owner_id = @OwnerId;";
+            return await connection.QueryFirstOrDefaultAsync<Dish>(sql, dish);
         }
         public async Task<bool> DeleteDishAsync(int id)
+        {
+            using var connection = new SqlConnection(_connectionString);
+            const string sql = "DELETE FROM dishes WHERE id = @Id AND owner_id = @OwnerId";
+            var affectedRows = await connection.ExecuteAsync(sql, new { Id = id });
+            return affectedRows > 0;
+        }
+        public async Task<bool> DeleteAllDishesByUserAsync(int ownerId)
+        {
+            using var connection = new SqlConnection(_connectionString);
+            const string sql = @"DELETE FROM dishes_foods WHERE dish_id IN (SELECT id FROM dishes WHERE owner_id = @OwnerId);
+                                DELETE FROM meals_dishes  WHERE dish_id IN (SELECT id FROM dishes WHERE owner_id = @OwnerId);
+                                DELETE FROM dishes WHERE owner_id = @OwnerId;";
+            var affectedRows = await connection.ExecuteAsync(sql, new { OwnerId = ownerId });
+            return affectedRows > 0;
+        }
+
+        //
+        public async Task<bool> AddFoodAsync(int dishId, int foodId, decimal quantity)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<bool> UpdateFoodQuantityAsync(int dishId, int foodId, decimal quantity)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<bool> RemoveFoodAsync(int dishId, int foodId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<IEnumerable<(Food food, decimal quantity)>> GetAllFoodsByDishAsync(int dishId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<decimal> GetDishCaloriesAsync(int dishId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<bool> UpdateImageAsync(int dishId, int? imageId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<bool> RemoveImageAsync(int dishId)
         {
             throw new NotImplementedException();
         }
