@@ -22,7 +22,7 @@ namespace backend.GraphQL.Mutations
                     var name = context.GetArgument<string?>("name");
                     var user = await userService.CreateUserAsync(email, password, name);
 
-                    var token = jwtService.GenerateToken(user.Email, "USER");
+                    var token = jwtService.GenerateToken(user.Id, user.Email);
                     return new
                     {
                         user,

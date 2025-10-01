@@ -12,7 +12,7 @@ public static class AuthorizationHelper
     public static void EnsureRole(HttpContext? context, string role)
     {
         EnsureAuthenticated(context);
-        if (!context.User.IsInRole(role))
+        if (!context!.User.IsInRole(role))
             throw new ExecutionError("Forbidden");
     }
 }

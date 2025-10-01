@@ -34,7 +34,7 @@ namespace backend.GraphQL.Queries
                     var password = context.GetArgument<string>("password");
 
                     var user = await userService.AuthenticateUserAsync(email, password);
-                    var token = jwtService.GenerateToken(user.Email, "USER");
+                    var token = jwtService.GenerateToken(user.Id, user.Email);
 
                     return new
                     {

@@ -8,12 +8,12 @@ public class JwtService
     private readonly string _key;
     private readonly int _expiryMinutes;
 
-    public JwtService(string key, int expiryMinutes = 15)
+    public JwtService(string key, int expiryMinutes)
     {
         _key = key;
         _expiryMinutes = expiryMinutes;
     }
-    public string GenerateToken(string email, string role = "USER")
+    public string GenerateToken(int userId, string email)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = Encoding.ASCII.GetBytes(_key);
@@ -22,8 +22,8 @@ public class JwtService
         {
             Subject = new ClaimsIdentity(new[]
             {
-                new Claim(ClaimTypes.Name, email),
-                new Claim(ClaimTypes.Role, role)
+                new Claim("email", email),
+                new Claim("userId", userId.ToString())
             }),
             Expires = DateTime.UtcNow.AddMinutes(_expiryMinutes),
             SigningCredentials = new SigningCredentials(

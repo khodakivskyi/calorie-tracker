@@ -55,7 +55,8 @@ namespace backend
             });
 
             var jwtKey = builder.Configuration["JwtSettings:SecretKey"];
-            builder.Services.AddSingleton(new JwtService(jwtKey!));
+            var expiryMinutes = builder.Configuration.GetValue<int>("JwtSettings:ExpiryMinutes", 15);
+            builder.Services.AddSingleton(new JwtService(jwtKey!, expiryMinutes));
 
             builder.Services.AddAuthentication(options =>
             {
