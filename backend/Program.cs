@@ -9,6 +9,9 @@ using backend.Services;
 using GraphQL;
 using GraphQL.Execution;
 using GraphQL.Types;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace backend
 {
@@ -51,6 +54,27 @@ namespace backend
                 options.AddGraphTypes(typeof(RootQuery).Assembly);
             });
 
+            var jwtKey = builder.Configuration["JwtSettings:SecretKey"];
+            var expiryMinutes = builder.Configuration.GetValue<int>("JwtSettings:ExpiryMinutes", 15);
+            builder.Services.AddSingleton(new JwtService(jwtKey!, expiryMinutes));
+
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtKey!))
+                };
+            });
+
             var app = builder.Build();
 
             if (app.Environment.IsDevelopment())
@@ -59,6 +83,7 @@ namespace backend
             }
 
             app.UseCors();
+            app.UseAuthentication();
             app.UseAuthorization();
             app.UseGraphQL<ISchema>("/graphql");
 
