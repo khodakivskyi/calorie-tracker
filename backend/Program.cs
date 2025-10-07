@@ -37,6 +37,8 @@ namespace backend
             builder.Services.AddScoped<UserService>();
 
             builder.Services.AddScoped<MealService>();
+            builder.Services.AddScoped<MealType>();
+
 
             builder.Services.AddScoped<RootQuery>();
             builder.Services.AddScoped<RootMutation>();
