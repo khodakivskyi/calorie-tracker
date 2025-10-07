@@ -1,6 +1,6 @@
 ﻿using System.Text;
 using backend.Models;
-//using backend.Exceptions;
+using backend.Exceptions;
 using System.Security.Cryptography;
 using backend.Repositories.Interfaces;
 using backend.Repositories;
@@ -20,8 +20,8 @@ namespace backend.Services
         public async Task<Meal> GetMealByIdAsync(int id)
         {
             var meal = await _mealRepository.GetMealByIdAsync(id);
-            //if (meal == null)
-            //    throw new NotFoundException($"Meal with id {id} not found");
+            if (meal == null)
+                throw new NotFoundException($"Meal with id {id} not found");
             
             return meal;
         }
@@ -29,8 +29,8 @@ namespace backend.Services
         public async Task<IEnumerable<Meal>> GetAllMealsByUserAsync(int ownerId)
         {
             var meals = await _mealRepository.GetAllMealsByUserAsync(ownerId);
-            //if (!meals.Any())
-            //    throw new NotFoundException($"Meals for ownerId '{ownerId}' not found");
+            if (!meals.Any())
+                throw new NotFoundException($"Meals for ownerId '{ownerId}' not found");
            
             return meals;
         }
