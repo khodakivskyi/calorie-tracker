@@ -1,18 +1,18 @@
 ﻿using Microsoft.AspNetCore.Http;
-using GraphQL;
+using backend.Exceptions;
 
 public static class AuthorizationHelper
 {
     public static void EnsureAuthenticated(HttpContext? context)
     {
         if (context?.User?.Identity?.IsAuthenticated != true)
-            throw new ExecutionError("Unauthorized");
+            throw new UnauthorizedException();
     }
 
     public static void EnsureRole(HttpContext? context, string role)
     {
         EnsureAuthenticated(context);
         if (!context!.User.IsInRole(role))
-            throw new ExecutionError("Forbidden");
+            throw new ForbiddenException();
     }
 }

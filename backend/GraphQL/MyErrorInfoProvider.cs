@@ -14,6 +14,16 @@ namespace backend.GraphQL
 
             switch (original)
             {
+                case UnauthorizedException unauthorized:
+                    info.Message = unauthorized.Message;
+                    info.Extensions!["code"] = "UNAUTHORIZED";
+                    break;
+
+                case ForbiddenException forbidden:
+                    info.Message = forbidden.Message;
+                    info.Extensions!["code"] = "FORBIDDEN";
+                    break;
+
                 case ConflictException conflict:
                     info.Message = conflict.Message;
                     info.Extensions!["code"] = "CONFLICT";

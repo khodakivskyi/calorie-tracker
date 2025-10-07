@@ -43,7 +43,7 @@ namespace backend.Services
             {
                 var userWithSameEmail = await _userRepository.GetUserByEmailAsync(email);
                 if (userWithSameEmail != null)
-                    throw new ConflictException($"User with email '{email}' already exists");
+                    throw new ConflictException("This email is already in use");
 
                 user.Email = email;
             }
@@ -67,7 +67,7 @@ namespace backend.Services
 
             var updatedUser = await _userRepository.UpdateUserAsync(user);
             if (updatedUser == null)
-                throw new NotFoundException($"Failed to update user with id {user.Id}");
+                throw new NotFoundException("Failed to update user");
 
             return updatedUser;
         }
@@ -83,7 +83,7 @@ namespace backend.Services
         {
             var existingUser = await _userRepository.GetUserByEmailAsync(email);
             if (existingUser != null)
-                throw new ConflictException($"User with email '{email}' already exists");
+                throw new ConflictException("This email is already registered");
 
             string salt = GenerateSalt();
             string passwordHash = HashPassword(password, salt);
@@ -99,12 +99,15 @@ namespace backend.Services
 
         public async Task<User> AuthenticateUserAsync(string email, string password)
         {
-            var user = await this.GetUserByEmailAsync(email);
+            var user = await _userRepository.GetUserByEmailAsync(email);
+
+            if (user == null)
+                throw new ValidationException("Invalid email or password");
 
             var hashedPassword = HashPassword(password, user.Salt);
 
             if (hashedPassword != user.PasswordHash)
-                throw new ValidationException("Invalid password");
+                throw new ValidationException("Invalid email or password");
 
             return user;
         }

@@ -17,14 +17,6 @@ namespace backend.GraphQL.Queries
                 return await userService.GetUserByIdAsync(id);
             });
 
-            Field<NonNullGraphType<UserType>>("getUserByEmail")
-            .Argument<StringGraphType>("email")
-            .ResolveAsync(async context =>
-            {
-                var email = context.GetArgument<string>("email");
-                return await userService.GetUserByEmailAsync(email);
-            });
-
             Field<NonNullGraphType<AuthPayloadType>>("authenticateUser")
                 .Argument<NonNullGraphType<StringGraphType>>("email")
                 .Argument<NonNullGraphType<StringGraphType>>("password")
