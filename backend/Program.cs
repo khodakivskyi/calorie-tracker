@@ -1,4 +1,5 @@
 using backend.Repositories;
+using backend.Repositories.Interfaces;
 using backend.Services;
 using backend.GraphQL;
 using backend.GraphQL.Mutations;
@@ -6,6 +7,7 @@ using backend.GraphQL.Queries;
 using backend.GraphQL.Types;
 using GraphQL;
 using GraphQL.Types;
+using backend.Models;
 
 namespace backend
 {
@@ -17,6 +19,7 @@ namespace backend
 
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
             builder.Services.AddScoped<UserRepository>(provider => new UserRepository(connectionString!));
+            builder.Services.AddScoped<IMealRepository>(provider => new MealRepository(connectionString!));
 
             builder.Services.AddControllers();
 
@@ -32,6 +35,8 @@ namespace backend
 
             builder.Services.AddScoped<UserType>();
             builder.Services.AddScoped<UserService>();
+
+            builder.Services.AddScoped<MealService>();
 
             builder.Services.AddScoped<RootQuery>();
             builder.Services.AddScoped<RootMutation>();

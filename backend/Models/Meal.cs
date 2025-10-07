@@ -7,6 +7,7 @@
         public string Name { get; set; } = string.Empty;
         public DateTime CreatedAt { get; init; } //чи може реалізувати можливість зміни?
 
+        public Meal() { }
         public Meal(int ownerId, string name)
         {
             OwnerId = ownerId;
