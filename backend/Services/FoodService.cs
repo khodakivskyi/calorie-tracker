@@ -30,11 +30,9 @@ namespace backend.Services
 
         public async Task<Food> CreateFoodAsync(Food food)
         {
-            var existingFood = await _foodRepository.GetFoodByNameAsync(food.Name);
-            if (existingFood != null)
-                throw new ConflictException($"Food with name '{food.Name}' already exists");
-            /// WHETHER TO CHECK BY NAME OR NOT IS DEBATABLE
-
+           // var existingFood = await _foodRepository.GetFoodByNameAsync(food.Name);
+           // if (existingFood != null)
+              //  throw new ConflictException($"Food with name '{food.Name}' already exists"); //
 
             var createdFood = await _foodRepository.CreateFoodAsync(food);
             if (createdFood == null)

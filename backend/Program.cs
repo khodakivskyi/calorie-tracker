@@ -31,7 +31,9 @@ namespace backend
             });
 
             builder.Services.AddScoped<UserType>();
+            builder.Services.AddScoped<FoodType>();
             builder.Services.AddScoped<UserService>();
+            builder.Services.AddScoped<FoodService>();
 
             builder.Services.AddScoped<RootQuery>();
             builder.Services.AddScoped<RootMutation>();
