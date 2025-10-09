@@ -35,6 +35,12 @@ namespace backend.Repositories
             return await connection.QueryAsync<Food>(sql, new { OwnerId = ownerId });
         }
 
+        public async Task<decimal?> GetFoodCaloriesAsync(int foodId)
+        {
+            using var connection = new SqlConnection(_connectionString);
+            const string sql = "SELECT calories FROM calories WHERE food_id = @FoodId";
+            return await connection.QuerySingleOrDefaultAsync<decimal?>(sql, new { FoodId = foodId });
+        }
         public async Task<Food> CreateFoodAsync(Food food)
         {
             using var connection = new SqlConnection(_connectionString);
