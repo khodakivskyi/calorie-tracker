@@ -62,37 +62,89 @@ namespace backend.Repositories
         //
         public async Task<bool> AddFoodAsync(int dishId, int foodId, decimal quantity)
         {
-            throw new NotImplementedException();
+            using var connection = new SqlConnection(_connectionString);
+            const string sql = @"INSERT INTO dishes_foods (dish_id, food_id, quantity)
+                                VALUES (@DishId, @FoodId, @Quantity);";
+            var affectedRows = await connection.ExecuteAsync(sql, new { DishId = dishId, FoodId = foodId, Quantity = quantity });
+            return affectedRows > 0;
         }
 
         public async Task<bool> UpdateFoodQuantityAsync(int dishId, int foodId, decimal quantity)
         {
-            throw new NotImplementedException();
+            using var connection = new SqlConnection(_connectionString);
+            const string sql = @"UPDATE dishes_foods 
+                                SET quantity = @Quantity
+                                WHERE dish_id = @DishId AND food_id = @FoodId;";
+            var affectedRows = await connection.ExecuteAsync(sql, new { DishId = dishId, FoodId = foodId, Quantity = quantity });
+            return affectedRows > 0;
         }
 
         public async Task<bool> RemoveFoodAsync(int dishId, int foodId)
         {
-            throw new NotImplementedException();
+            using var connection = new SqlConnection(_connectionString);
+            const string sql = @"DELETE FROM dishes_foods 
+                                WHERE dish_id = @DishId AND food_id = @FoodId;";
+            var affectedRows = await connection.ExecuteAsync(sql, new { DishId = dishId, FoodId = foodId });
+            return affectedRows > 0;
         }
 
         public async Task<IEnumerable<(Food food, decimal quantity)>> GetAllFoodsByDishAsync(int dishId)
         {
-            throw new NotImplementedException();
+            using var connection = new SqlConnection(_connectionString);
+            const string sql = @"SELECT f.id, f.owner_id, f.name, f.image_id, f.created_at, f.source, f.external_id, df.quantity
+                                FROM dishes_foods df
+                                INNER JOIN foods f ON df.food_id = f.id
+                                WHERE df.dish_id = @DishId;";
+            
+            var results = await connection.QueryAsync(sql, new { DishId = dishId });
+            
+            return results.Select(r => (
+                food: new Food(
+                    ownerId: r.owner_id,
+                    name: r.name,
+                    imageId: r.image_id,
+                    source: r.source,
+                    externalId: r.external_id
+                )
+                {
+                    Id = r.id,
+                    CreatedAt = r.created_at
+                },
+                quantity: (decimal)r.quantity
+            ));
         }
 
         public async Task<decimal> GetDishCaloriesAsync(int dishId)
         {
-            throw new NotImplementedException();
+            using var connection = new SqlConnection(_connectionString);
+            const string sql = @"SELECT ISNULL(SUM(c.calories * df.quantity), 0) as TotalCalories
+                                FROM dishes_foods df
+                                INNER JOIN foods f ON df.food_id = f.id
+                                INNER JOIN calories c ON c.food_id = f.id
+                                WHERE df.dish_id = @DishId;";
+            
+            var totalCalories = await connection.QueryFirstOrDefaultAsync<decimal>(sql, new { DishId = dishId });
+            return totalCalories;
         }
 
         public async Task<bool> UpdateImageAsync(int dishId, int? imageId)
         {
-            throw new NotImplementedException();
+            using var connection = new SqlConnection(_connectionString);
+            const string sql = @"UPDATE dishes 
+                                SET image_id = @ImageId
+                                WHERE id = @DishId;";
+            var affectedRows = await connection.ExecuteAsync(sql, new { DishId = dishId, ImageId = imageId });
+            return affectedRows > 0;
         }
 
         public async Task<bool> RemoveImageAsync(int dishId)
         {
-            throw new NotImplementedException();
+            using var connection = new SqlConnection(_connectionString);
+            const string sql = @"UPDATE dishes 
+                                SET image_id = NULL
+                                WHERE id = @DishId;";
+            var affectedRows = await connection.ExecuteAsync(sql, new { DishId = dishId });
+            return affectedRows > 0;
         }
     }
 }
