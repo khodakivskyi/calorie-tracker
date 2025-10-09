@@ -30,7 +30,7 @@ namespace backend.GraphQL.Mutations
                     };
                 });
 
-            Field<NonNullGraphType<UserType>>("updateUser")
+            Field<NonNullGraphType<AuthPayloadType>>("updateUser")
                 .Argument<NonNullGraphType<IntGraphType>>("id")
                 .Argument<StringGraphType>("email")
                 .Argument<StringGraphType>("password")
@@ -42,8 +42,14 @@ namespace backend.GraphQL.Mutations
                     var password = context.GetArgument<string?>("password");
                     var name = context.GetArgument<string?>("name");
 
+                    var user = await userService.UpdateUserAsync(id, email, password, name);
+                    var token = jwtService.GenerateToken(user.Id, user.Email);
 
-                    return await userService.UpdateUserAsync(id, email, password, name);
+                    return new
+                    {
+                        user,
+                        token
+                    };
                 });
 
             Field<BooleanGraphType>("deleteUser")

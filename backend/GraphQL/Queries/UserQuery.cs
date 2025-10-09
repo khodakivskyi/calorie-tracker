@@ -10,7 +10,7 @@ namespace backend.GraphQL.Queries
         public UserQuery(UserService userService, JwtService jwtService)
         {
             Field<NonNullGraphType<UserType>>("getUserById")
-            .Argument<IntGraphType>("id")
+            .Argument<NonNullGraphType<IntGraphType>>("id")
             .ResolveAsync(async context =>
             {
                 var id = context.GetArgument<int>("id");

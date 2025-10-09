@@ -41,6 +41,9 @@ namespace backend.Services
 
             if (!string.IsNullOrEmpty(email) && email != user.Email)
             {
+                if (!email.Contains("@"))
+                    throw new ValidationException("Invalid email format");
+
                 var userWithSameEmail = await _userRepository.GetUserByEmailAsync(email);
                 if (userWithSameEmail != null)
                     throw new ConflictException("This email is already in use");
@@ -50,6 +53,9 @@ namespace backend.Services
 
             if (!string.IsNullOrEmpty(password))
             {
+                if (password.Length < 6)
+                    throw new ValidationException("Password must be at least 6 characters");
+
                 string newPasswordHash = HashPassword(password, user.Salt);
 
                 if (user.PasswordHash != newPasswordHash)
@@ -81,6 +87,12 @@ namespace backend.Services
 
         public async Task<User> CreateUserAsync(string email, string password, string? name)
         {
+            if (string.IsNullOrWhiteSpace(email) || !email.Contains("@"))
+                throw new ValidationException("Invalid email format");
+
+            if (string.IsNullOrWhiteSpace(password) || password.Length < 6)
+                throw new ValidationException("Password must be at least 6 characters");
+
             var existingUser = await _userRepository.GetUserByEmailAsync(email);
             if (existingUser != null)
                 throw new ConflictException("This email is already registered");
