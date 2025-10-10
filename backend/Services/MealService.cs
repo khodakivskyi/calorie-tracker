@@ -134,12 +134,34 @@ namespace backend.Services
                 throw new NotFoundException($"No meals found on {date:d} for ownerId {ownerId}");
             return meals;
         }
+
         public async Task<IEnumerable<Meal>> GetMealsByNameAsync(int ownerId, string name)
         {
             var meals = await _mealRepository.GetMealsByNameAsync(ownerId, name);
             if (!meals.Any())
                 throw new NotFoundException($"No meals found with name containing '{name}' for ownerId {ownerId}");
             return meals;
+        }
+
+        public async Task<decimal> GetDailyCaloriesAsync(int ownerId, DateTime date)
+        {
+            var totalCalories = await _mealRepository.GetDailyCaloriesAsync(ownerId, date);
+            return totalCalories;
+        }
+        public async Task<Dictionary<DateTime, decimal>> GetWeeklyCaloriesAsync(int ownerId, DateTime startDate)
+        {
+            var weeklyCalories = await _mealRepository.GetWeeklyCaloriesAsync(ownerId, startDate);
+            if (!weeklyCalories.Any())
+                throw new NotFoundException($"No calorie data found for week starting {startDate:d} for ownerId {ownerId}");
+            return weeklyCalories;
+        }
+
+        public async Task<Dictionary<DateTime, decimal>> GetMonthlyCaloriesAsync(int ownerId, int year, int month)
+        {
+            var monthlyCalories = await _mealRepository.GetMonthlyCaloriesAsync(ownerId, year, month);
+            if (!monthlyCalories.Any())
+                throw new NotFoundException($"No calorie data found for {month}/{year} for ownerId {ownerId}");
+            return monthlyCalories;
         }
     }
 }
