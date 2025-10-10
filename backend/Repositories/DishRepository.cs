@@ -19,7 +19,7 @@ namespace backend.Repositories
             const string sql = "SELECT id, owner_id, name, weight, image_id, created_at FROM dishes WHERE id = @Id";
             return await connection.QueryFirstOrDefaultAsync<Dish>(sql, new { Id = id });
         }
-        public async Task<IEnumerable<Dish?>> GetAllDishesByUserAsync(int ownerId)
+        public async Task<IEnumerable<Dish>> GetAllDishesByUserAsync(int ownerId)
         {
             using var connection = new SqlConnection(_connectionString);
             const string sql = @"SELECT id, owner_id, name, weight, image_id, created_at FROM dishes WHERE owner_id = @OwnerId
@@ -127,6 +127,8 @@ namespace backend.Repositories
             return totalCalories;
         }
 
+
+        //
         public async Task<bool> UpdateImageAsync(int dishId, int? imageId)
         {
             using var connection = new SqlConnection(_connectionString);
