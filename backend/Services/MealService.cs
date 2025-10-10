@@ -72,5 +72,74 @@ namespace backend.Services
 
             return await _mealRepository.DeleteAllMealsByUserAsync(ownerId);
         }
+
+        public async Task<bool> AddDishToMealAsync(int mealId, int dishId, decimal quantity)
+        {
+            await GetMealByIdAsync(mealId);
+            var success = await _mealRepository.AddDishToMealAsync(mealId, dishId, quantity);
+            if (!success)
+                throw new InvalidOperationException("Failed to add dish to meal");
+            return success;
+        }
+
+        public async Task<bool> UpdateDishQuantityInMealAsync(int mealId, int dishId, decimal quantity)
+        {
+            await GetMealByIdAsync(mealId);
+            var success = await _mealRepository.UpdateDishQuantityInMealAsync(mealId, dishId, quantity);
+            if (!success)
+                throw new InvalidOperationException("Failed to update dish quantity in meal");
+            return success;
+        }
+
+        public async Task<bool> RemoveDishFromMealAsync(int mealId, int dishId)
+        {
+            await GetMealByIdAsync(mealId);
+            var success = await _mealRepository.RemoveDishFromMealAsync(mealId, dishId);
+            if (!success)
+                throw new InvalidOperationException("Failed to remove dish from meal");
+            return success;
+        }
+
+        public async Task<IEnumerable<MealDish>> GetDishesByMealAsync(int mealId)
+        {
+            await GetMealByIdAsync(mealId);
+            var dishes = await _mealRepository.GetDishesByMealAsync(mealId);
+            return dishes;
+        }
+
+        public async Task<decimal> GetMealTotalCaloriesAsync(int mealId)
+        {
+            await GetMealByIdAsync(mealId);
+            return await _mealRepository.GetMealTotalCaloriesAsync(mealId);
+        }
+
+        public async Task<Nutrients?> GetMealTotalNutrientsAsync(int mealId)
+        {
+            await GetMealByIdAsync(mealId);
+            return await _mealRepository.GetMealTotalNutrientsAsync(mealId);
+        }
+
+        public async Task<IEnumerable<Meal>> GetMealsByDateRangeAsync(int ownerId, DateTime startDate, DateTime endDate)
+        {
+            var meals = await _mealRepository.GetMealsByDateRangeAsync(ownerId, startDate, endDate);
+            if (!meals.Any())
+                throw new NotFoundException($"No meals found between {startDate:d} and {endDate:d} for ownerId {ownerId}");
+            return meals;
+        }
+
+        public async Task<IEnumerable<Meal>> GetMealsByDateAsync(int ownerId, DateTime date)
+        {
+            var meals = await _mealRepository.GetMealsByDateAsync(ownerId, date);
+            if (!meals.Any())
+                throw new NotFoundException($"No meals found on {date:d} for ownerId {ownerId}");
+            return meals;
+        }
+        public async Task<IEnumerable<Meal>> GetMealsByNameAsync(int ownerId, string name)
+        {
+            var meals = await _mealRepository.GetMealsByNameAsync(ownerId, name);
+            if (!meals.Any())
+                throw new NotFoundException($"No meals found with name containing '{name}' for ownerId {ownerId}");
+            return meals;
+        }
     }
 }

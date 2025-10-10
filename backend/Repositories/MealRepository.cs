@@ -109,20 +109,18 @@ namespace backend.Repositories
         {
             using var connection = new SqlConnection(_connectionString);
             const string sql = @"
-                SELECT 
-                    SUM(
-                        ((n.Protein * 4) + (n.Fat * 9) + (n.Carbohydrates * 4)) 
-                        * (df.Quantity / 100.0) 
-                        * (md.Quantity / 100.0)
-                    ) AS TotalCalories
+                SELECT ISNULL(SUM(c.calories * (df.quantity / 100.0) * (md.quantity / 100.0)), 0) AS TotalCalories
                 FROM meals_dishes md
-                JOIN dishes_foods df ON md.dish_id = df.dish_id
-                JOIN nutrients n ON df.food_id = n.food_id
+                INNER JOIN dishes_foods df ON md.dish_id = df.dish_id
+                INNER JOIN foods f ON df.food_id = f.id
+                INNER JOIN calories c ON c.food_id = f.id
                 WHERE md.meal_id = @MealId;
             ";
 
-            return await connection.ExecuteScalarAsync<decimal>(sql, new { MealId = mealId });
+            var totalCalories = await connection.QueryFirstOrDefaultAsync<decimal>(sql, new { MealId = mealId });
+            return totalCalories;
         }
+
 
         public async Task<Nutrients?> GetMealTotalNutrientsAsync(int mealId)
         {
@@ -141,6 +139,43 @@ namespace backend.Repositories
             return await connection.QueryFirstOrDefaultAsync<Nutrients>(sql, new { MealId = mealId });
         }
 
+        public async Task<IEnumerable<Meal>> GetMealsByDateRangeAsync(int ownerId, DateTime startDate, DateTime endDate)
+        {
+            using var connection = new SqlConnection(_connectionString);
+            const string sql = @"
+                SELECT id, owner_id AS OwnerId, name, created_at AS CreatedAt
+                FROM meals
+                WHERE owner_id = @OwnerId
+                  AND CAST(created_at AS date) BETWEEN @StartDate AND @EndDate
+                ORDER BY created_at DESC;";
 
+            return await connection.QueryAsync<Meal>(sql, new { OwnerId = ownerId, StartDate = startDate.Date, EndDate = endDate.Date });
+        }
+
+        public async Task<IEnumerable<Meal>> GetMealsByDateAsync(int ownerId, DateTime date)
+        {
+            using var connection = new SqlConnection(_connectionString);
+            const string sql = @"
+                SELECT id, owner_id AS OwnerId, name, created_at AS CreatedAt
+                FROM meals
+                WHERE owner_id = @OwnerId
+                  AND CAST(created_at AS date) = @Date
+                ORDER BY created_at DESC;";
+
+            return await connection.QueryAsync<Meal>(sql, new { OwnerId = ownerId, Date = date.Date });
+        }
+
+        public async Task<IEnumerable<Meal>> GetMealsByNameAsync(int ownerId, string name)
+        {
+            using var connection = new SqlConnection(_connectionString);
+            const string sql = @"
+                SELECT id, owner_id AS OwnerId, name, created_at AS CreatedAt
+                FROM meals
+                WHERE owner_id = @OwnerId
+                  AND name LIKE '%' + @Name + '%'
+                ORDER BY created_at DESC;";
+
+            return await connection.QueryAsync<Meal>(sql, new { OwnerId = ownerId, Name = name });
+        }
     }
 }
