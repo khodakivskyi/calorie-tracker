@@ -10,9 +10,10 @@ namespace backend.GraphQL.Types
             Field(x => x.Id);
             Field(x => x.OwnerId);
             Field(x => x.Name);
-            Field(x => x.ImageId);
+            Field(x => x.ImageId, nullable: true);
             Field(x => x.CreatedAt);
             Field(x => x.Source);
+            Field(x => x.ExternalId, nullable: true);
         }
     }
 }

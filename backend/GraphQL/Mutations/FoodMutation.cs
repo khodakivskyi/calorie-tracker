@@ -26,8 +26,7 @@ namespace backend.GraphQL.Mutations
                     var source = context.GetArgument<int>("source");
                     var externalId = context.GetArgument<string?>("externalId");
 
-                    var food = new Food(ownerId, name, imageId, source, externalId);
-                    return await foodService.CreateFoodAsync(food);
+                    return await foodService.CreateFoodAsync(ownerId, name, imageId, source, externalId);
                 });
 
             Field<FoodType>("updateFood")
@@ -46,15 +45,7 @@ namespace backend.GraphQL.Mutations
                     var source = context.GetArgument<int?>("source");
                     var externalId = context.GetArgument<string?>("externalId");
 
-                    var existing = await foodService.GetFoodByIdAsync(id, ownerId);
-                    if (existing == null) return null;
-
-                    if (!string.IsNullOrEmpty(name)) existing.Name = name;
-                    if (imageId.HasValue) existing.ImageId = imageId;
-                    if (source.HasValue) existing.Source = source.Value;
-                    if (!string.IsNullOrEmpty(externalId)) existing.ExternalId = externalId;
-
-                    return await foodService.UpdateFoodAsync(existing);
+                    return await foodService.UpdateFoodAsync(id, ownerId, name, imageId, source, externalId);
                 });
 
             Field<BooleanGraphType>("deleteFood")

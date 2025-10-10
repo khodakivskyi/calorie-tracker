@@ -1,4 +1,5 @@
 using backend.Repositories;
+using backend.Repositories.Interfaces;
 using backend.Services;
 using backend.GraphQL;
 using backend.GraphQL.Mutations;
@@ -17,6 +18,7 @@ namespace backend
 
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
             builder.Services.AddScoped<UserRepository>(provider => new UserRepository(connectionString!));
+            builder.Services.AddScoped<IFoodRepository, FoodRepository>(provider => new FoodRepository(connectionString!));
 
             builder.Services.AddControllers();
 

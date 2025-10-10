@@ -28,24 +28,43 @@ namespace backend.Services
             return await _foodRepository.GetFoodsByOwnerAsync(ownerId);
         }
 
-        public async Task<Food> CreateFoodAsync(Food food)
+        public async Task<Food> CreateFoodAsync(int ownerId, string name, int? imageId, int source, string? externalId = null)
         {
-           // var existingFood = await _foodRepository.GetFoodByNameAsync(food.Name);
-           // if (existingFood != null)
-              //  throw new ConflictException($"Food with name '{food.Name}' already exists"); //
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ValidationException("Food name cannot be empty");
 
+            if (source <= 0)
+                throw new ValidationException("Invalid source");
+
+            var food = new Food(ownerId, name, imageId, source, externalId);
             var createdFood = await _foodRepository.CreateFoodAsync(food);
+            
             if (createdFood == null)
                 throw new InvalidOperationException("Failed to create food");
 
             return createdFood;
         }
 
-        public async Task<Food> UpdateFoodAsync(Food food)
+        public async Task<Food> UpdateFoodAsync(int id, int ownerId, string? name = null, int? imageId = null, int? source = null, string? externalId = null)
         {
-            var updatedFood = await _foodRepository.UpdateFoodAsync(food);
+            var existingFood = await this.GetFoodByIdAsync(id, ownerId);
+
+            if (!string.IsNullOrWhiteSpace(name) && name != existingFood.Name)
+                existingFood.Name = name;
+
+            if (imageId.HasValue && imageId != existingFood.ImageId)
+                existingFood.ImageId = imageId;
+
+            if (source.HasValue && source.Value > 0 && source.Value != existingFood.Source)
+                existingFood.Source = source.Value;
+
+            if (!string.IsNullOrWhiteSpace(externalId) && externalId != existingFood.ExternalId)
+                existingFood.ExternalId = externalId;
+
+            var updatedFood = await _foodRepository.UpdateFoodAsync(existingFood);
             if (updatedFood == null)
-                throw new NotFoundException($"Failed to update food with id {food.Id}");
+                throw new NotFoundException("Failed to update food");
+
             return updatedFood;
         }
 
