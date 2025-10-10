@@ -27,6 +27,12 @@ namespace backend.Services
         {
             return await _foodRepository.GetFoodsByOwnerAsync(ownerId);
         }
+        public async Task<decimal?> GetFoodCaloriesAsync(int foodId)
+        {
+            var calories = await _foodRepository.GetFoodCaloriesAsync(foodId);
+
+            if (calories == null)
+                throw new NotFoundException($"Calories for food with id {foodId} not found");
 
         public async Task<Food> CreateFoodAsync(int ownerId, string name, int? imageId, int source, string? externalId = null)
         {

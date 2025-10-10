@@ -26,6 +26,15 @@ namespace backend.GraphQL.Queries
                     var ownerId = context.GetArgument<int>("ownerId");
                     return await foodService.GetFoodsByOwnerAsync(ownerId);
                 });
+
+            Field<DecimalGraphType>("getFoodCalories")
+                .Argument<NonNullGraphType<IntGraphType>>("foodId")
+                .ResolveAsync(async context =>
+                {
+                    var foodId = context.GetArgument<int>("foodId");
+                    var calories = await foodService.GetFoodCaloriesAsync(foodId);
+                    return calories ?? 0m;
+                });
         }
     }
 }
