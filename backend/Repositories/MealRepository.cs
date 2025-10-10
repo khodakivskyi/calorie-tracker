@@ -108,12 +108,21 @@ namespace backend.Repositories
         public async Task<decimal> GetMealTotalCaloriesAsync(int mealId)
         {
             using var connection = new SqlConnection(_connectionString);
+
             const string sql = @"
-                SELECT ISNULL(SUM(c.calories * (df.quantity / 100.0) * (md.quantity / 100.0)), 0) AS TotalCalories
+                SELECT ISNULL(SUM(
+                    (
+                        CASE 
+                            WHEN c.calories IS NOT NULL THEN c.calories
+                            ELSE (n.protein * 4 + n.fat * 9 + n.carbohydrates * 4)
+                        END
+                    ) * (df.quantity / 100.0) * (md.quantity / 100.0)
+                ), 0) AS TotalCalories
                 FROM meals_dishes md
                 INNER JOIN dishes_foods df ON md.dish_id = df.dish_id
                 INNER JOIN foods f ON df.food_id = f.id
-                INNER JOIN calories c ON c.food_id = f.id
+                LEFT JOIN calories c ON c.food_id = f.id
+                LEFT JOIN nutrients n ON n.food_id = f.id
                 WHERE md.meal_id = @MealId;
             ";
 
@@ -177,5 +186,103 @@ namespace backend.Repositories
 
             return await connection.QueryAsync<Meal>(sql, new { OwnerId = ownerId, Name = name });
         }
+
+        public async Task<decimal> GetDailyCaloriesAsync(int ownerId, DateTime date)
+        {
+            using var connection = new SqlConnection(_connectionString);
+            const string sql = @"
+                SELECT ISNULL(SUM(
+                    (
+                        CASE 
+                            WHEN c.calories IS NOT NULL THEN c.calories
+                            ELSE (n.protein * 4 + n.fat * 9 + n.carbohydrates * 4)
+                        END
+                    ) * (df.quantity / 100.0) * (md.quantity / 100.0)
+                ), 0) AS TotalCalories
+                FROM meals m
+                INNER JOIN meals_dishes md ON m.id = md.meal_id
+                INNER JOIN dishes_foods df ON md.dish_id = df.dish_id
+                INNER JOIN foods f ON df.food_id = f.id
+                LEFT JOIN calories c ON c.food_id = f.id
+                LEFT JOIN nutrients n ON n.food_id = f.id
+                WHERE m.owner_id = @OwnerId
+                  AND CAST(m.created_at AS date) = @Date;
+            ";
+
+            return await connection.QueryFirstOrDefaultAsync<decimal>(sql, new { OwnerId = ownerId, Date = date.Date });
+        }
+
+
+        public async Task<Dictionary<DateTime, decimal>> GetWeeklyCaloriesAsync(int ownerId, DateTime startDate)
+        {
+            using var connection = new SqlConnection(_connectionString);
+            var endDate = startDate.AddDays(6);
+
+            const string sql = @"
+                SELECT 
+                    CAST(m.created_at AS date) AS [Date],
+                    ISNULL(SUM(
+                        (
+                            CASE 
+                                WHEN c.calories IS NOT NULL THEN c.calories
+                                ELSE (n.protein * 4 + n.fat * 9 + n.carbohydrates * 4)
+                            END
+                        ) * (df.quantity / 100.0) * (md.quantity / 100.0)
+                    ), 0) AS TotalCalories
+                FROM meals m
+                INNER JOIN meals_dishes md ON m.id = md.meal_id
+                INNER JOIN dishes_foods df ON md.dish_id = df.dish_id
+                INNER JOIN foods f ON df.food_id = f.id
+                LEFT JOIN calories c ON c.food_id = f.id
+                LEFT JOIN nutrients n ON n.food_id = f.id
+                WHERE m.owner_id = @OwnerId
+                  AND CAST(m.created_at AS date) BETWEEN @StartDate AND @EndDate
+                GROUP BY CAST(m.created_at AS date)
+                ORDER BY [Date];
+            ";
+
+            var result = await connection.QueryAsync<(DateTime Date, decimal TotalCalories)>(
+                sql, new { OwnerId = ownerId, StartDate = startDate.Date, EndDate = endDate.Date });
+
+            return result.ToDictionary(x => x.Date, x => x.TotalCalories);
+        }
+
+
+        public async Task<Dictionary<DateTime, decimal>> GetMonthlyCaloriesAsync(int ownerId, int year, int month)
+        {
+            using var connection = new SqlConnection(_connectionString);
+            var startDate = new DateTime(year, month, 1);
+            var endDate = startDate.AddMonths(1).AddDays(-1);
+
+            const string sql = @"
+                SELECT 
+                    CAST(m.created_at AS date) AS [Date],
+                    ISNULL(SUM(
+                        (
+                            CASE 
+                                WHEN c.calories IS NOT NULL THEN c.calories
+                                ELSE (n.protein * 4 + n.fat * 9 + n.carbohydrates * 4)
+                            END
+                        ) * (df.quantity / 100.0) * (md.quantity / 100.0)
+                    ), 0) AS TotalCalories
+                FROM meals m
+                INNER JOIN meals_dishes md ON m.id = md.meal_id
+                INNER JOIN dishes_foods df ON md.dish_id = df.dish_id
+                INNER JOIN foods f ON df.food_id = f.id
+                LEFT JOIN calories c ON c.food_id = f.id
+                LEFT JOIN nutrients n ON n.food_id = f.id
+                WHERE m.owner_id = @OwnerId
+                  AND YEAR(m.created_at) = @Year
+                  AND MONTH(m.created_at) = @Month
+                GROUP BY CAST(m.created_at AS date)
+                ORDER BY [Date];
+            ";
+
+            var result = await connection.QueryAsync<(DateTime Date, decimal TotalCalories)>(
+                sql, new { OwnerId = ownerId, Year = year, Month = month });
+
+            return result.ToDictionary(x => x.Date, x => x.TotalCalories);
+        }
+
     }
 }
