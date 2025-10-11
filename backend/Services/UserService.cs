@@ -20,7 +20,7 @@ namespace backend.Services
             var user = await _userRepository.GetUserByIdAsync(id);
             if (user == null)
             {
-                throw new NotFoundException($"User with id {id} not found");
+                throw new NotFoundException("User not found");
             }
             return user;
         }
@@ -30,7 +30,7 @@ namespace backend.Services
             var user = await _userRepository.GetUserByEmailAsync(email);
             if (user == null)
             {
-                throw new NotFoundException($"User with email '{email}' not found");
+                throw new NotFoundException("User not found");
             }
             return user;
         }
@@ -46,7 +46,7 @@ namespace backend.Services
 
                 var userWithSameEmail = await _userRepository.GetUserByEmailAsync(email);
                 if (userWithSameEmail != null)
-                    throw new ConflictException("This email is already in use");
+                    throw new ConflictException("Email conflict");
 
                 user.Email = email;
             }
@@ -95,7 +95,7 @@ namespace backend.Services
 
             var existingUser = await _userRepository.GetUserByEmailAsync(email);
             if (existingUser != null)
-                throw new ConflictException("This email is already registered");
+                throw new ConflictException("Email conflict");
 
             string salt = GenerateSalt();
             string passwordHash = HashPassword(password, salt);
@@ -104,7 +104,7 @@ namespace backend.Services
 
             var createdUser = await _userRepository.CreateUserAsync(newUser);
             if (createdUser == null)
-                throw new InvalidOperationException("Failed to create user");
+                throw new InvalidOperationException("User creation failed");
 
             return createdUser;
         }

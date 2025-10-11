@@ -2,9 +2,7 @@
 using backend.GraphQL.Mutations;
 using backend.GraphQL.Queries;
 using GraphQL;
-using GraphQL.Instrumentation;
 using GraphQL.Types;
-using Microsoft.Extensions.Logging;
 
 namespace backend.GraphQL
 {
@@ -23,43 +21,23 @@ namespace backend.GraphQL
                 }
                 catch (Exception ex)
                 {
-                    if (ex is not UnauthorizedException && 
-                        ex is not ForbiddenException && 
-                        ex is not ConflictException && 
-                        ex is not NotFoundException && 
+                    if (ex is not UnauthorizedException &&
+                        ex is not ForbiddenException &&
+                        ex is not ConflictException &&
+                        ex is not NotFoundException &&
                         ex is not ValidationException)
                     {
-                        logger.LogError(ex, $"Unhandled exception in GraphQL field {context.FieldDefinition?.Name}");
+                        logger.LogError(ex, "Unhandled exception in GraphQL field {Field}", context.FieldDefinition?.Name);
                     }
 
                     throw ex switch
                     {
-                        UnauthorizedException unauthorized => new ExecutionError(unauthorized.Message)
-                        {
-                            Code = "UNAUTHORIZED",
-                            Data = { ["exception"] = ex }
-                        },
-                        ForbiddenException forbidden => new ExecutionError(forbidden.Message)
-                        {
-                            Code = "FORBIDDEN",
-                            Data = { ["exception"] = ex }
-                        },
-                        ConflictException conflict => new ExecutionError(conflict.Message)
-                        {
-                            Code = "CONFLICT",
-                            Data = { ["exception"] = ex } 
-                        },
-                        NotFoundException notFound => new ExecutionError(notFound.Message)
-                        {
-                            Code = "NOT_FOUND",
-                            Data = { ["exception"] = ex }
-                        },
-                        ValidationException validation => new ExecutionError(validation.Message)
-                        {
-                            Code = "VALIDATION_ERROR",
-                            Data = { ["exception"] = ex }
-                        },
-                        _ => new ExecutionError("Internal server error") { Data = { ["exception"] = ex } }
+                        UnauthorizedException => new ExecutionError("Authentication required", ex),
+                        ForbiddenException => new ExecutionError("Access denied", ex),
+                        ConflictException => new ExecutionError("Unable to complete operation", ex),
+                        NotFoundException => new ExecutionError("Resource not found", ex),
+                        ValidationException => new ExecutionError(ex.Message, ex),
+                        _ => new ExecutionError("Internal server error", ex)
                     };
                 }
             });

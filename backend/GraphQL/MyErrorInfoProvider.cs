@@ -12,35 +12,21 @@ namespace backend.GraphQL
 
             var original = executionError.InnerException ?? executionError;
 
-            switch (original)
+            info.Extensions!["code"] = original switch
             {
-                case UnauthorizedException unauthorized:
-                    info.Message = unauthorized.Message;
-                    info.Extensions!["code"] = "UNAUTHORIZED";
-                    break;
+                UnauthorizedException => "UNAUTHORIZED",
+                ForbiddenException => "FORBIDDEN",
+                ConflictException => "CONFLICT",
+                NotFoundException => "NOT_FOUND",
+                ValidationException => "VALIDATION_ERROR",
+                _ => "INTERNAL_ERROR"
+            };
 
-                case ForbiddenException forbidden:
-                    info.Message = forbidden.Message;
-                    info.Extensions!["code"] = "FORBIDDEN";
-                    break;
-
-                case ConflictException conflict:
-                    info.Message = conflict.Message;
-                    info.Extensions!["code"] = "CONFLICT";
-                    break;
-
-                case NotFoundException notFound:
-                    info.Message = notFound.Message;
-                    info.Extensions!["code"] = "NOT_FOUND";
-                    break;
-
-                case ValidationException validation:
-                    info.Message = validation.Message;
-                    info.Extensions!["code"] = "VALIDATION_ERROR";
-                    break;
-            }
-
-            return info;
+            return new ErrorInfo
+            {
+                Message = info.Message,
+                Extensions = info.Extensions
+            };
         }
     }
 }
