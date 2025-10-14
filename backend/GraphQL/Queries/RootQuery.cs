@@ -1,18 +1,23 @@
-﻿using GraphQL.Types;
+using backend.GraphQL.Queries;
+using GraphQL.Types;
 
 namespace backend.GraphQL.Queries
 {
     public class RootQuery : ObjectGraphType
     {
-        public RootQuery(UserQuery userQuery, MealQuery mealQuery)
+        public RootQuery(UserQuery userQuery, FoodQuery foodQuery, MealQuery mealQuery)
         {
             Name = "Query";
 
-            foreach (var field in userQuery.Fields)
-                AddField(field);
+            var queries = new ObjectGraphType[] { userQuery, foodQuery, mealQuery };
 
-            foreach (var field in mealQuery.Fields)
-                AddField(field);
+            foreach (var query in queries)
+            {
+                foreach (var field in query.Fields)
+                {
+                    AddField(field);
+                }
+            }
         }
     }
 }

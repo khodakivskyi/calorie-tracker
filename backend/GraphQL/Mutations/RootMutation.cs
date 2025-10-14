@@ -1,18 +1,22 @@
-﻿using GraphQL.Types;
+using GraphQL.Types;
 
 namespace backend.GraphQL.Mutations
 {
     public class RootMutation : ObjectGraphType
     {
-        public RootMutation(UserMutation userMutation, MealMutation mealMutation)
+        public RootMutation(UserMutation userMutation, FoodMutation foodMutation, MealMutation mealMutation)
         {
             Name = "Mutation";
 
-            foreach (var field in userMutation.Fields)
-                AddField(field);
+            var mutations = new ObjectGraphType[] { userMutation, foodMutation, mealMutation };
 
-            foreach (var field in mealMutation.Fields)
-                AddField(field);
+            foreach (var mutation in mutations)
+            {
+                foreach (var field in mutation.Fields)
+                {
+                    AddField(field);
+                }
+            }
         }
     }
 }
