@@ -1,4 +1,6 @@
-using backend.Exceptions;
+using backend.Repositories;
+using backend.Repositories.Interfaces;
+using backend.Services;
 using backend.GraphQL;
 using backend.GraphQL.Mutations;
 using backend.GraphQL.Queries;
@@ -24,7 +26,8 @@ namespace backend
             builder.Logging.AddConsole();
 
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-            builder.Services.AddScoped<IUserRepository>(provider => new UserRepository(connectionString!));
+            builder.Services.AddScoped<IUserRepository, UserRepository>(provider => new UserRepository(connectionString!));
+            builder.Services.AddScoped<IFoodRepository, FoodRepository>(provider => new FoodRepository(connectionString!));
 
             builder.Services.AddControllers();
 
@@ -38,9 +41,14 @@ namespace backend
                 });
             });
 
+            builder.Services.AddScoped<UserService>();
+            builder.Services.AddScoped<FoodService>();
+          
+          
             builder.Services.AddSingleton<IErrorInfoProvider, MyErrorInfoProvider>();
             builder.Services.AddScoped<UserType>();
-            builder.Services.AddScoped<UserService>();
+            builder.Services.AddScoped<FoodType>();
+          
             builder.Services.AddScoped<RootQuery>();
             builder.Services.AddScoped<RootMutation>();
             builder.Services.AddScoped<ISchema, AppSchema>();
