@@ -7,34 +7,33 @@ namespace backend.GraphQL.Queries
 {
     public class UserQuery : ObjectGraphType
     {
-        public UserQuery(UserService userService)
+        public UserQuery(UserService userService, JwtService jwtService)
         {
-            Field<UserType>("getUserById")
-            .Argument<IntGraphType>("id")
+            Field<NonNullGraphType<UserType>>("getUserById")
+            .Argument<NonNullGraphType<IntGraphType>>("id")
             .ResolveAsync(async context =>
             {
                 var id = context.GetArgument<int>("id");
                 return await userService.GetUserByIdAsync(id);
             });
 
-            Field<UserType>("getUserByEmail")
-           .Argument<StringGraphType>("email")
-           .ResolveAsync(async context =>
-           {
-               var email = context.GetArgument<string>("email");
-               return await userService.GetUserByEmailAsync(email);
-           });
-
-            Field<UserType>("authenticateUser")
+            Field<NonNullGraphType<AuthPayloadType>>("authenticateUser")
                 .Argument<NonNullGraphType<StringGraphType>>("email")
                 .Argument<NonNullGraphType<StringGraphType>>("password")
                 .ResolveAsync(async context =>
                 {
                     var email = context.GetArgument<string>("email");
                     var password = context.GetArgument<string>("password");
-                    return await userService.AuthenticateUserAsync(email, password);
+
+                    var user = await userService.AuthenticateUserAsync(email, password);
+                    var token = jwtService.GenerateToken(user.Id, user.Email);
+
+                    return new
+                    {
+                        user,
+                        token
+                    };
                 });
         }
     }
-
 }

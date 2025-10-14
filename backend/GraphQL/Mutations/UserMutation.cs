@@ -7,11 +7,11 @@ namespace backend.GraphQL.Mutations
 {
     public class UserMutation : ObjectGraphType
     {
-        public UserMutation(UserService userService)
+        public UserMutation(UserService userService, JwtService jwtService)
         {
             Name = "UserMutations";
 
-            Field<UserType>("createUser")
+            Field <NonNullGraphType<AuthPayloadType>>("createUser")
                 .Argument<NonNullGraphType<StringGraphType>>("email")
                 .Argument<NonNullGraphType<StringGraphType>>("password")
                 .Argument<StringGraphType>("name")
@@ -20,11 +20,17 @@ namespace backend.GraphQL.Mutations
                     var email = context.GetArgument<string>("email");
                     var password = context.GetArgument<string>("password");
                     var name = context.GetArgument<string?>("name");
+                    var user = await userService.CreateUserAsync(email, password, name);
 
-                    return await userService.CreateUserAsync(email, password, name);
+                    var token = jwtService.GenerateToken(user.Id, user.Email);
+                    return new
+                    {
+                        user,
+                        token
+                    };
                 });
 
-            Field<UserType>("updateUser")
+            Field<NonNullGraphType<AuthPayloadType>>("updateUser")
                 .Argument<NonNullGraphType<IntGraphType>>("id")
                 .Argument<StringGraphType>("email")
                 .Argument<StringGraphType>("password")
@@ -36,16 +42,14 @@ namespace backend.GraphQL.Mutations
                     var password = context.GetArgument<string?>("password");
                     var name = context.GetArgument<string?>("name");
 
-                    var user = await userService.GetUserByIdAsync(id);
-                    if (user == null) return false;
+                    var user = await userService.UpdateUserAsync(id, email, password, name);
+                    var token = jwtService.GenerateToken(user.Id, user.Email);
 
-                    if (!string.IsNullOrEmpty(email))
-                        user.Email = email;
-
-                    if (!string.IsNullOrEmpty(name))
-                        user.Name = name;   
-
-                    return await userService.UpdateUserAsync(user, password);
+                    return new
+                    {
+                        user,
+                        token
+                    };
                 });
 
             Field<BooleanGraphType>("deleteUser")

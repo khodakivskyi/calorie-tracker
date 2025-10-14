@@ -9,7 +9,7 @@ public class UserType : ObjectGraphType<User>
     public UserType()
     {
         Field(x => x.Id);
-        Field(x => x.Name);
+        Field(x => x.Name, nullable: true);
         Field(x => x.Email);
     }
 }
