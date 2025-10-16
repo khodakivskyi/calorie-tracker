@@ -37,6 +37,12 @@ namespace backend.Repositories
 
         public async Task<Food?> CreateFoodAsync(Food food)
         {
+            Console.WriteLine(food.Name);
+                            Console.WriteLine(food.Source);
+                            Console.WriteLine(food.CreatedAt);
+                            Console.WriteLine(food.Id);
+
+
             using var connection = new SqlConnection(_connectionString);
             const string sql = @"
                 INSERT INTO foods (owner_id, name, image_id, source, external_id, created_at)

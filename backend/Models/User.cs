@@ -8,9 +8,7 @@
         public string PasswordHash { get; set; } = string.Empty;
         public string Salt { get; set; } = string.Empty;
 
-        public User()
-        {
-        }
+        public User() { }
 
         public User(string email, string passwordHash, string salt, string? name)
         {

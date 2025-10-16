@@ -29,13 +29,16 @@ namespace backend.Services
         }
         public async Task<decimal?> GetFoodCaloriesAsync(int foodId)
         {
-            var calories = await _foodRepository.GetFoodCaloriesAsync(foodId);
+            var calories = await _foodRepository.GetCaloriesByFoodIdAsync(foodId);
 
             if (calories == null)
                 throw new NotFoundException($"Calories for food with id {foodId} not found");
+            return calories.Calories;
+        }
 
         public async Task<Food> CreateFoodAsync(int ownerId, string name, int? imageId, int source, string? externalId = null)
         {
+
             if (string.IsNullOrWhiteSpace(name))
                 throw new ValidationException("Food name cannot be empty");
 
