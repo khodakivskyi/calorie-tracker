@@ -29,6 +29,8 @@ namespace backend
             builder.Services.AddScoped<IUserRepository, UserRepository>(provider => new UserRepository(connectionString!));
             builder.Services.AddScoped<IFoodRepository, FoodRepository>(provider => new FoodRepository(connectionString!));
             builder.Services.AddScoped<IMealRepository, MealRepository>(provider => new MealRepository(connectionString!));
+            builder.Services.AddScoped<ICaloriesRepository, CaloriesRepository>(provider => new CaloriesRepository(connectionString!));
+
           
             builder.Services.AddControllers();
 
