@@ -45,11 +45,13 @@ namespace backend
             builder.Services.AddScoped<UserService>();
             builder.Services.AddScoped<FoodService>();
             builder.Services.AddScoped<MealService>();
+            builder.Services.AddScoped<CaloriesService>();
           
             builder.Services.AddSingleton<IErrorInfoProvider, MyErrorInfoProvider>();
             builder.Services.AddScoped<UserType>();
             builder.Services.AddScoped<FoodType>();
             builder.Services.AddScoped<MealType>();
+            builder.Services.AddScoped<CaloriesType>();
           
             builder.Services.AddScoped<RootQuery>();
             builder.Services.AddScoped<RootMutation>();
