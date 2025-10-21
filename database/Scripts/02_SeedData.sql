@@ -6,25 +6,37 @@ VALUES
     ('Іван Петренко', 'ivan@example.com', 'a1b2c3d4e5f6', 'salt123'),
     ('Марія Коваленко', 'maria@example.com', 'f6e5d4c3b2a1', 'salt456'),
     ('Олексій Сидоренко', 'oleksiy@example.com', '1a2b3c4d5e6f', 'salt789');
+GO
 
 INSERT INTO calorie_limits (user_id, limit_value, created_at)
 VALUES
     (1, 2000.00, '2024-01-01 00:00:00'),
     (2, 1800.00, '2024-01-01 00:00:00'),
     (3, 2200.00, '2024-01-01 00:00:00');
+GO
 
-INSERT INTO foods (owner_id, name, source, external_id)
+INSERT INTO images (owner_id, file_name, url, created_at, external_id)
 VALUES
-    (1, 'Яблуко', 1, 'USDA_001'),
-    (1, 'Банан', 1, 'USDA_002'),
-    (1, 'Курятина', 2, 'LOCAL_001'),
-    (1, 'Рис', 1, 'USDA_003'),
-    (1, 'Броколі', 2, 'LOCAL_002'),
-    (2, 'Морква', 2, 'LOCAL_003'),
-    (2, 'Картопля', 2, 'LOCAL_004'),
-    (2, 'Лосось', 3, 'IMPORT_001'),
-    (3, 'Авокадо', 3, 'IMPORT_002'),
-    (3, 'Грецький йогурт', 2, 'LOCAL_005');
+    (NULL, 'apple.jpg', '/images/foods/apple.jpg', '2024-01-01 10:00:00', 'FATSECRET_IMG_001'),
+    (NULL, 'banana.jpg', '/images/foods/banana.jpg', '2024-01-01 10:00:00', 'FATSECRET_IMG_002'),
+    (1, 'chicken.jpg', '/images/foods/chicken.jpg', '2024-01-01 10:00:00', NULL),
+    (2, 'carrot.jpg', '/images/foods/carrot.jpg', '2024-01-01 10:00:00', NULL),
+    (NULL, 'avocado.jpg', '/images/foods/avocado.jpg', '2024-01-01 10:00:00', 'FATSECRET_IMG_003');
+GO
+
+INSERT INTO foods (owner_id, name, image_id, created_at, external_id)
+VALUES
+    (NULL, 'Яблуко', 1, '2024-01-01 10:00:00', 'FATSECRET_001'),
+    (NULL, 'Банан', 2, '2024-01-01 10:00:00', 'FATSECRET_002'),
+    (1, 'Курятина', 3, '2024-01-01 10:00:00', NULL),
+    (NULL, 'Рис', NULL, '2024-01-01 10:00:00', 'FATSECRET_003'),
+    (1, 'Броколі', NULL, '2024-01-01 10:00:00', NULL),
+    (2, 'Морква', 4, '2024-01-01 10:00:00', NULL),
+    (2, 'Картопля', NULL, '2024-01-01 10:00:00', NULL),
+    (NULL, 'Лосось', NULL, '2024-01-01 10:00:00', 'FATSECRET_004'),
+    (NULL, 'Авокадо', 5, '2024-01-01 10:00:00', 'FATSECRET_005'),
+    (3, 'Грецький йогурт', NULL, '2024-01-01 10:00:00', NULL);
+GO
 
 INSERT INTO calories (food_id, calories)
 VALUES
@@ -38,6 +50,7 @@ VALUES
     (8, 208.00),
     (9, 160.00),
     (10, 59.00);
+GO
 
 INSERT INTO nutrients (food_id, protein, fat, carbohydrates)
 VALUES
@@ -51,13 +64,18 @@ VALUES
     (8, 25.00, 12.00, 0.00),
     (9, 2.00, 14.70, 8.50),
     (10, 10.00, 0.40, 3.60);
+GO
 
-INSERT INTO dishes (owner_id, name, weight, created_at)
+INSERT INTO dishes (owner_id, name, weight, created_at, image_id, external_id)
 VALUES
-    (1, 'Куряча грудка з рисом', 300.00, '2024-01-15 12:00:00'),
-    (1, 'Салат з броколі', 200.00, '2024-01-15 12:30:00'),
-    (2, 'Лосось з картоплею', 400.00, '2024-01-16 13:00:00'),
-    (3, 'Авокадо тост', 150.00, '2024-01-17 09:00:00');
+    (1, 'Куряча грудка з рисом', 300.00, '2024-01-15 12:00:00', NULL, NULL),
+    (1, 'Салат з броколі', 200.00, '2024-01-15 12:30:00', NULL, NULL),
+    (2, 'Лосось з картоплею', 400.00, '2024-01-16 13:00:00', NULL, NULL),
+    (3, 'Авокадо тост', 150.00, '2024-01-17 09:00:00', NULL, NULL),
+    (NULL, 'Цезар салат', 250.00, '2024-01-18 12:00:00', NULL, 'FATSECRET_001'),
+    (NULL, 'Грецький салат', 200.00, '2024-01-18 12:30:00', NULL, 'FATSECRET_002'),
+    (NULL, 'Паста карбонара', 350.00, '2024-01-18 13:00:00', NULL, 'FATSECRET_003');
+GO
 
 INSERT INTO dishes_foods (dish_id, food_id, quantity)
 VALUES
@@ -68,6 +86,7 @@ VALUES
     (3, 7, 200.00),
     (4, 9, 100.00),
     (4, 10, 50.00);
+GO
 
 INSERT INTO meals (owner_id, name, created_at)
 VALUES
@@ -75,6 +94,7 @@ VALUES
     (1, 'Обід', '2024-01-15 13:00:00'),
     (2, 'Вечеря', '2024-01-16 19:00:00'),
     (3, 'Сніданок', '2024-01-17 09:30:00');
+GO
 
 INSERT INTO meals_dishes (meal_id, dish_id, quantity)
 VALUES
@@ -83,3 +103,4 @@ VALUES
     (2, 2, 1.00),
     (3, 3, 1.00),
     (4, 4, 1.00);
+GO

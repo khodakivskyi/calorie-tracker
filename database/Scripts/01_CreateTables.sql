@@ -1,13 +1,7 @@
 USE calorie_tracker
 GO
 
-CREATE TABLE sources
-(
-    id   INT IDENTITY PRIMARY KEY,
-    name NVARCHAR(50) NOT NULL UNIQUE
-)
-    GO
-
+-- CREATE TABLES
 CREATE TABLE users
 (
     id            INT IDENTITY PRIMARY KEY,
@@ -16,7 +10,7 @@ CREATE TABLE users
     password_hash NVARCHAR(255) NOT NULL,
     salt          NVARCHAR(255) NOT NULL
 )
-    GO
+GO
 
 CREATE TABLE calorie_limits
 (
@@ -25,65 +19,66 @@ CREATE TABLE calorie_limits
     limit_value DECIMAL(10, 2) NOT NULL CHECK (limit_value > 0),
     created_at  DATETIME2 DEFAULT GETDATE()
 )
-    GO
+GO
 
 CREATE TABLE images
 (
-    id                   INT IDENTITY PRIMARY KEY,
-    owner_id             INT NOT NULL REFERENCES users,
-    file_name            NVARCHAR(255) NOT NULL,
-    created_at           DATETIME2 DEFAULT GETDATE(),
-    cloudinary_url       NVARCHAR(500) NOT NULL,
-    cloudinary_public_id NVARCHAR(255) NOT NULL
+    id         INT IDENTITY PRIMARY KEY,
+    owner_id   INT REFERENCES users ON DELETE CASCADE,
+    file_name  NVARCHAR(255) NOT NULL,
+    url        NVARCHAR(500) NOT NULL,
+    created_at DATETIME2 DEFAULT GETDATE(),
+    external_id NVARCHAR(50)
 )
-    GO
+GO
 
 CREATE TABLE dishes
 (
-    id         INT IDENTITY PRIMARY KEY,
-    owner_id   INT NOT NULL REFERENCES users ON DELETE CASCADE,
+    id          INT IDENTITY PRIMARY KEY,
+    owner_id   INT REFERENCES users ON DELETE CASCADE,
     name       NVARCHAR(255) NOT NULL,
-    weight     DECIMAL(10, 2) NOT NULL,
+    weight     DECIMAL(10, 2) NOT NULL CHECK (weight > 0),
     created_at DATETIME2 DEFAULT GETDATE(),
-    image_id   INT REFERENCES images
+    image_id   INT REFERENCES images,
+    external_id NVARCHAR(50)
 )
-    GO
-
-CREATE INDEX IX_dishes_owner_id ON dishes (owner_id)
-    GO
+GO
 
 CREATE TABLE foods
 (
     id          INT IDENTITY PRIMARY KEY,
-    owner_id    INT NOT NULL REFERENCES users ON DELETE CASCADE,
+    owner_id    INT REFERENCES users ON DELETE CASCADE,
     name        NVARCHAR(255) NOT NULL,
     image_id    INT REFERENCES images,
     created_at  DATETIME2 DEFAULT GETDATE(),
-    source      INT REFERENCES sources,
-    external_id NVARCHAR(100)
+    external_id NVARCHAR(50)
 )
-    GO
+GO
 
 CREATE TABLE calories
 (
-    id       INT IDENTITY PRIMARY KEY,
-    calories DECIMAL(10, 2) NOT NULL,
-    food_id  INT NOT NULL REFERENCES foods ON DELETE CASCADE
+    food_id  INT PRIMARY KEY REFERENCES foods ON DELETE CASCADE,
+    calories DECIMAL(10, 2) NOT NULL CHECK (calories >= 0)
 )
-    GO
+GO
+
+CREATE TABLE nutrients
+(
+    food_id       INT PRIMARY KEY REFERENCES foods ON DELETE CASCADE,
+    protein       DECIMAL(10, 2) NOT NULL CHECK (protein >= 0),
+    fat           DECIMAL(10, 2) NOT NULL CHECK (fat >= 0),
+    carbohydrates DECIMAL(10, 2) NOT NULL CHECK (carbohydrates >= 0)
+)
+GO
 
 CREATE TABLE dishes_foods
 (
-    dish_id  INT NOT NULL REFERENCES dishes,
+    dish_id  INT NOT NULL REFERENCES dishes ON DELETE CASCADE,
     food_id  INT NOT NULL REFERENCES foods,
     quantity DECIMAL(10, 2) DEFAULT 1.0 NOT NULL CHECK (quantity > 0),
     PRIMARY KEY (dish_id, food_id)
 )
-    GO
-
-CREATE INDEX IX_dishes_foods_dish_id ON dishes_foods (dish_id)
-CREATE INDEX IX_foods_owner_id ON foods (owner_id)
-    GO
+GO
 
 CREATE TABLE meals
 (
@@ -92,29 +87,32 @@ CREATE TABLE meals
     name       NVARCHAR(255) NOT NULL,
     created_at DATETIME2 DEFAULT GETDATE()
 )
-    GO
-
-CREATE INDEX IX_meals_owner_id ON meals (owner_id)
-    GO
+GO
 
 CREATE TABLE meals_dishes
 (
-    meal_id  INT NOT NULL REFERENCES meals,
+    meal_id  INT NOT NULL REFERENCES meals ON DELETE CASCADE,
     dish_id  INT NOT NULL REFERENCES dishes,
-    quantity DECIMAL(10, 2) DEFAULT 1.0 NOT NULL,
+    quantity DECIMAL(10, 2) DEFAULT 1.0 NOT NULL CHECK (quantity > 0),
     PRIMARY KEY (meal_id, dish_id)
 )
-    GO
+GO
 
+-- CREATE INDEXES
+CREATE INDEX IX_calorie_limits_user_id ON calorie_limits (user_id)
+CREATE INDEX IX_images_owner_id ON images (owner_id)
+CREATE INDEX IX_dishes_owner_id ON dishes (owner_id)
+CREATE INDEX IX_foods_owner_id ON foods (owner_id)
+CREATE INDEX IX_meals_owner_id ON meals (owner_id)
+GO
+
+CREATE INDEX IX_dishes_foods_dish_id ON dishes_foods (dish_id)
+CREATE INDEX IX_dishes_foods_food_id ON dishes_foods (food_id)
 CREATE INDEX IX_meals_dishes_meal_id ON meals_dishes (meal_id)
-    GO
+CREATE INDEX IX_meals_dishes_dish_id ON meals_dishes (dish_id)
+GO
 
-CREATE TABLE nutrients
-(
-    id            INT IDENTITY PRIMARY KEY,
-    protein       DECIMAL(10, 2) NOT NULL,
-    fat           DECIMAL(10, 2) NOT NULL,
-    carbohydrates DECIMAL(10, 2) NOT NULL,
-    food_id       INT NOT NULL REFERENCES foods ON DELETE CASCADE
-)
-    GO
+CREATE UNIQUE INDEX IX_foods_external_id ON foods (external_id) WHERE external_id IS NOT NULL
+CREATE UNIQUE INDEX IX_dishes_external_id ON dishes (external_id) WHERE external_id IS NOT NULL
+CREATE UNIQUE INDEX IX_images_external_id ON images (external_id) WHERE external_id IS NOT NULL
+GO
