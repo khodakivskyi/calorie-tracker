@@ -46,6 +46,41 @@ namespace backend.GraphQL.Mutations
                     var ownerId = context.GetArgument<int>("ownerId");
                     return await mealService.DeleteAllMealsByUserAsync(ownerId);
                 });
+
+
+            Field<BooleanGraphType>("addDishToMeal")
+               .Argument<NonNullGraphType<IntGraphType>>("mealId")
+               .Argument<NonNullGraphType<IntGraphType>>("dishId")
+               .Argument<NonNullGraphType<DecimalGraphType>>("quantity")
+               .ResolveAsync(async context =>
+               {
+                   var mealId = context.GetArgument<int>("mealId");
+                   var dishId = context.GetArgument<int>("dishId");
+                   var quantity = context.GetArgument<decimal>("quantity");
+                   return await mealService.AddDishToMealAsync(mealId, dishId, quantity);
+               });
+
+            Field<BooleanGraphType>("updateDishQuantityInMeal")
+                .Argument<NonNullGraphType<IntGraphType>>("mealId")
+                .Argument<NonNullGraphType<IntGraphType>>("dishId")
+                .Argument<NonNullGraphType<DecimalGraphType>>("quantity")
+                .ResolveAsync(async context =>
+                {
+                    var mealId = context.GetArgument<int>("mealId");
+                    var dishId = context.GetArgument<int>("dishId");
+                    var quantity = context.GetArgument<decimal>("quantity");
+                    return await mealService.UpdateDishQuantityInMealAsync(mealId, dishId, quantity);
+                });
+
+            Field<BooleanGraphType>("removeDishFromMeal")
+                .Argument<NonNullGraphType<IntGraphType>>("mealId")
+                .Argument<NonNullGraphType<IntGraphType>>("dishId")
+                .ResolveAsync(async context =>
+                {
+                    var mealId = context.GetArgument<int>("mealId");
+                    var dishId = context.GetArgument<int>("dishId");
+                    return await mealService.RemoveDishFromMealAsync(mealId, dishId);
+                });
         }
     }
 }
