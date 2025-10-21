@@ -7,6 +7,7 @@ namespace backend.Models
 
         public CaloriesModel() { }
 
+        public CaloriesModel() { }
         public CaloriesModel(int foodId, decimal calories)
         {
             FoodId = foodId;
