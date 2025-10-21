@@ -1,12 +1,14 @@
-﻿namespace backend.Models
+namespace backend.Models
 {
-    public class DishFood
+    public class DishFoodDto
     {
         public int DishId { get; set; }
         public int FoodId { get; set; }
         public decimal Quantity { get; set; }
 
-        public DishFood(int dishId, int foodId, decimal quantity)
+        public DishFoodDto() { }
+
+        public DishFoodDto(int dishId, int foodId, decimal quantity)
         {
             DishId = dishId;
             FoodId = foodId;
