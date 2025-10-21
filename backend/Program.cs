@@ -30,8 +30,10 @@ namespace backend
             builder.Services.AddScoped<IFoodRepository, FoodRepository>(provider => new FoodRepository(connectionString!));
             builder.Services.AddScoped<IMealRepository, MealRepository>(provider => new MealRepository(connectionString!));
             builder.Services.AddScoped<ICaloriesRepository, CaloriesRepository>(provider => new CaloriesRepository(connectionString!));
-
+            builder.Services.AddScoped<INutrientsRepository, NutrientsRepository>(provider => new NutrientsRepository(connectionString!));
           
+
+
             builder.Services.AddControllers();
 
             builder.Services.AddCors(options =>
@@ -47,14 +49,16 @@ namespace backend
             builder.Services.AddScoped<UserService>();
             builder.Services.AddScoped<FoodService>();
             builder.Services.AddScoped<MealService>();
+            builder.Services.AddScoped<NutrientsService>();
             builder.Services.AddScoped<CaloriesService>();
-          
+
             builder.Services.AddSingleton<IErrorInfoProvider, MyErrorInfoProvider>();
             builder.Services.AddScoped<UserType>();
             builder.Services.AddScoped<FoodType>();
             builder.Services.AddScoped<MealType>();
+            builder.Services.AddScoped<NutrientsType>();
             builder.Services.AddScoped<CaloriesType>();
-          
+
             builder.Services.AddScoped<RootQuery>();
             builder.Services.AddScoped<RootMutation>();
             builder.Services.AddScoped<ISchema, AppSchema>();
