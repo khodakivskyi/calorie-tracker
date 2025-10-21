@@ -6,8 +6,6 @@ namespace backend.Models
         public decimal Calories { get; set; }
 
         public CaloriesModel() { }
-
-        public CaloriesModel() { }
         public CaloriesModel(int foodId, decimal calories)
         {
             FoodId = foodId;
