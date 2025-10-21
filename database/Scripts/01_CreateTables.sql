@@ -28,7 +28,7 @@ CREATE TABLE images
     file_name  NVARCHAR(255) NOT NULL,
     url        NVARCHAR(500) NOT NULL,
     created_at DATETIME2 DEFAULT GETDATE(),
-    external_id NVARCHAR(50) UNIQUE
+    external_id NVARCHAR(50)
 )
 GO
 
@@ -40,7 +40,7 @@ CREATE TABLE dishes
     weight     DECIMAL(10, 2) NOT NULL CHECK (weight > 0),
     created_at DATETIME2 DEFAULT GETDATE(),
     image_id   INT REFERENCES images,
-    external_id NVARCHAR(50) UNIQUE
+    external_id NVARCHAR(50)
 )
 GO
 
@@ -51,7 +51,7 @@ CREATE TABLE foods
     name        NVARCHAR(255) NOT NULL,
     image_id    INT REFERENCES images,
     created_at  DATETIME2 DEFAULT GETDATE(),
-    external_id NVARCHAR(50) UNIQUE
+    external_id NVARCHAR(50)
 )
 GO
 
@@ -112,7 +112,7 @@ CREATE INDEX IX_meals_dishes_meal_id ON meals_dishes (meal_id)
 CREATE INDEX IX_meals_dishes_dish_id ON meals_dishes (dish_id)
 GO
 
-CREATE INDEX IX_foods_external_id ON foods (external_id)
-CREATE INDEX IX_dishes_external_id ON dishes (external_id)
-CREATE INDEX IX_images_external_id ON images (external_id)
+CREATE UNIQUE INDEX IX_foods_external_id ON foods (external_id) WHERE external_id IS NOT NULL
+CREATE UNIQUE INDEX IX_dishes_external_id ON dishes (external_id) WHERE external_id IS NOT NULL
+CREATE UNIQUE INDEX IX_images_external_id ON images (external_id) WHERE external_id IS NOT NULL
 GO
