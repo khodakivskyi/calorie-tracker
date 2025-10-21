@@ -5,7 +5,7 @@ namespace backend.GraphQL.Queries
 {
     public class RootQuery : ObjectGraphType
     {
-        public RootQuery(UserQuery userQuery, FoodQuery foodQuery, MealQuery mealQuery)
+        public RootQuery(UserQuery userQuery, FoodQuery foodQuery, MealQuery mealQuery, NutrientsQuery nutrientsQuery)
         {
             Name = "Query";
 

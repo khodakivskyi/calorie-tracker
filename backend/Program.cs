@@ -29,6 +29,7 @@ namespace backend
             builder.Services.AddScoped<IUserRepository, UserRepository>(provider => new UserRepository(connectionString!));
             builder.Services.AddScoped<IFoodRepository, FoodRepository>(provider => new FoodRepository(connectionString!));
             builder.Services.AddScoped<IMealRepository, MealRepository>(provider => new MealRepository(connectionString!));
+            builder.Services.AddScoped<INutrientsRepository, NutrientsRepository>(provider => new NutrientsRepository(connectionString!));
           
             builder.Services.AddControllers();
 
@@ -45,11 +46,13 @@ namespace backend
             builder.Services.AddScoped<UserService>();
             builder.Services.AddScoped<FoodService>();
             builder.Services.AddScoped<MealService>();
+            builder.Services.AddScoped<NutrientsService>();
           
             builder.Services.AddSingleton<IErrorInfoProvider, MyErrorInfoProvider>();
             builder.Services.AddScoped<UserType>();
             builder.Services.AddScoped<FoodType>();
             builder.Services.AddScoped<MealType>();
+            builder.Services.AddScoped<NutrientsType>();
           
             builder.Services.AddScoped<RootQuery>();
             builder.Services.AddScoped<RootMutation>();

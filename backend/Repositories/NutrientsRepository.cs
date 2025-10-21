@@ -17,7 +17,7 @@ namespace backend.Repositories
         public async Task<Nutrients?> GetNutrientsByFoodIdAsync(int foodId)
         {
             using var connection = new SqlConnection(_connectionString);
-            const string sql = @"SELECT id, protein, fat, carbohydrates, food_id AS FoodId
+            const string sql = @"SELECT protein, fat, carbohydrates, food_id AS FoodId
                                 FROM nutrients
                                 WHERE food_id = @FoodId";
             return await connection.QuerySingleOrDefaultAsync<Nutrients>(sql, new { FoodId = foodId });
@@ -27,7 +27,7 @@ namespace backend.Repositories
         {
             using var connection = new SqlConnection(_connectionString);
             const string sql = @"INSERT INTO nutrients (food_id, protein, fat, carbohydrates)
-                                OUTPUT INSERTED.id, INSERTED.protein, INSERTED.fat, INSERTED.carbohydrates, INSERTED.food_id AS FoodId
+                                OUTPUT INSERTED.protein, INSERTED.fat, INSERTED.carbohydrates, INSERTED.food_id AS FoodId
                                 VALUES (@FoodId, @Protein, @Fat, @Carbohydrates);";
             return await connection.QuerySingleOrDefaultAsync<Nutrients>(sql,
                 new { FoodId = foodId, Protein = protein, Fat = fat, Carbohydrates = carbohydrates });
@@ -38,7 +38,7 @@ namespace backend.Repositories
             using var connection = new SqlConnection(_connectionString);
             const string sql = @"UPDATE nutrients
                                 SET protein = @Protein, fat = @Fat, carbohydrates = @Carbohydrates
-                                OUTPUT INSERTED.id, INSERTED.protein, INSERTED.fat, INSERTED.carbohydrates, INSERTED.food_id AS FoodId
+                                OUTPUT INSERTED.protein, INSERTED.fat, INSERTED.carbohydrates, INSERTED.food_id AS FoodId
                                 WHERE food_id = @FoodId;";
             return await connection.QuerySingleOrDefaultAsync<Nutrients>(sql,
                 new { FoodId = foodId, Protein = protein, Fat = fat, Carbohydrates = carbohydrates });
