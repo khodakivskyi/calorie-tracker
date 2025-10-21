@@ -39,6 +39,7 @@ CREATE TABLE dishes
     name       NVARCHAR(255) NOT NULL,
     weight     DECIMAL(10, 2) NOT NULL CHECK (weight > 0),
     created_at DATETIME2 DEFAULT GETDATE(),
+    updated_at DATETIME2 DEFAULT GETDATE(),
     image_id   INT REFERENCES images,
     external_id NVARCHAR(50)
 )
@@ -51,6 +52,7 @@ CREATE TABLE foods
     name        NVARCHAR(255) NOT NULL,
     image_id    INT REFERENCES images,
     created_at  DATETIME2 DEFAULT GETDATE(),
+    updated_at  DATETIME2 DEFAULT GETDATE(),
     external_id NVARCHAR(50)
 )
 GO
@@ -85,7 +87,8 @@ CREATE TABLE meals
     id         INT IDENTITY PRIMARY KEY,
     owner_id   INT NOT NULL REFERENCES users ON DELETE CASCADE,
     name       NVARCHAR(255) NOT NULL,
-    created_at DATETIME2 DEFAULT GETDATE()
+    created_at DATETIME2 DEFAULT GETDATE(),
+    updated_at DATETIME2 DEFAULT GETDATE()
 )
 GO
 

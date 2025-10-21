@@ -7,6 +7,8 @@
         public decimal LimitValue { get; set; }
         public DateTime CreatedAt { get; init; }
 
+        public CalorieLimit() { }
+
         public CalorieLimit(int userId, decimal limitValue)
         {
             UserId = userId;
