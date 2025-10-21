@@ -14,10 +14,11 @@ namespace backend.Repositories
             _connectionString = connectionString;
         }
 
+        // crud
         public async Task<Nutrients?> GetNutrientsByFoodIdAsync(int foodId)
         {
             using var connection = new SqlConnection(_connectionString);
-            const string sql = @"SELECT protein, fat, carbohydrates, food_id AS FoodId
+            const string sql = @"SELECT food_id AS FoodId, protein, fat, carbohydrates
                                 FROM nutrients
                                 WHERE food_id = @FoodId";
             return await connection.QuerySingleOrDefaultAsync<Nutrients>(sql, new { FoodId = foodId });
@@ -27,7 +28,7 @@ namespace backend.Repositories
         {
             using var connection = new SqlConnection(_connectionString);
             const string sql = @"INSERT INTO nutrients (food_id, protein, fat, carbohydrates)
-                                OUTPUT INSERTED.protein, INSERTED.fat, INSERTED.carbohydrates, INSERTED.food_id AS FoodId
+                                OUTPUT INSERTED.food_id AS FoodId, INSERTED.protein, INSERTED.fat, INSERTED.carbohydrates
                                 VALUES (@FoodId, @Protein, @Fat, @Carbohydrates);";
             return await connection.QuerySingleOrDefaultAsync<Nutrients>(sql,
                 new { FoodId = foodId, Protein = protein, Fat = fat, Carbohydrates = carbohydrates });
@@ -38,7 +39,7 @@ namespace backend.Repositories
             using var connection = new SqlConnection(_connectionString);
             const string sql = @"UPDATE nutrients
                                 SET protein = @Protein, fat = @Fat, carbohydrates = @Carbohydrates
-                                OUTPUT INSERTED.protein, INSERTED.fat, INSERTED.carbohydrates, INSERTED.food_id AS FoodId
+                                OUTPUT INSERTED.food_id AS FoodId, INSERTED.protein, INSERTED.fat, INSERTED.carbohydrates
                                 WHERE food_id = @FoodId;";
             return await connection.QuerySingleOrDefaultAsync<Nutrients>(sql,
                 new { FoodId = foodId, Protein = protein, Fat = fat, Carbohydrates = carbohydrates });

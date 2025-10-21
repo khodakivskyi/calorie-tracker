@@ -12,10 +12,12 @@ namespace backend.Repositories
         {
             _connectionString = connectionString;
         }
+
+        // crud
         public async Task<CaloriesModel?> GetCaloriesByFoodIdAsync(int foodId)
         {
             using var connection = new SqlConnection(_connectionString);
-            const string sql = @"SELECT calories, food_id AS FoodId
+            const string sql = @"SELECT food_id AS FoodId, calories
                         FROM calories
                         WHERE food_id = @FoodId";
             return await connection.QuerySingleOrDefaultAsync<CaloriesModel>(sql, new { FoodId = foodId });
@@ -25,7 +27,7 @@ namespace backend.Repositories
         {
             using var connection = new SqlConnection(_connectionString);
             const string sql = @"INSERT INTO calories (food_id, calories)
-                        OUTPUT INSERTED.calories, INSERTED.food_id AS FoodId
+                        OUTPUT INSERTED.food_id AS FoodId, INSERTED.calories
                         VALUES (@FoodId, @Calories);";
             return await connection.QuerySingleOrDefaultAsync<CaloriesModel>(sql, new { FoodId = foodId, Calories = calories });
         }
@@ -35,7 +37,7 @@ namespace backend.Repositories
             using var connection = new SqlConnection(_connectionString);
             const string sql = @"UPDATE calories
                         SET calories = @Calories
-                        OUTPUT INSERTED.calories, INSERTED.food_id AS FoodId
+                        OUTPUT INSERTED.food_id AS FoodId, INSERTED.calories
                         WHERE food_id = @FoodId;";
             return await connection.QuerySingleOrDefaultAsync<CaloriesModel>(sql, new { FoodId = foodId, Calories = calories });
         }
