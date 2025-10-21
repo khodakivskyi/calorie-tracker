@@ -7,8 +7,6 @@ namespace backend.GraphQL.Types
     {
         public CaloriesType()
         {
-            Name = "Calories";
-            Field(x => x.Id);
             Field(x => x.FoodId);
             Field(x => x.Calories);
         }
