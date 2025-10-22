@@ -12,5 +12,6 @@ public class MealType : ObjectGraphType<Meal>
         Field(x => x.OwnerId);
         Field(x => x.Name);
         Field(x => x.CreatedAt);
+        Field(x => x.UpdatedAt);
     }
 }
