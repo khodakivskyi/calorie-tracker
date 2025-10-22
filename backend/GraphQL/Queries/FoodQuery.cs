@@ -11,29 +11,42 @@ namespace backend.GraphQL.Queries
         {
             Field<FoodType>("getFoodById")
                 .Argument<NonNullGraphType<IntGraphType>>("id")
-                .Argument<NonNullGraphType<IntGraphType>>("ownerId")
+                .Argument<NonNullGraphType<IntGraphType>>("userId")
                 .ResolveAsync(async context =>
                 {
                     var id = context.GetArgument<int>("id");
-                    var ownerId = context.GetArgument<int>("ownerId");
-                    return await foodService.GetFoodByIdAsync(id, ownerId);
+                    var userId = context.GetArgument<int>("userId");
+                    return await foodService.GetFoodByIdAsync(id, userId);
                 });
 
-            Field<ListGraphType<FoodType>>("getFoodsByOwner")
-                .Argument<NonNullGraphType<IntGraphType>>("ownerId")
+            Field<ListGraphType<FoodType>>("getFoodsByUser")
+                .Argument<NonNullGraphType<IntGraphType>>("userId")
                 .ResolveAsync(async context =>
                 {
-                    var ownerId = context.GetArgument<int>("ownerId");
-                    return await foodService.GetFoodsByOwnerAsync(ownerId);
+                    var userId = context.GetArgument<int>("userId");
+                    return await foodService.GetFoodsByUserAsync(userId);
                 });
 
-            Field<DecimalGraphType>("getFoodCalories")
-                .Argument<NonNullGraphType<IntGraphType>>("foodId")
+            Field<ListGraphType<FoodType>>("getPrivateFoodsByUser")
+                .Argument<NonNullGraphType<IntGraphType>>("userId")
                 .ResolveAsync(async context =>
                 {
-                    var foodId = context.GetArgument<int>("foodId");
-                    var calories = await foodService.GetFoodCaloriesAsync(foodId);
-                    return calories ?? 0m;
+                    var userId = context.GetArgument<int>("userId");
+                    return await foodService.GetPrivateFoodsByUserAsync(userId);
+                });
+
+            Field<ListGraphType<FoodType>>("getGlobalFoods")
+                .ResolveAsync(async context =>
+                {
+                    return await foodService.GetGlobalFoodsAsync();
+                });
+
+            Field<FoodType>("getFoodByExternalId")
+                .Argument<NonNullGraphType<StringGraphType>>("externalId")
+                .ResolveAsync(async context =>
+                {
+                    var externalId = context.GetArgument<string>("externalId");
+                    return await foodService.GetFoodByExternalIdAsync(externalId);
                 });
         }
     }
