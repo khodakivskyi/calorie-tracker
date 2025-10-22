@@ -7,10 +7,12 @@ namespace backend.Services
     public class CaloriesService
     {
         private readonly ICaloriesRepository _caloriesRepository;
+        private readonly INutrientsRepository _nutrientsRepository;
 
-        public CaloriesService(ICaloriesRepository caloriesRepository)
+        public CaloriesService(ICaloriesRepository caloriesRepository, INutrientsRepository nutrientsRepository)
         {
             _caloriesRepository = caloriesRepository;
+            _nutrientsRepository = nutrientsRepository;
         }
 
         public async Task<CaloriesModel> GetCaloriesByFoodAsync(int foodId)
@@ -61,6 +63,24 @@ namespace backend.Services
                 throw new NotFoundException($"Calories record for food with id {foodId} not found");
 
             return await _caloriesRepository.DeleteCaloriesAsync(foodId);
+        }
+
+        public async Task<decimal> GetOrCalculateCaloriesAsync(int foodId)
+        {
+            var calories = await _caloriesRepository.GetCaloriesByFoodIdAsync(foodId);
+            if (calories != null)
+                return calories.Calories;
+
+            var nutrients = await _nutrientsRepository.GetNutrientsByFoodIdAsync(foodId);
+            if (nutrients != null)
+                return CalculateCaloriesFromNutrients(nutrients);
+
+            throw new NotFoundException($"No calories or nutrients data available for food {foodId}");
+        }
+
+        public decimal CalculateCaloriesFromNutrients(Nutrients nutrients)
+        {
+            return (nutrients.Protein * 4) + (nutrients.Fat * 9) + (nutrients.Carbohydrates * 4);
         }
     }
 }

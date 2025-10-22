@@ -15,12 +15,9 @@ namespace backend.Services
 
         public async Task<Dish> GetDishByIdAsync(int id, int userId)
         {
-            var dish = await _dishRepository.GetDishByIdAsync(id);
+            var dish = await _dishRepository.GetDishByIdAsync(id, userId);
             if (dish == null)
                 throw new NotFoundException($"Dish with id {id} not found");
-
-            if (dish.OwnerId != userId)
-                throw new ForbiddenException("You don't have access to this dish");
 
             return dish;
         }
@@ -30,7 +27,22 @@ namespace backend.Services
             return await _dishRepository.GetAllDishesByUserAsync(userId);
         }
 
-        public async Task<Dish> CreateDishAsync(int userId, string name, decimal weight, int? imageId = null)
+        public async Task<IEnumerable<Dish>> GetPrivateDishesByUserAsync(int userId)
+        {
+            return await _dishRepository.GetPrivateDishesByUserAsync(userId);
+        }
+
+        public async Task<IEnumerable<Dish>> GetGlobalDishesAsync()
+        {
+            return await _dishRepository.GetGlobalDishesAsync();
+        }
+
+        public async Task<Dish?> GetDishByExternalIdAsync(string externalId)
+        {
+            return await _dishRepository.GetDishByExternalIdAsync(externalId);
+        }
+
+        public async Task<Dish> CreateDishAsync(int? userId, string name, decimal weight, int? imageId = null, string? externalId = null)
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new ValidationException("Dish name cannot be empty");
@@ -38,7 +50,7 @@ namespace backend.Services
             if (weight <= 0)
                 throw new ValidationException("Dish weight must be greater than 0");
 
-            var dish = new Dish(userId, name, weight, imageId);
+            var dish = new Dish(userId, name, weight, imageId, externalId);
             var createdDish = await _dishRepository.CreateDishAsync(dish);
             
             if (createdDish == null)
@@ -48,10 +60,15 @@ namespace backend.Services
         }
 
 
-//
-        public async Task<Dish> UpdateDishAsync(int userId, int dishId, string? name = null, decimal? weight = null, int? imageId = null)
+        public async Task<Dish> UpdateDishAsync(int userId, int dishId, string? name = null, decimal? weight = null, int? imageId = null, string? externalId = null)
         {
             var existingDish = await this.GetDishByIdAsync(dishId, userId);
+
+            if (existingDish.OwnerId == null)
+                throw new ValidationException("You cannot update global dishes");
+
+            if (existingDish.OwnerId != userId)
+                throw new ValidationException("You can only update your own dishes");
 
             if (!string.IsNullOrWhiteSpace(name) && name != existingDish.Name)
                 existingDish.Name = name;
@@ -62,6 +79,9 @@ namespace backend.Services
             if (imageId.HasValue && imageId != existingDish.ImageId)
                 existingDish.ImageId = imageId;
 
+            if (!string.IsNullOrWhiteSpace(externalId) && externalId != existingDish.ExternalId)
+                existingDish.ExternalId = externalId;
+
             var updatedDish = await _dishRepository.UpdateDishAsync(existingDish);
             if (updatedDish == null)
                 throw new NotFoundException("Failed to update dish");
@@ -71,7 +91,14 @@ namespace backend.Services
 
         public async Task<bool> DeleteDishAsync(int userId, int dishId)
         {
-            await this.GetDishByIdAsync(dishId, userId);
+            var dish = await this.GetDishByIdAsync(dishId, userId);
+            
+            if (dish.OwnerId == null)
+                throw new ValidationException("You cannot delete global dishes");
+
+            if (dish.OwnerId != userId)
+                throw new ValidationException("You can only delete your own dishes");
+
             return await _dishRepository.DeleteDishAsync(dishId);
         }
 
@@ -85,7 +112,13 @@ namespace backend.Services
             if (quantity <= 0)
                 throw new ValidationException("Quantity must be greater than 0");
 
-            await this.GetDishByIdAsync(dishId, userId);
+            var dish = await this.GetDishByIdAsync(dishId, userId);
+            
+            if (dish.OwnerId == null)
+                throw new ValidationException("You cannot modify global dishes");
+
+            if (dish.OwnerId != userId)
+                throw new ValidationException("You can only modify your own dishes");
 
             var success = await _dishRepository.AddFoodAsync(dishId, foodId, quantity);
             if (!success)
@@ -99,7 +132,13 @@ namespace backend.Services
             if (quantity <= 0)
                 throw new ValidationException("Quantity must be greater than 0");
 
-            await this.GetDishByIdAsync(dishId, userId);
+            var dish = await this.GetDishByIdAsync(dishId, userId);
+            
+            if (dish.OwnerId == null)
+                throw new ValidationException("You cannot modify global dishes");
+
+            if (dish.OwnerId != userId)
+                throw new ValidationException("You can only modify your own dishes");
 
             var success = await _dishRepository.UpdateFoodQuantityAsync(dishId, foodId, quantity);
             if (!success)
@@ -110,7 +149,13 @@ namespace backend.Services
 
         public async Task<bool> RemoveFoodFromDishAsync(int userId, int dishId, int foodId)
         {
-            await this.GetDishByIdAsync(dishId, userId);
+            var dish = await this.GetDishByIdAsync(dishId, userId);
+            
+            if (dish.OwnerId == null)
+                throw new ValidationException("You cannot modify global dishes");
+
+            if (dish.OwnerId != userId)
+                throw new ValidationException("You can only modify your own dishes");
 
             var success = await _dishRepository.RemoveFoodAsync(dishId, foodId);
             if (!success)
@@ -129,29 +174,6 @@ namespace backend.Services
         {
             await this.GetDishByIdAsync(dishId, userId);
             return await _dishRepository.GetDishCaloriesAsync(dishId);
-        }
-
-//
-        public async Task<bool> UpdateDishImageAsync(int userId, int dishId, int? imageId)
-        {
-            await this.GetDishByIdAsync(dishId, userId);
-
-            var success = await _dishRepository.UpdateImageAsync(dishId, imageId);
-            if (!success)
-                throw new InvalidOperationException("Failed to update dish image");
-
-            return true;
-        }
-
-        public async Task<bool> RemoveDishImageAsync(int userId, int dishId)
-        {
-            await this.GetDishByIdAsync(dishId, userId);
-
-            var success = await _dishRepository.RemoveImageAsync(dishId);
-            if (!success)
-                throw new InvalidOperationException("Failed to remove dish image");
-
-            return true;
         }
     }
 }

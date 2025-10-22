@@ -71,8 +71,12 @@ namespace backend.Services
             if (protein < 0 || fat < 0 || carbohydrates < 0)
                 throw new ValidationException("Nutrient values cannot be negative");
 
-            if (protein == 0 && fat == 0 && carbohydrates == 0)
-                throw new ValidationException("At least one nutrient value must be greater than zero");
+            //?прибрав перевірку на те, щоб хоча б одне значення з бжу != 0
+            //вода, кава, сіль і тд - все по нулям, можна потім буде додавати відслідковування випитої води?
+            //aбо рахувати чисті калорії і повернути перевірку
+            //???
+            /*if (protein == 0 && fat == 0 && carbohydrates == 0)
+                throw new ValidationException("At least one nutrient value must be greater than zero");*/
         }
     }
 }
