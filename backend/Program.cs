@@ -5,9 +5,6 @@ using backend.GraphQL;
 using backend.GraphQL.Mutations;
 using backend.GraphQL.Queries;
 using backend.GraphQL.Types;
-using backend.Repositories;
-using backend.Repositories.Interfaces;
-using backend.Services;
 using GraphQL;
 using GraphQL.Execution;
 using GraphQL.Types;
@@ -28,8 +25,13 @@ namespace backend
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
             builder.Services.AddScoped<IUserRepository, UserRepository>(provider => new UserRepository(connectionString!));
             builder.Services.AddScoped<IFoodRepository, FoodRepository>(provider => new FoodRepository(connectionString!));
+            builder.Services.AddScoped<IDishRepository, DishRepository>(provider => new DishRepository(connectionString!));
             builder.Services.AddScoped<IMealRepository, MealRepository>(provider => new MealRepository(connectionString!));
+            builder.Services.AddScoped<ICaloriesRepository, CaloriesRepository>(provider => new CaloriesRepository(connectionString!));
+            builder.Services.AddScoped<INutrientsRepository, NutrientsRepository>(provider => new NutrientsRepository(connectionString!));
           
+
+
             builder.Services.AddControllers();
 
             builder.Services.AddCors(options =>
@@ -44,13 +46,19 @@ namespace backend
 
             builder.Services.AddScoped<UserService>();
             builder.Services.AddScoped<FoodService>();
+            builder.Services.AddScoped<DishService>();
             builder.Services.AddScoped<MealService>();
-          
+            builder.Services.AddScoped<NutrientsService>();
+            builder.Services.AddScoped<CaloriesService>();
+
             builder.Services.AddSingleton<IErrorInfoProvider, MyErrorInfoProvider>();
             builder.Services.AddScoped<UserType>();
             builder.Services.AddScoped<FoodType>();
+            builder.Services.AddScoped<DishType>();
             builder.Services.AddScoped<MealType>();
-          
+            builder.Services.AddScoped<NutrientsType>();
+            builder.Services.AddScoped<CaloriesType>();
+
             builder.Services.AddScoped<RootQuery>();
             builder.Services.AddScoped<RootMutation>();
             builder.Services.AddScoped<ISchema, AppSchema>();
