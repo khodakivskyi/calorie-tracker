@@ -23,7 +23,7 @@ namespace backend.Repositories
             return await connection.QueryFirstOrDefaultAsync<Meal>(sql, new { Id = id});
         }
 
-        public async Task<IEnumerable<Meal>> GetAllMealsByUserAsync(int userId)
+        public async Task<IEnumerable<Meal>> GetMealsByUserAsync(int userId)
         {
             using var connection = new SqlConnection(_connectionString);
             const string sql = @"SELECT id, owner_id AS OwnerId, name, created_at AS CreatedAt, updated_at AS UpdatedAt

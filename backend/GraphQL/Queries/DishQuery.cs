@@ -23,7 +23,7 @@ namespace backend.GraphQL.Queries
                 .ResolveAsync(async context =>
                 {
                     var userId = context.GetArgument<int>("userId");
-                    return await dishService.GetAllDishesByUserAsync(userId);
+                    return await dishService.GetDishesByUserAsync(userId);
                 });
 
             Field<ListGraphType<DishType>>("getPrivateDishesByUser")

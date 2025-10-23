@@ -5,8 +5,8 @@ namespace backend.Repositories.Interfaces
     public interface IDishRepository
     {
         // Returns all types
-        Task<Dish?> GetDishByIdAsync(int id, int userId);
-        Task<IEnumerable<Dish>> GetAllDishesByUserAsync(int userId);
+        Task<Dish?> GetDishByIdAsync(int dishId, int userId);
+        Task<IEnumerable<Dish>> GetDishesByUserAsync(int userId);
 
         // Only for global dishes
         Task<IEnumerable<Dish>> GetGlobalDishesAsync();

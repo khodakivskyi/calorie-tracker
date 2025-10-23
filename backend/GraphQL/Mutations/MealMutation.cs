@@ -22,25 +22,25 @@ namespace backend.GraphQL.Mutations
                 });
 
             Field<NonNullGraphType<MealType>>("updateMeal")
-                .Argument<NonNullGraphType<IntGraphType>>("id")
+                .Argument<NonNullGraphType<IntGraphType>>("mealId")
                 .Argument<NonNullGraphType<IntGraphType>>("userId")
                 .Argument<NonNullGraphType<StringGraphType>>("name")
                 .ResolveAsync(async context =>
                 {
-                    var id = context.GetArgument<int>("id");
+                    var mealId = context.GetArgument<int>("mealId");
                     var userId = context.GetArgument<int>("userId");
                     var name = context.GetArgument<string>("name");
-                    return await mealService.UpdateMealAsync(id, userId, name);
+                    return await mealService.UpdateMealAsync(mealId, userId, name);
                 });
 
             Field<BooleanGraphType>("deleteMeal")
-                .Argument<NonNullGraphType<IntGraphType>>("id")
+                .Argument<NonNullGraphType<IntGraphType>>("mealId")
                 .Argument<NonNullGraphType<IntGraphType>>("userId")
                 .ResolveAsync(async context =>
                 {
-                    var id = context.GetArgument<int>("id");
+                    var mealId = context.GetArgument<int>("mealId");
                     var userId = context.GetArgument<int>("userId");
-                    return await mealService.DeleteMealAsync(id, userId);
+                    return await mealService.DeleteMealAsync(mealId, userId);
                 });
 
             Field<BooleanGraphType>("deleteAllMealsByUser")

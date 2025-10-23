@@ -14,17 +14,17 @@ namespace backend.Repositories
         }
 
         // Returns all types
-        public async Task<Dish?> GetDishByIdAsync(int id, int userId)
+        public async Task<Dish?> GetDishByIdAsync(int dishId, int userId)
         {
             using var connection = new SqlConnection(_connectionString);
             const string sql = @"SELECT id, owner_id AS OwnerId, name, weight, image_id AS ImageId, 
                                         created_at AS CreatedAt, updated_at AS UpdatedAt, external_id AS ExternalId 
                                  FROM dishes 
                                  WHERE id = @Id AND (owner_id = @UserId OR owner_id IS NULL)";
-            return await connection.QueryFirstOrDefaultAsync<Dish>(sql, new { Id = id, UserId = userId });
+            return await connection.QueryFirstOrDefaultAsync<Dish>(sql, new { Id = dishId, UserId = userId });
         }
         
-        public async Task<IEnumerable<Dish>> GetAllDishesByUserAsync(int userId)
+        public async Task<IEnumerable<Dish>> GetDishesByUserAsync(int userId)
         {
             using var connection = new SqlConnection(_connectionString);
             const string sql = @"SELECT id, owner_id AS OwnerId, name, weight, image_id AS ImageId, 

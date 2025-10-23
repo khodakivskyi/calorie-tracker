@@ -5,7 +5,7 @@ namespace backend.Repositories.Interfaces
     public interface IFoodRepository
     {
         // Returns all types
-        Task<Food?> GetFoodByIdAsync(int id, int userId);
+        Task<Food?> GetFoodByIdAsync(int foodId, int userId);
         Task<IEnumerable<Food>> GetFoodsByUserAsync(int userId);
 
         // Only for global foods
@@ -16,7 +16,7 @@ namespace backend.Repositories.Interfaces
         Task<IEnumerable<Food>> GetPrivateFoodsByUserAsync(int userId);
         Task<Food?> CreateFoodAsync(Food food);
         Task<Food?> UpdateFoodAsync(Food food);
-        Task<bool> DeleteFoodAsync(int id, int userId);
+        Task<bool> DeleteFoodAsync(int foodId, int userId);
         Task<bool> DeleteAllFoodsByUserAsync(int userId);
     }
 }

@@ -28,30 +28,30 @@ namespace backend.GraphQL.Mutations
                 });
 
             Field<FoodType>("updateFood")
-                .Argument<NonNullGraphType<IntGraphType>>("id")
+                .Argument<NonNullGraphType<IntGraphType>>("foodId")
                 .Argument<NonNullGraphType<IntGraphType>>("userId")
                 .Argument<StringGraphType>("name")
                 .Argument<IntGraphType>("imageId")
                 .Argument<StringGraphType>("externalId")
                 .ResolveAsync(async context =>
                 {
-                    var id = context.GetArgument<int>("id");
+                    var foodId = context.GetArgument<int>("foodId");
                     var userId = context.GetArgument<int>("userId");
                     var name = context.GetArgument<string?>("name");
                     var imageId = context.GetArgument<int?>("imageId");
                     var externalId = context.GetArgument<string?>("externalId");
 
-                    return await foodService.UpdateFoodAsync(id, userId, name, imageId, externalId);
+                    return await foodService.UpdateFoodAsync(foodId, userId, name, imageId, externalId);
                 });
 
             Field<BooleanGraphType>("deleteFood")
-                .Argument<NonNullGraphType<IntGraphType>>("id")
+                .Argument<NonNullGraphType<IntGraphType>>("foodId")
                 .Argument<NonNullGraphType<IntGraphType>>("userId")
                 .ResolveAsync(async context =>
                 {
-                    var id = context.GetArgument<int>("id");
+                    var foodId = context.GetArgument<int>("foodId");
                     var userId = context.GetArgument<int>("userId");
-                    return await foodService.DeleteFoodAsync(id, userId);
+                    return await foodService.DeleteFoodAsync(foodId, userId);
                 });
 
             Field<BooleanGraphType>("deleteAllFoodsByUser")

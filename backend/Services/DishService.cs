@@ -13,18 +13,18 @@ namespace backend.Services
             _dishRepository = dishRepository;
         }
 
-        public async Task<Dish> GetDishByIdAsync(int id, int userId)
+        public async Task<Dish> GetDishByIdAsync(int dishId, int userId)
         {
-            var dish = await _dishRepository.GetDishByIdAsync(id, userId);
+            var dish = await _dishRepository.GetDishByIdAsync(dishId, userId);
             if (dish == null)
-                throw new NotFoundException($"Dish with id {id} not found");
+                throw new NotFoundException($"Dish with id {dishId} not found");
 
             return dish;
         }
 
-        public async Task<IEnumerable<Dish>> GetAllDishesByUserAsync(int userId)
+        public async Task<IEnumerable<Dish>> GetDishesByUserAsync(int userId)
         {
-            return await _dishRepository.GetAllDishesByUserAsync(userId);
+            return await _dishRepository.GetDishesByUserAsync(userId);
         } 
 
         public async Task<IEnumerable<Dish>> GetPrivateDishesByUserAsync(int userId)
@@ -89,7 +89,7 @@ namespace backend.Services
             return updatedDish;
         }
 
-        public async Task<bool> DeleteDishAsync(int userId, int dishId)
+        public async Task<bool> DeleteDishAsync(int dishId, int userId)
         {
             var dish = await this.GetDishByIdAsync(dishId, userId);
             

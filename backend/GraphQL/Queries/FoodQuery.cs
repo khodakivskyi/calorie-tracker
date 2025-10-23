@@ -10,13 +10,13 @@ namespace backend.GraphQL.Queries
         public FoodQuery(FoodService foodService)
         {
             Field<FoodType>("getFoodById")
-                .Argument<NonNullGraphType<IntGraphType>>("id")
+                .Argument<NonNullGraphType<IntGraphType>>("foodId")
                 .Argument<NonNullGraphType<IntGraphType>>("userId")
                 .ResolveAsync(async context =>
                 {
-                    var id = context.GetArgument<int>("id");
+                    var foodId = context.GetArgument<int>("foodId");
                     var userId = context.GetArgument<int>("userId");
-                    return await foodService.GetFoodByIdAsync(id, userId);
+                    return await foodService.GetFoodByIdAsync(foodId, userId);
                 });
 
             Field<ListGraphType<FoodType>>("getFoodsByUser")

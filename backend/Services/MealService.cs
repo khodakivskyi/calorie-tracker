@@ -22,9 +22,9 @@ namespace backend.Services
             return meal;
         }
 
-        public async Task<IEnumerable<Meal>> GetAllMealsByUserAsync(int userId)
+        public async Task<IEnumerable<Meal>> GetMealsByUserAsync(int userId)
         {
-            return await _mealRepository.GetAllMealsByUserAsync(userId);
+            return await _mealRepository.GetMealsByUserAsync(userId);
         }
 
         public async Task<Meal> CreateMealAsync(int userId, string name)
@@ -40,9 +40,9 @@ namespace backend.Services
             return createdMeal;
         }
 
-        public async Task<Meal> UpdateMealAsync(int id, int userId, string name) 
+        public async Task<Meal> UpdateMealAsync(int mealId, int userId, string name) 
         {
-            var existingMeal = await this.GetMealByIdAsync(id);
+            var existingMeal = await this.GetMealByIdAsync(mealId);
 
             if (existingMeal.OwnerId != userId)
                 throw new ValidationException("You can only update your own meals");
@@ -55,19 +55,19 @@ namespace backend.Services
             var updatedMeal = await _mealRepository.UpdateMealAsync(existingMeal);
 
             if (updatedMeal == null)
-                throw new InvalidOperationException($"Failed to update meal with id '{id}'");
+                throw new InvalidOperationException($"Failed to update meal with id '{mealId}'");
 
             return updatedMeal;
         }
 
-        public async Task<bool> DeleteMealAsync(int id, int userId)
+        public async Task<bool> DeleteMealAsync(int mealId, int userId)
         {
-            var meal = await this.GetMealByIdAsync(id);
+            var meal = await this.GetMealByIdAsync(mealId);
 
             if (meal.OwnerId != userId)
                 throw new ValidationException("You can only delete your own meals");
 
-            return await _mealRepository.DeleteMealAsync(id);
+            return await _mealRepository.DeleteMealAsync(mealId);
         }
 
         public async Task<bool> DeleteAllMealsByUserAsync(int userId)

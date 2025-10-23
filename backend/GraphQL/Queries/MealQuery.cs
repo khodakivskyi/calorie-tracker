@@ -22,7 +22,7 @@ namespace backend.GraphQL.Queries
                 .ResolveAsync(async context =>
                 {
                     var userId = context.GetArgument<int>("userId");
-                    return await mealService.GetAllMealsByUserAsync(userId);
+                    return await mealService.GetMealsByUserAsync(userId);
                 });
 
             Field<ListGraphType<ObjectGraphType>>("getDishesByMeal")

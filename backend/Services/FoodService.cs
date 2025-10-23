@@ -13,11 +13,11 @@ namespace backend.Services
             _foodRepository = foodRepository;
         }
 
-        public async Task<Food> GetFoodByIdAsync(int id, int userId)
+        public async Task<Food> GetFoodByIdAsync(int foodId, int userId)
         {
-            var food = await _foodRepository.GetFoodByIdAsync(id, userId);
+            var food = await _foodRepository.GetFoodByIdAsync(foodId, userId);
             if (food == null)
-                throw new NotFoundException($"Food with id {id} not found");
+                throw new NotFoundException($"Food with id {foodId} not found");
 
             return food;
         }
@@ -56,9 +56,9 @@ namespace backend.Services
             return createdFood;
         }
 
-        public async Task<Food> UpdateFoodAsync(int id, int userId, string? name = null, int? imageId = null, string? externalId = null)
+        public async Task<Food> UpdateFoodAsync(int foodId, int userId, string? name = null, int? imageId = null, string? externalId = null)
         {
-            var existingFood = await this.GetFoodByIdAsync(id, userId);
+            var existingFood = await this.GetFoodByIdAsync(foodId, userId);
 
             if (existingFood.OwnerId == null)
                 throw new ValidationException("You cannot update global foods");
@@ -82,9 +82,9 @@ namespace backend.Services
             return updatedFood;
         }
 
-        public async Task<bool> DeleteFoodAsync(int id, int userId)
+        public async Task<bool> DeleteFoodAsync(int foodId, int userId)
         {
-            var food = await this.GetFoodByIdAsync(id, userId);
+            var food = await this.GetFoodByIdAsync(foodId, userId);
             
             if (food.OwnerId == null)
                 throw new ValidationException("You cannot delete global foods");
@@ -92,7 +92,7 @@ namespace backend.Services
             if (food.OwnerId != userId)
                 throw new ValidationException("You can only delete your own foods");
 
-            return await _foodRepository.DeleteFoodAsync(id, userId);
+            return await _foodRepository.DeleteFoodAsync(foodId, userId);
         }
 
         public async Task<bool> DeleteAllFoodsByUserAsync(int userId)

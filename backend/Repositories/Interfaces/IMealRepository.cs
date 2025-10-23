@@ -6,7 +6,7 @@ namespace backend.Repositories.Interfaces
     {
         // crud
         Task<Meal?> GetMealByIdAsync(int id);
-        Task<IEnumerable<Meal>> GetAllMealsByUserAsync(int userId);
+        Task<IEnumerable<Meal>> GetMealsByUserAsync(int userId);
         Task<Meal?> CreateMealAsync(Meal meal);
         Task<Meal?> UpdateMealAsync(Meal meal);
         Task<bool> DeleteMealAsync(int id);

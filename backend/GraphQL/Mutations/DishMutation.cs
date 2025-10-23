@@ -48,7 +48,7 @@ namespace backend.GraphQL.Mutations
                 {
                     var dishId = context.GetArgument<int>("dishId");
                     var userId = context.GetArgument<int>("userId");
-                    return await dishService.DeleteDishAsync(userId, dishId);
+                    return await dishService.DeleteDishAsync(dishId, userId);
                 });
 
             Field<BooleanGraphType>("deleteAllDishesByUser")

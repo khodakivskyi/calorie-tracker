@@ -31,18 +31,18 @@ namespace backend.GraphQL.Mutations
                 });
 
             Field<NonNullGraphType<AuthPayloadType>>("updateUser")
-                .Argument<NonNullGraphType<IntGraphType>>("id")
+                .Argument<NonNullGraphType<IntGraphType>>("userId")
                 .Argument<StringGraphType>("email")
                 .Argument<StringGraphType>("password")
                 .Argument<StringGraphType>("name")
                 .ResolveAsync(async context =>
                 {
-                    var id = context.GetArgument<int>("id");
+                    var userId = context.GetArgument<int>("userId");
                     var email = context.GetArgument<string?>("email");
                     var password = context.GetArgument<string?>("password");
                     var name = context.GetArgument<string?>("name");
 
-                    var user = await userService.UpdateUserAsync(id, email, password, name);
+                    var user = await userService.UpdateUserAsync(userId, email, password, name);
                     var token = jwtService.GenerateToken(user.Id, user.Email);
 
                     return new
@@ -53,11 +53,11 @@ namespace backend.GraphQL.Mutations
                 });
 
             Field<BooleanGraphType>("deleteUser")
-                .Argument<NonNullGraphType<IntGraphType>>("id")
+                .Argument<NonNullGraphType<IntGraphType>>("userId")
                 .ResolveAsync(async context =>
                 {
-                    var id = context.GetArgument<int>("id");
-                    return await userService.DeleteUserAsync(id);
+                    var userId = context.GetArgument<int>("userId");
+                    return await userService.DeleteUserAsync(userId);
                 });
         }
     }

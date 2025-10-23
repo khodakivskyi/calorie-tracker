@@ -15,14 +15,14 @@ namespace backend.Repositories
         }
 
         // Returns all types
-        public async Task<Food?> GetFoodByIdAsync(int id, int userId)
+        public async Task<Food?> GetFoodByIdAsync(int foodId, int userId)
         {
             using var connection = new SqlConnection(_connectionString);
             const string sql = @"SELECT id, owner_id AS OwnerId, name, image_id AS ImageId, 
                                         created_at AS CreatedAt, updated_at AS UpdatedAt, external_id AS ExternalId
                                  FROM foods 
                                  WHERE id = @Id AND (owner_id = @UserId OR owner_id IS NULL)";
-            return await connection.QuerySingleOrDefaultAsync<Food>(sql, new { Id = id, UserId = userId });
+            return await connection.QuerySingleOrDefaultAsync<Food>(sql, new { Id = foodId, UserId = userId });
         }
 
         public async Task<IEnumerable<Food>> GetFoodsByUserAsync(int userId)
@@ -102,11 +102,11 @@ namespace backend.Repositories
             return await connection.QuerySingleOrDefaultAsync<Food>(sql, food);
         }
 
-        public async Task<bool> DeleteFoodAsync(int id, int userId)
+        public async Task<bool> DeleteFoodAsync(int foodId, int userId)
         {
             using var connection = new SqlConnection(_connectionString);
             const string sql = "DELETE FROM foods WHERE id = @Id AND owner_id = @UserId"; ;
-            var affectedRows = await connection.ExecuteAsync(sql, new { Id = id, UserId = userId });
+            var affectedRows = await connection.ExecuteAsync(sql, new { Id = foodId, UserId = userId });
             return affectedRows > 0;
         }
 
