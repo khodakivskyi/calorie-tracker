@@ -24,6 +24,5 @@ namespace backend.Repositories.Interfaces
         Task<bool> UpdateFoodQuantityAsync(int dishId, int foodId, decimal quantity);
         Task<bool> RemoveFoodAsync(int dishId, int foodId);
         Task<IEnumerable<(Food food, decimal quantity)>> GetAllFoodsByDishAsync(int dishId);
-        Task<decimal> GetDishCaloriesAsync(int dishId);
     }
 }

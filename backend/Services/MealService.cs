@@ -127,18 +127,6 @@ namespace backend.Services
             return dishes;
         }
 
-        public async Task<decimal> GetMealTotalCaloriesAsync(int mealId)
-        {
-            await GetMealByIdAsync(mealId);
-            return await _mealRepository.GetMealTotalCaloriesAsync(mealId);
-        }
-
-        public async Task<Nutrients?> GetMealTotalNutrientsAsync(int mealId)
-        {
-            await GetMealByIdAsync(mealId);
-            return await _mealRepository.GetMealTotalNutrientsAsync(mealId);
-        }
-
         public async Task<IEnumerable<Meal>> GetMealsByDateRangeAsync(int userId, DateTime startDate, DateTime endDate)
         {
             return await _mealRepository.GetMealsByDateRangeAsync(userId, startDate, endDate);

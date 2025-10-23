@@ -163,18 +163,5 @@ namespace backend.Repositories
                 quantity: (decimal)r.quantity
             ));
         }
-
-        public async Task<decimal> GetDishCaloriesAsync(int dishId)
-        {
-            using var connection = new SqlConnection(_connectionString);
-            const string sql = @"SELECT ISNULL(SUM(c.calories * df.quantity), 0) as TotalCalories
-                                FROM dishes_foods df
-                                INNER JOIN foods f ON df.food_id = f.id
-                                INNER JOIN calories c ON c.food_id = f.id
-                                WHERE df.dish_id = @DishId;";
-            
-            var totalCalories = await connection.QueryFirstOrDefaultAsync<decimal>(sql, new { DishId = dishId });
-            return totalCalories;
-        }
     }
 }

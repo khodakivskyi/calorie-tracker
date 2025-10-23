@@ -110,50 +110,6 @@ namespace backend.Repositories
             return await connection.QueryAsync<MealDishDto>(sql, new { MealId = mealId });
         }
 
-        // Meal calculations
-        public async Task<decimal> GetMealTotalCaloriesAsync(int mealId)
-        {
-            using var connection = new SqlConnection(_connectionString);
-
-            const string sql = @"
-                SELECT ISNULL(SUM(
-                    (
-                        CASE 
-                            WHEN c.calories IS NOT NULL THEN c.calories
-                            ELSE (n.protein * 4 + n.fat * 9 + n.carbohydrates * 4)
-                        END
-                    ) * (df.quantity / 100.0) * (md.quantity / 100.0)
-                ), 0) AS TotalCalories
-                FROM meals_dishes md
-                INNER JOIN dishes_foods df ON md.dish_id = df.dish_id
-                INNER JOIN foods f ON df.food_id = f.id
-                LEFT JOIN calories c ON c.food_id = f.id
-                LEFT JOIN nutrients n ON n.food_id = f.id
-                WHERE md.meal_id = @MealId;
-            ";
-
-            var totalCalories = await connection.QueryFirstOrDefaultAsync<decimal>(sql, new { MealId = mealId });
-            return totalCalories;
-        }
-
-
-        public async Task<Nutrients?> GetMealTotalNutrientsAsync(int mealId)
-        {
-            using var connection = new SqlConnection(_connectionString);
-            const string sql = @"
-                SELECT 
-                    SUM(n.Protein * (df.Quantity / 100.0) * (md.Quantity / 100.0)) AS Protein,
-                    SUM(n.Fat * (df.Quantity / 100.0) * (md.Quantity / 100.0)) AS Fat,
-                    SUM(n.Carbohydrates * (df.Quantity / 100.0) * (md.Quantity / 100.0)) AS Carbohydrates
-                FROM meals_dishes md
-                JOIN dishes_foods df ON md.dish_id = df.dish_id
-                JOIN nutrients n ON df.food_id = n.food_id
-                WHERE md.meal_id = @MealId;
-            ";
-
-            return await connection.QueryFirstOrDefaultAsync<Nutrients>(sql, new { MealId = mealId });
-        }
-
         // Query by date/name
         public async Task<IEnumerable<Meal>> GetMealsByDateRangeAsync(int userId, DateTime startDate, DateTime endDate)
         {

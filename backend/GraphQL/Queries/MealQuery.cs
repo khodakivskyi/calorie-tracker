@@ -25,7 +25,6 @@ namespace backend.GraphQL.Queries
                     return await mealService.GetAllMealsByUserAsync(userId);
                 });
 
-
             Field<ListGraphType<ObjectGraphType>>("getDishesByMeal")
                 .Argument<NonNullGraphType<IntGraphType>>("mealId")
                 .ResolveAsync(async context =>
@@ -33,23 +32,6 @@ namespace backend.GraphQL.Queries
                     var mealId = context.GetArgument<int>("mealId");
                     var dishes = await mealService.GetDishesByMealAsync(mealId);
                     return dishes.Select(d => new { d.DishId, d.Quantity });
-                });
-
-            Field<DecimalGraphType>("getMealTotalCalories")
-                .Argument<NonNullGraphType<IntGraphType>>("mealId")
-                .ResolveAsync(async context =>
-                {
-                    var mealId = context.GetArgument<int>("mealId");
-                    return await mealService.GetMealTotalCaloriesAsync(mealId);
-                });
-
-            Field<ObjectGraphType>("getMealTotalNutrients")
-                .Argument<NonNullGraphType<IntGraphType>>("mealId")
-                .ResolveAsync(async context =>
-                {
-                    var mealId = context.GetArgument<int>("mealId");
-                    var nutrients = await mealService.GetMealTotalNutrientsAsync(mealId);
-                    return new { nutrients?.Protein, nutrients?.Fat, nutrients?.Carbohydrates };
                 });
 
             Field<DecimalGraphType>("getDailyCalories")

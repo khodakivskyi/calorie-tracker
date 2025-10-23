@@ -169,11 +169,5 @@ namespace backend.Services
             await this.GetDishByIdAsync(dishId, userId);
             return await _dishRepository.GetAllFoodsByDishAsync(dishId);
         }
-
-        public async Task<decimal> GetDishCaloriesAsync(int userId, int dishId)
-        {
-            await this.GetDishByIdAsync(dishId, userId);
-            return await _dishRepository.GetDishCaloriesAsync(dishId);
-        }
     }
 }
