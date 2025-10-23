@@ -25,7 +25,7 @@ namespace backend.Services
         public async Task<IEnumerable<Dish>> GetAllDishesByUserAsync(int userId)
         {
             return await _dishRepository.GetAllDishesByUserAsync(userId);
-        }
+        } 
 
         public async Task<IEnumerable<Dish>> GetPrivateDishesByUserAsync(int userId)
         {
@@ -41,6 +41,7 @@ namespace backend.Services
         {
             return await _dishRepository.GetDishByExternalIdAsync(externalId);
         }
+
 
         public async Task<Dish> CreateDishAsync(int? userId, string name, decimal weight, int? imageId = null, string? externalId = null)
         {
@@ -58,7 +59,6 @@ namespace backend.Services
 
             return createdDish;
         }
-
 
         public async Task<Dish> UpdateDishAsync(int userId, int dishId, string? name = null, decimal? weight = null, int? imageId = null, string? externalId = null)
         {
@@ -106,6 +106,7 @@ namespace backend.Services
         {
             return await _dishRepository.DeleteAllDishesByUserAsync(userId);
         }
+
 
         public async Task<bool> AddFoodToDishAsync(int userId, int dishId, int foodId, decimal quantity)
         {
