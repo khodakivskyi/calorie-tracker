@@ -73,7 +73,9 @@ jobs:
             "LogLevel": {
               "Default": "Information",
               "Microsoft.AspNetCore": "Information",
-              "Microsoft.Hosting.Lifetime": "Information"
+              "Microsoft.Hosting.Lifetime": "Information",
+              "GraphQL": "Debug",
+              "backend.GraphQL": "Debug"
             }
           },
           "AllowedHosts": "*"
@@ -102,25 +104,19 @@ jobs:
     
     - name: Test API endpoint
       run: |
-        echo "Testing API health..."
-        curl -v http://localhost:5000/ || true
-        echo ""
-        echo "Testing GraphQL endpoint..."
-        curl -v http://localhost:5000/graphql -X POST -H "Content-Type: application/json" -d '{"query":"{ __schema { queryType { name } } }"}' || true
-        echo ""
-        echo "Testing GraphiQL..."
-        curl -v http://localhost:5000/ui/graphiql || true
+        echo "Testing GraphQL endpoint with simple query..."
+        curl -v http://localhost:5000/graphql -X POST -H "Content-Type: application/json" -d '{"query":"query { getGlobalFoods { id name } }"}' || true
     
     - name: Wait for API to be ready
       continue-on-error: true
       run: |
         echo "Waiting for API to be ready..."
-        timeout 30 bash -c 'until curl -s http://localhost:5000/graphql -X POST -H "Content-Type: application/json" -d "{\"query\":\"{ getGlobalFoods { id name } }\"}" | grep -q "getGlobalFoods"; do sleep 2; done' || echo "API might not be fully ready, continuing anyway..."
+        timeout 30 bash -c 'until curl -s http://localhost:5000/graphql -X POST -H "Content-Type: application/json" -d "{\"query\":\"query { getGlobalFoods { id name } }\"}" | grep -q "data"; do sleep 2; done' || echo "API might not be fully ready, continuing anyway..."
     
     - name: Verify API is responding
       run: |
         echo "Testing if API responds to GraphQL queries..."
-        RESPONSE=$(curl -s -w "\n%{http_code}" http://localhost:5000/graphql -X POST -H "Content-Type: application/json" -d '{"query":"{ getGlobalFoods { id name } }"}')
+        RESPONSE=$(curl -s -w "\n%{http_code}" http://localhost:5000/graphql -X POST -H "Content-Type: application/json" -d '{"query":"query { getGlobalFoods { id name } }"}')
         echo "Full Response:"
         echo "$RESPONSE"
         HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
