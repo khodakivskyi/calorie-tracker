@@ -77,12 +77,25 @@ jobs:
     - name: Start API Server
       run: |
         cd backend
-        dotnet run --environment Testing &
+        echo "Starting API server..."
+        dotnet run --environment Testing > api.log 2>&1 &
         echo $! > api_pid.txt
-        sleep 15
+        sleep 20
+        echo "API server started, checking logs..."
+        cat api.log || echo "No log file found"
+    
+    - name: Check API Process
+      run: |
+        echo "Checking if API process is running..."
+        ps aux | grep dotnet || echo "No dotnet process found"
+        if [ -f backend/api_pid.txt ]; then
+          echo "API PID: $(cat backend/api_pid.txt)"
+          ps -p $(cat backend/api_pid.txt) || echo "API process not found"
+        fi
     
     - name: Wait for API to be ready
       run: |
+        echo "Waiting for API to be ready..."
         timeout 60 bash -c 'until curl -f http://localhost:5000/graphql -X POST -H "Content-Type: application/json" -d "{\"query\":\"{ __schema { queryType { name } } }\"}"; do sleep 2; done'
     
     - name: Run API Tests
