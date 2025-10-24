@@ -70,7 +70,9 @@
                   "    pm.response.to.have.status(200);",
                   "    const responseJson = pm.response.json();",
                   "    pm.expect(responseJson.data.authenticateUser.token).to.exist;",
-                  "    pm.expect(responseJson.data.authenticateUser.user.email).to.eql(\"test@example.com\");",
+                  "    ",
+                  "    const expectedEmail = pm.environment.get(\"testEmail\");",
+                  "    pm.expect(responseJson.data.authenticateUser.user.email).to.eql(expectedEmail);",
                   "    ",
                   "    // Save token",
                   "    pm.environment.set(\"authToken\", responseJson.data.authenticateUser.token);",
@@ -89,7 +91,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"query\": \"query AuthenticateUser($email: String!, $password: String!) {\\n    authenticateUser(email: $email, password: $password) {\\n      user {\\n        id\\n        email\\n        name\\n      }\\n      token\\n    }\\n  }\",\n  \"variables\": {\n    \"email\": \"test@example.com\",\n    \"password\": \"password123\"\n  }\n}"
+              "raw": "{\n  \"query\": \"query AuthenticateUser($email: String!, $password: String!) {\\n    authenticateUser(email: $email, password: $password) {\\n      user {\\n        id\\n        email\\n        name\\n      }\\n      token\\n    }\\n  }\",\n  \"variables\": {\n    \"email\": \"{{testEmail}}\",\n    \"password\": \"password123\"\n  }\n}"
             },
             "url": {
               "raw": "{{graphqlEndpoint}}",
@@ -108,7 +110,9 @@
                   "    pm.response.to.have.status(200);",
                   "    const responseJson = pm.response.json();",
                   "    pm.expect(responseJson.data.getUserById).to.exist;",
-                  "    pm.expect(responseJson.data.getUserById.email).to.eql(\"test@example.com\");",
+                  "    ",
+                  "    const expectedEmail = pm.environment.get(\"testEmail\");",
+                  "    pm.expect(responseJson.data.getUserById.email).to.eql(expectedEmail);",
                   "});"
                 ]
               }
@@ -164,7 +168,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"query\": \"query GetGlobalFoods {\\n    getGlobalFoods {\\n      id\\n      name\\n      calories\\n      protein\\n      carbs\\n      fat\\n    }\\n  }\",\n  \"variables\": {}\n}"
+              "raw": "{\n  \"query\": \"query GetGlobalFoods {\\n    getGlobalFoods {\\n      id\\n      name\\n    }\\n  }\",\n  \"variables\": {}\n}"
             },
             "url": {
               "raw": "{{graphqlEndpoint}}",
@@ -199,7 +203,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"query\": \"query GetFoodsByUser($userId: Int!) {\\n    getFoodsByUser(userId: $userId) {\\n      id\\n      name\\n      calories\\n      protein\\n      carbs\\n      fat\\n    }\\n  }\",\n  \"variables\": {\n    \"userId\": {{userId}}\n  }\n}"
+              "raw": "{\n  \"query\": \"query GetFoodsByUser($userId: Int!) {\\n    getFoodsByUser(userId: $userId) {\\n      id\\n      name\\n    }\\n  }\",\n  \"variables\": {\n    \"userId\": {{userId}}\n  }\n}"
             },
             "url": {
               "raw": "{{graphqlEndpoint}}",
@@ -239,7 +243,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"query\": \"query GetGlobalDishes {\\n    getGlobalDishes {\\n      id\\n      name\\n      description\\n    }\\n  }\",\n  \"variables\": {}\n}"
+              "raw": "{\n  \"query\": \"query GetGlobalDishes {\\n    getGlobalDishes {\\n      id\\n      name\\n      weight\\n    }\\n  }\",\n  \"variables\": {}\n}"
             },
             "url": {
               "raw": "{{graphqlEndpoint}}",
@@ -274,7 +278,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"query\": \"query GetDishesByUser($userId: Int!) {\\n    getDishesByUser(userId: $userId) {\\n      id\\n      name\\n      description\\n    }\\n  }\",\n  \"variables\": {\n    \"userId\": {{userId}}\n  }\n}"
+              "raw": "{\n  \"query\": \"query GetDishesByUser($userId: Int!) {\\n    getDishesByUser(userId: $userId) {\\n      id\\n      name\\n      weight\\n    }\\n  }\",\n  \"variables\": {\n    \"userId\": {{userId}}\n  }\n}"
             },
             "url": {
               "raw": "{{graphqlEndpoint}}",
@@ -314,7 +318,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"query\": \"query GetMealsByUser($userId: Int!) {\\n    getMealsByUser(userId: $userId) {\\n      id\\n      name\\n      date\\n    }\\n  }\",\n  \"variables\": {\n    \"userId\": {{userId}}\n  }\n}"
+              "raw": "{\n  \"query\": \"query GetMealsByUser($userId: Int!) {\\n    getMealsByUser(userId: $userId) {\\n      id\\n      name\\n      createdAt\\n    }\\n  }\",\n  \"variables\": {\n    \"userId\": {{userId}}\n  }\n}"
             },
             "url": {
               "raw": "{{graphqlEndpoint}}",
