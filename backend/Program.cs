@@ -29,6 +29,7 @@ namespace backend
             builder.Services.AddScoped<IMealRepository, MealRepository>(provider => new MealRepository(connectionString!));
             builder.Services.AddScoped<ICaloriesRepository, CaloriesRepository>(provider => new CaloriesRepository(connectionString!));
             builder.Services.AddScoped<INutrientsRepository, NutrientsRepository>(provider => new NutrientsRepository(connectionString!));
+            builder.Services.AddScoped<IImageRepository, ImageRepository>(provider => new ImageRepository(connectionString!));
           
 
 
@@ -50,6 +51,7 @@ namespace backend
             builder.Services.AddScoped<MealService>();
             builder.Services.AddScoped<NutrientsService>();
             builder.Services.AddScoped<CaloriesService>();
+            builder.Services.AddScoped<ImageService>();
 
             builder.Services.AddSingleton<IErrorInfoProvider, MyErrorInfoProvider>();
             builder.Services.AddScoped<UserType>();
@@ -105,6 +107,7 @@ namespace backend
             }
 
             app.UseCors();
+            app.UseStaticFiles();
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseGraphQL<ISchema>("/graphql");
