@@ -48,12 +48,16 @@ jobs:
         sleep 30
         timeout 60 bash -c 'until docker exec ${{ job.services.mssql.id }} /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P TestPassword123! -C -Q "SELECT 1"; do sleep 5; done'
     
+    - name: Create Database
+      run: |
+        docker exec ${{ job.services.mssql.id }} /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P TestPassword123! -C -Q "CREATE DATABASE calorie_tracker"
+    
     - name: Setup Test Database
       run: |
         docker cp database/Scripts/01_CreateTables.sql ${{ job.services.mssql.id }}:/tmp/
         docker cp database/Scripts/02_SeedData.sql ${{ job.services.mssql.id }}:/tmp/
-        docker exec ${{ job.services.mssql.id }} /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P TestPassword123! -C -i /tmp/01_CreateTables.sql
-        docker exec ${{ job.services.mssql.id }} /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P TestPassword123! -C -i /tmp/02_SeedData.sql
+        docker exec ${{ job.services.mssql.id }} /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P TestPassword123! -C -d calorie_tracker -i /tmp/01_CreateTables.sql
+        docker exec ${{ job.services.mssql.id }} /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P TestPassword123! -C -d calorie_tracker -i /tmp/02_SeedData.sql
     
     - name: Create Test Configuration
       run: |
@@ -78,7 +82,7 @@ jobs:
       run: |
         cd backend
         echo "Starting API server..."
-        dotnet run --environment Testing > api.log 2>&1 &
+        dotnet run --urls "http://localhost:5000" --environment Testing > api.log 2>&1 &
         echo $! > api_pid.txt
         sleep 20
         echo "API server started, checking logs..."
