@@ -1,0 +1,168 @@
+name: API Tests
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  api-tests:
+    runs-on: ubuntu-latest
+    
+    services:
+      mssql:
+        image: mcr.microsoft.com/mssql/server:2022-latest
+        env:
+          SA_PASSWORD: TestPassword123!
+          ACCEPT_EULA: Y
+        ports:
+          - 1433:1433
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+    
+    - name: Install Newman
+      run: npm install -g newman
+    
+    - name: Restore dependencies
+      run: dotnet restore
+      working-directory: ./backend
+    
+    - name: Build
+      run: dotnet build --no-restore
+      working-directory: ./backend
+    
+    - name: Wait for SQL Server
+      run: |
+        sleep 30
+        timeout 60 bash -c 'until docker exec ${{ job.services.mssql.id }} /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P TestPassword123! -C -Q "SELECT 1"; do sleep 5; done'
+    
+    - name: Create Database
+      run: |
+        docker exec ${{ job.services.mssql.id }} /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P TestPassword123! -C -Q "CREATE DATABASE calorie_tracker"
+    
+    - name: Setup Test Database
+      run: |
+        docker cp database/Scripts/01_CreateTables.sql ${{ job.services.mssql.id }}:/tmp/
+        docker cp database/Scripts/02_SeedData.sql ${{ job.services.mssql.id }}:/tmp/
+        docker exec ${{ job.services.mssql.id }} /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P TestPassword123! -C -d calorie_tracker -i /tmp/01_CreateTables.sql
+        docker exec ${{ job.services.mssql.id }} /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P TestPassword123! -C -d calorie_tracker -i /tmp/02_SeedData.sql
+    
+    - name: Create Test Configuration
+      run: |
+        echo '{
+          "ConnectionStrings": {
+            "DefaultConnection": "Server=localhost,1433;Database=calorie_tracker;User Id=sa;Password=TestPassword123!;TrustServerCertificate=true;"
+          },
+          "JwtSettings": {
+            "SecretKey": "test-secret-key-for-ci-testing-only",
+            "ExpiryMinutes": 30
+          },
+          "Logging": {
+            "LogLevel": {
+              "Default": "Information",
+              "Microsoft.AspNetCore": "Information",
+              "Microsoft.Hosting.Lifetime": "Information",
+              "GraphQL": "Debug",
+              "backend.GraphQL": "Debug"
+            }
+          },
+          "AllowedHosts": "*"
+        }' > backend/appsettings.Testing.json
+    
+    - name: Start API Server
+      run: |
+        cd backend
+        echo "Starting API server..."
+        export ASPNETCORE_ENVIRONMENT=Testing
+        export ASPNETCORE_URLS=http://localhost:5000
+        dotnet bin/Debug/net8.0/backend.dll > api.log 2>&1 &
+        echo $! > api_pid.txt
+        sleep 20
+        echo "API server started, checking logs..."
+        cat api.log || echo "No log file found"
+    
+    - name: Check API Process
+      run: |
+        echo "Checking if API process is running..."
+        ps aux | grep dotnet || echo "No dotnet process found"
+        if [ -f backend/api_pid.txt ]; then
+          echo "API PID: $(cat backend/api_pid.txt)"
+          ps -p $(cat backend/api_pid.txt) || echo "API process not found"
+        fi
+    
+    - name: Test API endpoint
+      run: |
+        echo "Testing GraphQL endpoint with simple query..."
+        curl -v http://localhost:5000/graphql -X POST -H "Content-Type: application/json" -d '{"query":"query { getGlobalFoods { id name } }"}' || true
+    
+    - name: Wait for API to be ready
+      continue-on-error: true
+      run: |
+        echo "Waiting for API to be ready..."
+        timeout 30 bash -c 'until curl -s http://localhost:5000/graphql -X POST -H "Content-Type: application/json" -d "{\"query\":\"query { getGlobalFoods { id name } }\"}" | grep -q "data"; do sleep 2; done' || echo "API might not be fully ready, continuing anyway..."
+    
+    - name: Verify API is responding
+      run: |
+        echo "Testing if API responds to GraphQL queries..."
+        RESPONSE=$(curl -s -w "\n%{http_code}" http://localhost:5000/graphql -X POST -H "Content-Type: application/json" -d '{"query":"query { getGlobalFoods { id name } }"}')
+        echo "Full Response:"
+        echo "$RESPONSE"
+        HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
+        BODY=$(echo "$RESPONSE" | head -n-1)
+        echo "HTTP Code: $HTTP_CODE"
+        echo "Body: $BODY"
+        if [ "$HTTP_CODE" != "200" ]; then
+          echo "ERROR: API returned HTTP $HTTP_CODE instead of 200"
+          cat backend/api.log || echo "No API log"
+          exit 1
+        fi
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+
+    - name: Install Newman
+      run: npm install -g newman
+    
+    - name: Run API Tests
+      run: |
+        newman run tests/calorie-tracker-api.json \
+          --environment tests/local-environment.json \
+          --reporters cli,junit \
+          --reporter-junit-export test-results.xml \
+          --delay-request 1000
+    
+    - name: Show API logs on failure
+      if: failure()
+      run: |
+        echo "=== API Logs ==="
+        cat backend/api.log || echo "No API log file found"
+        echo "=== API Process Status ==="
+        ps aux | grep dotnet || echo "No dotnet process"
+    
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: api-test-results
+        path: test-results.xml
+    
+    - name: Stop API Server
+      if: always()
+      run: |
+        if [ -f backend/api_pid.txt ]; then
+          kill $(cat backend/api_pid.txt) || true
+        fi

@@ -1,0 +1,373 @@
+{
+  "info": {
+    "name": "Calorie Tracker GraphQL API",
+    "description": "GraphQL API tests for calorie tracker project",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "User Operations",
+      "item": [
+        {
+          "name": "Create User",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const timestamp = Date.now();",
+                  "const uniqueEmail = `test${timestamp}@example.com`;",
+                  "pm.environment.set(\"testEmail\", uniqueEmail);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"User created successfully\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.data.createUser.token).to.exist;",
+                  "    ",
+                  "    const expectedEmail = pm.environment.get(\"testEmail\");",
+                  "    pm.expect(responseJson.data.createUser.user.email).to.eql(expectedEmail);",
+                  "    ",
+                  "    // Save token for subsequent requests",
+                  "    pm.environment.set(\"authToken\", responseJson.data.createUser.token);",
+                  "    pm.environment.set(\"userId\", responseJson.data.createUser.user.id);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"mutation CreateUser($email: String!, $password: String!, $name: String) {\\n    createUser(email: $email, password: $password, name: $name) {\\n      user {\\n        id\\n        email\\n        name\\n      }\\n      token\\n    }\\n  }\",\n  \"variables\": {\n    \"email\": \"{{testEmail}}\",\n    \"password\": \"password123\",\n    \"name\": \"Test User\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{graphqlEndpoint}}",
+              "host": ["{{graphqlEndpoint}}"]
+            }
+          }
+        },
+        {
+          "name": "Authenticate User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"User authenticated successfully\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.data.authenticateUser.token).to.exist;",
+                  "    ",
+                  "    const expectedEmail = pm.environment.get(\"testEmail\");",
+                  "    pm.expect(responseJson.data.authenticateUser.user.email).to.eql(expectedEmail);",
+                  "    ",
+                  "    // Save token",
+                  "    pm.environment.set(\"authToken\", responseJson.data.authenticateUser.token);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"query AuthenticateUser($email: String!, $password: String!) {\\n    authenticateUser(email: $email, password: $password) {\\n      user {\\n        id\\n        email\\n        name\\n      }\\n      token\\n    }\\n  }\",\n  \"variables\": {\n    \"email\": \"{{testEmail}}\",\n    \"password\": \"password123\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{graphqlEndpoint}}",
+              "host": ["{{graphqlEndpoint}}"]
+            }
+          }
+        },
+        {
+          "name": "Get User By ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Get user by ID\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.data.getUserById).to.exist;",
+                  "    ",
+                  "    const expectedEmail = pm.environment.get(\"testEmail\");",
+                  "    pm.expect(responseJson.data.getUserById.email).to.eql(expectedEmail);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"query GetUserById($userId: Int!) {\\n    getUserById(userId: $userId) {\\n      id\\n      email\\n      name\\n    }\\n  }\",\n  \"variables\": {\n    \"userId\": {{userId}}\n  }\n}"
+            },
+            "url": {
+              "raw": "{{graphqlEndpoint}}",
+              "host": ["{{graphqlEndpoint}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Food Operations",
+      "item": [
+        {
+          "name": "Get Global Foods",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Get global foods\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.data.getGlobalFoods).to.be.an('array');",
+                  "    pm.expect(responseJson.data.getGlobalFoods.length).to.be.at.least(0);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"query GetGlobalFoods {\\n    getGlobalFoods {\\n      id\\n      name\\n    }\\n  }\",\n  \"variables\": {}\n}"
+            },
+            "url": {
+              "raw": "{{graphqlEndpoint}}",
+              "host": ["{{graphqlEndpoint}}"]
+            }
+          }
+        },
+        {
+          "name": "Get Foods By User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Get foods by user\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.data.getFoodsByUser).to.be.an('array');",
+                  "    pm.expect(responseJson.data.getFoodsByUser.length).to.be.at.least(0);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"query GetFoodsByUser($userId: Int!) {\\n    getFoodsByUser(userId: $userId) {\\n      id\\n      name\\n    }\\n  }\",\n  \"variables\": {\n    \"userId\": {{userId}}\n  }\n}"
+            },
+            "url": {
+              "raw": "{{graphqlEndpoint}}",
+              "host": ["{{graphqlEndpoint}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dish Operations",
+      "item": [
+        {
+          "name": "Get Global Dishes",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Get global dishes\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.data.getGlobalDishes).to.be.an('array');",
+                  "    pm.expect(responseJson.data.getGlobalDishes.length).to.be.at.least(0);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"query GetGlobalDishes {\\n    getGlobalDishes {\\n      id\\n      name\\n      weight\\n    }\\n  }\",\n  \"variables\": {}\n}"
+            },
+            "url": {
+              "raw": "{{graphqlEndpoint}}",
+              "host": ["{{graphqlEndpoint}}"]
+            }
+          }
+        },
+        {
+          "name": "Get Dishes By User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Get dishes by user\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.data.getDishesByUser).to.be.an('array');",
+                  "    pm.expect(responseJson.data.getDishesByUser.length).to.be.at.least(0);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"query GetDishesByUser($userId: Int!) {\\n    getDishesByUser(userId: $userId) {\\n      id\\n      name\\n      weight\\n    }\\n  }\",\n  \"variables\": {\n    \"userId\": {{userId}}\n  }\n}"
+            },
+            "url": {
+              "raw": "{{graphqlEndpoint}}",
+              "host": ["{{graphqlEndpoint}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Meal Operations",
+      "item": [
+        {
+          "name": "Get Meals By User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Get meals by user\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.data.getMealsByUser).to.be.an('array');",
+                  "    pm.expect(responseJson.data.getMealsByUser.length).to.be.at.least(0);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"query GetMealsByUser($userId: Int!) {\\n    getMealsByUser(userId: $userId) {\\n      id\\n      name\\n      createdAt\\n    }\\n  }\",\n  \"variables\": {\n    \"userId\": {{userId}}\n  }\n}"
+            },
+            "url": {
+              "raw": "{{graphqlEndpoint}}",
+              "host": ["{{graphqlEndpoint}}"]
+            }
+          }
+        },
+        {
+          "name": "Get Daily Calories",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Get daily calories\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.data.getDailyCalories).to.be.a('number');",
+                  "    pm.expect(responseJson.data.getDailyCalories).to.be.at.least(0);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"query GetDailyCalories($userId: Int!, $date: Date!) {\\n    getDailyCalories(userId: $userId, date: $date)\\n  }\",\n  \"variables\": {\n    \"userId\": {{userId}},\n    \"date\": \"2024-01-01\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{graphqlEndpoint}}",
+              "host": ["{{graphqlEndpoint}}"]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "graphqlEndpoint",
+      "value": "http://localhost:5000/graphql"
+    }
+  ]
+}

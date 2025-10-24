@@ -1,0 +1,26 @@
+{
+  "id": "local-environment",
+  "name": "Local Development",
+  "values": [
+    {
+      "key": "graphqlEndpoint",
+      "value": "http://localhost:5000/graphql",
+      "type": "default"
+    },
+    {
+      "key": "authToken",
+      "value": "",
+      "type": "default"
+    },
+    {
+      "key": "userId",
+      "value": "1",
+      "type": "default"
+    },
+    {
+      "key": "testEmail",
+      "value": "",
+      "type": "default"
+    }
+  ]
+}

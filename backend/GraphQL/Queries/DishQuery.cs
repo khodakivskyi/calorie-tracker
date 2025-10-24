@@ -48,14 +48,14 @@ namespace backend.GraphQL.Queries
                     return await dishService.GetDishByExternalIdAsync(externalId);
                 });
 
-            Field<ListGraphType<ObjectGraphType>>("getFoodsByDish")
+            Field<ListGraphType<DishFoodType>>("getFoodsByDish")
                 .Argument<NonNullGraphType<IntGraphType>>("dishId")
                 .ResolveAsync(async context =>
                 {
                     var dishId = context.GetArgument<int>("dishId");
                     var userId = 0; //we will get userId from jwt soon
                     var foods = await dishService.GetAllFoodsByDishAsync(userId, dishId);
-                    return foods.Select(f => new { f.food.Id, f.food.Name, f.quantity });
+                    return foods.Select(f => new { id = f.food.Id, name = f.food.Name, quantity = f.quantity });
                 });
         }
     }
