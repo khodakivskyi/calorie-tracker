@@ -96,19 +96,5 @@ namespace backend.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
-
-        [HttpGet("user/{userId}")]
-        public async Task<IActionResult> GetUserImages(int userId)
-        {
-            try
-            {
-                var images = await _imageService.GetImagesByOwnerAsync(userId);
-                return Ok(images);
-            }
-            catch
-            {
-                return StatusCode(500, "Internal server error");
-            }
-        }
     }
 }
