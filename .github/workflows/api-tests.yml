@@ -83,7 +83,9 @@ jobs:
       run: |
         cd backend
         echo "Starting API server..."
-        dotnet run --urls "http://localhost:5000" --environment Testing > api.log 2>&1 &
+        export ASPNETCORE_ENVIRONMENT=Testing
+        export ASPNETCORE_URLS=http://localhost:5000
+        dotnet bin/Debug/net8.0/backend.dll > api.log 2>&1 &
         echo $! > api_pid.txt
         sleep 20
         echo "API server started, checking logs..."
