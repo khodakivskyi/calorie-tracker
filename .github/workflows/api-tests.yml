@@ -1,0 +1,113 @@
+name: API Tests
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  api-tests:
+    runs-on: ubuntu-latest
+    
+    services:
+      mssql:
+        image: mcr.microsoft.com/mssql/server:2022-latest
+        env:
+          SA_PASSWORD: TestPassword123!
+          ACCEPT_EULA: Y
+        ports:
+          - 1433:1433
+        options: >-
+          --health-cmd "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P TestPassword123! -Q 'SELECT 1'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+    
+    - name: Install Newman
+      run: npm install -g newman
+    
+    - name: Restore dependencies
+      run: dotnet restore
+      working-directory: ./backend
+    
+    - name: Build
+      run: dotnet build --no-restore
+      working-directory: ./backend
+    
+    - name: Wait for SQL Server
+      run: |
+        timeout 60 bash -c 'until docker exec ${{ job.services.mssql.id }} /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P TestPassword123! -Q "SELECT 1"; do sleep 2; done'
+    
+    - name: Setup Test Database
+      run: |
+        # Copy database scripts to container and execute them
+        docker cp database/Scripts/01_CreateTables.sql ${{ job.services.mssql.id }}:/tmp/
+        docker cp database/Scripts/02_SeedData.sql ${{ job.services.mssql.id }}:/tmp/
+        docker exec ${{ job.services.mssql.id }} /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P TestPassword123! -i /tmp/01_CreateTables.sql
+        docker exec ${{ job.services.mssql.id }} /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P TestPassword123! -i /tmp/02_SeedData.sql
+    
+    - name: Create Test Configuration
+      run: |
+        echo '{
+          "ConnectionStrings": {
+            "DefaultConnection": "Server=localhost,1433;Database=calorie_tracker;User Id=sa;Password=TestPassword123!;TrustServerCertificate=true;"
+          },
+          "JwtSettings": {
+            "SecretKey": "test-secret-key-for-ci-testing-only",
+            "ExpiryMinutes": 30
+          },
+          "Logging": {
+            "LogLevel": {
+              "Default": "Warning",
+              "Microsoft.AspNetCore": "Warning"
+            }
+          },
+          "AllowedHosts": "*"
+        }' > backend/appsettings.Testing.json
+    
+    - name: Start API Server
+      run: |
+        cd backend
+        dotnet run --environment Testing &
+        echo $! > api_pid.txt
+        sleep 15
+    
+    - name: Wait for API to be ready
+      run: |
+        timeout 60 bash -c 'until curl -f http://localhost:5000/graphql -X POST -H "Content-Type: application/json" -d "{\"query\":\"{ __schema { queryType { name } } }\"}"; do sleep 2; done'
+    
+    - name: Run API Tests
+      run: |
+        newman run tests/calorie-tracker-api.json \
+          --environment tests/local-environment.json \
+          --reporters cli,junit \
+          --reporter-junit-export test-results.xml \
+          --delay-request 1000
+    
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: api-test-results
+        path: test-results.xml
+    
+    - name: Stop API Server
+      if: always()
+      run: |
+        if [ -f backend/api_pid.txt ]; then
+          kill $(cat backend/api_pid.txt) || true
+        fi
