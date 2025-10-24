@@ -16,6 +16,11 @@
       "key": "userId",
       "value": "1",
       "type": "default"
+    },
+    {
+      "key": "testEmail",
+      "value": "",
+      "type": "default"
     }
   ]
 }

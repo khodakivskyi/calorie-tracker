@@ -115,14 +115,12 @@ jobs:
         timeout 30 bash -c 'until curl -s http://localhost:5000/graphql -X POST -H "Content-Type: application/json" -d "{\"query\":\"{ getGlobalFoods { id name } }\"}" | grep -q "getGlobalFoods"; do sleep 2; done' || echo "API might not be fully ready, continuing anyway..."
     
     - name: Run API Tests
-      continue-on-error: true
       run: |
         newman run tests/calorie-tracker-api.json \
           --environment tests/local-environment.json \
           --reporters cli,junit \
           --reporter-junit-export test-results.xml \
-          --delay-request 1000 \
-          --bail || echo "Some tests failed, but continuing..."
+          --delay-request 1000
     
     - name: Upload test results
       uses: actions/upload-artifact@v4

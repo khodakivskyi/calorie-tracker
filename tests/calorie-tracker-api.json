@@ -12,6 +12,16 @@
           "name": "Create User",
           "event": [
             {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const timestamp = Date.now();",
+                  "const uniqueEmail = `test${timestamp}@example.com`;",
+                  "pm.environment.set(\"testEmail\", uniqueEmail);"
+                ]
+              }
+            },
+            {
               "listen": "test",
               "script": {
                 "exec": [
@@ -19,7 +29,9 @@
                   "    pm.response.to.have.status(200);",
                   "    const responseJson = pm.response.json();",
                   "    pm.expect(responseJson.data.createUser.token).to.exist;",
-                  "    pm.expect(responseJson.data.createUser.user.email).to.eql(\"test@example.com\");",
+                  "    ",
+                  "    const expectedEmail = pm.environment.get(\"testEmail\");",
+                  "    pm.expect(responseJson.data.createUser.user.email).to.eql(expectedEmail);",
                   "    ",
                   "    // Save token for subsequent requests",
                   "    pm.environment.set(\"authToken\", responseJson.data.createUser.token);",
@@ -39,7 +51,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"query\": \"mutation CreateUser($email: String!, $password: String!, $name: String) {\\n    createUser(email: $email, password: $password, name: $name) {\\n      user {\\n        id\\n        email\\n        name\\n      }\\n      token\\n    }\\n  }\",\n  \"variables\": {\n    \"email\": \"test@example.com\",\n    \"password\": \"password123\",\n    \"name\": \"Test User\"\n  }\n}"
+              "raw": "{\n  \"query\": \"mutation CreateUser($email: String!, $password: String!, $name: String) {\\n    createUser(email: $email, password: $password, name: $name) {\\n      user {\\n        id\\n        email\\n        name\\n      }\\n      token\\n    }\\n  }\",\n  \"variables\": {\n    \"email\": \"{{testEmail}}\",\n    \"password\": \"password123\",\n    \"name\": \"Test User\"\n  }\n}"
             },
             "url": {
               "raw": "{{graphqlEndpoint}}",
