@@ -28,9 +28,9 @@ namespace backend.Services
             return image;
         }
 
-        public async Task<IEnumerable<Image>> GetImagesByOwnerAsync(int userId)
+        public async Task<IEnumerable<Image>> GetImagesByUserAsync(int userId)
         {
-            return await _imageRepository.GetImagesByOwnerAsync(userId);
+            return await _imageRepository.GetImagesByUserAsync(userId);
         }
 
         public async Task<Image> SaveImageAsync(IFormFile file, int userId)
@@ -41,11 +41,11 @@ namespace backend.Services
 
             var userFolder = CreateUserFolder(userId);
             var filePath = Path.Combine(userFolder, uniqueFileName);
-            
+
             try
             {
                 await SaveFileToDisk(file, filePath);
-                
+
                 var url = $"/images/users/{userId}/{uniqueFileName}";
                 var image = new Image(userId, file.FileName, url);
                 var createdImage = await _imageRepository.CreateImageAsync(image);
@@ -82,11 +82,11 @@ namespace backend.Services
             var userFolder = CreateUserFolder(userId);
             var newFilePath = Path.Combine(userFolder, uniqueFileName);
             var oldFilePath = Path.Combine(_environment.WebRootPath, oldImage.Url.TrimStart('/').Replace('/', Path.DirectorySeparatorChar));
-            
+
             try
             {
                 await SaveFileToDisk(newFile, newFilePath);
-                
+
                 var newUrl = $"/images/users/{userId}/{uniqueFileName}";
                 oldImage.FileName = newFile.FileName;
                 oldImage.Url = newUrl;
@@ -127,7 +127,7 @@ namespace backend.Services
         }
 
 
- 
+
         private void ValidateFile(IFormFile file)
         {
             if (file == null || file.Length == 0)

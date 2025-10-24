@@ -26,17 +26,17 @@ namespace backend.Repositories
             return await connection.QuerySingleOrDefaultAsync<Image>(sql, new { Id = imageId });
         }
 
-        public async Task<IEnumerable<Image>> GetImagesByOwnerAsync(int ownerId)
+        public async Task<IEnumerable<Image>> GetImagesByUserAsync(int userId)
         {
             using var connection = new SqlConnection(_connectionString);
             const string sql = @"
                 SELECT id, owner_id AS OwnerId, file_name AS FileName, 
                        url, created_at AS CreatedAt
                 FROM images 
-                WHERE owner_id = @OwnerId
+                WHERE owner_id = @UserId
                 ORDER BY created_at DESC";
 
-            return await connection.QueryAsync<Image>(sql, new { OwnerId = ownerId });
+            return await connection.QueryAsync<Image>(sql, new { UserId = userId });
         }
 
         public async Task<Image?> CreateImageAsync(Image image)
@@ -74,11 +74,11 @@ namespace backend.Repositories
             return affectedRows > 0;
         }
 
-        public async Task<bool> DeleteAllImagesByOwnerAsync(int ownerId)
+        public async Task<bool> DeleteAllImagesByUserAsync(int userId)
         {
             using var connection = new SqlConnection(_connectionString);
-            const string sql = "DELETE FROM images WHERE owner_id = @OwnerId";
-            var affectedRows = await connection.ExecuteAsync(sql, new { OwnerId = ownerId });
+            const string sql = "DELETE FROM images WHERE owner_id = @UserId";
+            var affectedRows = await connection.ExecuteAsync(sql, new { UserId = userId });
             return affectedRows > 0;
         }
     }
