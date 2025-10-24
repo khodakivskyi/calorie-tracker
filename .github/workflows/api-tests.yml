@@ -71,8 +71,9 @@ jobs:
           },
           "Logging": {
             "LogLevel": {
-              "Default": "Warning",
-              "Microsoft.AspNetCore": "Warning"
+              "Default": "Information",
+              "Microsoft.AspNetCore": "Information",
+              "Microsoft.Hosting.Lifetime": "Information"
             }
           },
           "AllowedHosts": "*"
@@ -114,6 +115,30 @@ jobs:
         echo "Waiting for API to be ready..."
         timeout 30 bash -c 'until curl -s http://localhost:5000/graphql -X POST -H "Content-Type: application/json" -d "{\"query\":\"{ getGlobalFoods { id name } }\"}" | grep -q "getGlobalFoods"; do sleep 2; done' || echo "API might not be fully ready, continuing anyway..."
     
+    - name: Verify API is responding
+      run: |
+        echo "Testing if API responds to GraphQL queries..."
+        RESPONSE=$(curl -s -w "\n%{http_code}" http://localhost:5000/graphql -X POST -H "Content-Type: application/json" -d '{"query":"{ getGlobalFoods { id name } }"}')
+        echo "Full Response:"
+        echo "$RESPONSE"
+        HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
+        BODY=$(echo "$RESPONSE" | head -n-1)
+        echo "HTTP Code: $HTTP_CODE"
+        echo "Body: $BODY"
+        if [ "$HTTP_CODE" != "200" ]; then
+          echo "ERROR: API returned HTTP $HTTP_CODE instead of 200"
+          cat backend/api.log || echo "No API log"
+          exit 1
+        fi
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+
+    - name: Install Newman
+      run: npm install -g newman
+    
     - name: Run API Tests
       run: |
         newman run tests/calorie-tracker-api.json \
@@ -121,6 +146,14 @@ jobs:
           --reporters cli,junit \
           --reporter-junit-export test-results.xml \
           --delay-request 1000
+    
+    - name: Show API logs on failure
+      if: failure()
+      run: |
+        echo "=== API Logs ==="
+        cat backend/api.log || echo "No API log file found"
+        echo "=== API Process Status ==="
+        ps aux | grep dotnet || echo "No dotnet process"
     
     - name: Upload test results
       uses: actions/upload-artifact@v4
