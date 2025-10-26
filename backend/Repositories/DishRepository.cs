@@ -92,11 +92,11 @@ namespace backend.Repositories
                                 WHERE id = @Id AND owner_id = @OwnerId;";
             return await connection.QueryFirstOrDefaultAsync<Dish>(sql, dish);
         }
-        public async Task<bool> DeleteDishAsync(int id)
+        public async Task<bool> DeleteDishAsync(int dishId)
         {
             using var connection = new SqlConnection(_connectionString);
-            const string sql = "DELETE FROM dishes WHERE id = @Id";
-            var affectedRows = await connection.ExecuteAsync(sql, new { Id = id });
+            const string sql = "DELETE FROM dishes WHERE id = @Id AND owner_id = @OwnerId";
+            var affectedRows = await connection.ExecuteAsync(sql, new { Id = dishId });
             return affectedRows > 0;
         }
         public async Task<bool> DeleteAllDishesByUserAsync(int userId)
