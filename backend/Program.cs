@@ -66,6 +66,7 @@ namespace backend
             builder.Services.AddScoped<MealDishType>();
             builder.Services.AddScoped<CaloriesDataType>();
             builder.Services.AddScoped<AuthPayloadType>();
+            builder.Services.AddScoped<ImageType>();
 
             builder.Services.AddScoped<RootQuery>();
             builder.Services.AddScoped<RootMutation>();

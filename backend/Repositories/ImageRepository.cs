@@ -26,7 +26,7 @@ namespace backend.Repositories
             return await connection.QuerySingleOrDefaultAsync<Image>(sql, new { Id = imageId });
         }
 
-        public async Task<IEnumerable<Image>> GetImagesByOwnerAsync(int ownerId)
+        public async Task<IEnumerable<Image>> GetImagesByUserAsync(int ownerId)
         {
             using var connection = new SqlConnection(_connectionString);
             const string sql = @"
