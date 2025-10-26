@@ -28,9 +28,9 @@ namespace backend.Services
             return image;
         }
 
-        public async Task<IEnumerable<Image>> GetImagesByOwnerAsync(int userId)
+        public async Task<IEnumerable<Image>> GetImagesByUserAsync(int userId)
         {
-            return await _imageRepository.GetImagesByOwnerAsync(userId);
+            return await _imageRepository.GetImagesByUserAsync(userId);
         }
 
         public async Task<Image> SaveImageAsync(IFormFile file, int userId)

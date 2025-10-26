@@ -10,11 +10,11 @@ namespace backend.GraphQL.Queries
         public MealQuery(MealService mealService)
         {
             Field<MealType>("getMealById")
-                .Argument<NonNullGraphType<IntGraphType>>("id")
+                .Argument<NonNullGraphType<IntGraphType>>("mealId")
                 .ResolveAsync(async context =>
                 {
-                    var id = context.GetArgument<int>("id");
-                    return await mealService.GetMealByIdAsync(id);
+                    var mealId = context.GetArgument<int>("mealId");
+                    return await mealService.GetMealByIdAsync(mealId);
                 });
 
             Field<ListGraphType<MealType>>("getMealsByUser")
