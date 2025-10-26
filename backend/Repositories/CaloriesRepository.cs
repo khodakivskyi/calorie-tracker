@@ -27,7 +27,7 @@ namespace backend.Repositories
             using var connection = new SqlConnection(_connectionString);
             const string sql = @"UPDATE calories
                         SET calories = @Calories
-                        OUTPUT INSERTED.food_id AS FoodId, INSERTED.calories
+                        OUTPUT food_id AS FoodId, calories
                         WHERE food_id = @FoodId;";
             return await connection.QuerySingleOrDefaultAsync<CaloriesModel>(sql, new { FoodId = foodId, Calories = calories });
         }
@@ -59,7 +59,7 @@ namespace backend.Repositories
                                 WHERE df.dish_id = @DishId";
             
             var result = await connection.QueryFirstOrDefaultAsync<decimal>(sql, new { DishId = dishId });
-            return new CaloriesModel(dishId, result);
+            return CaloriesModel.ForDish(dishId, result);
         }
 
         public async Task<CaloriesModel?> GetCaloriesByMealAsync(int mealId)
@@ -83,7 +83,7 @@ namespace backend.Repositories
             ";
 
             var result = await connection.QueryFirstOrDefaultAsync<decimal>(sql, new { MealId = mealId });
-            return new CaloriesModel(mealId, result);
+            return CaloriesModel.ForMeal(mealId, result);
         }
     }
 }

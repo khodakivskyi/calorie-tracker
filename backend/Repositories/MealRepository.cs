@@ -48,8 +48,8 @@ namespace backend.Repositories
             using var connection = new SqlConnection(_connectionString);
             const string sql = @"UPDATE meals
                                  SET name = @Name, updated_at = GETDATE()
-                                 OUTPUT INSERTED.id, INSERTED.owner_id AS OwnerId, INSERTED.name, 
-                                        INSERTED.created_at AS CreatedAt, INSERTED.updated_at AS UpdatedAt
+                                 OUTPUT id, owner_id AS OwnerId, name, 
+                                        created_at AS CreatedAt, updated_at AS UpdatedAt
                                  WHERE id = @Id;";
             return await connection.QueryFirstOrDefaultAsync<Meal>(sql, meal);
         }

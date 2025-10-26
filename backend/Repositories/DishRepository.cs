@@ -86,9 +86,9 @@ namespace backend.Repositories
             const string sql = @"UPDATE dishes 
                                 SET name = @Name, weight = @Weight, image_id = @ImageId, 
                                     external_id = @ExternalId, updated_at = GETDATE()
-                                OUTPUT INSERTED.id, INSERTED.owner_id AS OwnerId, INSERTED.name, INSERTED.weight, 
-                                       INSERTED.image_id AS ImageId, INSERTED.created_at AS CreatedAt, 
-                                       INSERTED.updated_at AS UpdatedAt, INSERTED.external_id AS ExternalId
+                                OUTPUT id, owner_id AS OwnerId, name, weight, 
+                                       image_id AS ImageId, created_at AS CreatedAt, 
+                                       updated_at AS UpdatedAt, external_id AS ExternalId
                                 WHERE id = @Id AND owner_id = @OwnerId;";
             return await connection.QueryFirstOrDefaultAsync<Dish>(sql, dish);
         }
