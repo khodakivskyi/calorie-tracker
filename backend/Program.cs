@@ -71,7 +71,7 @@ namespace backend
                 options.AddSystemTextJson();
                 options.AddErrorInfoProvider(opt =>
                 {
-                    opt.ExposeExceptionDetails = false;
+                    opt.ExposeExceptionDetails = true;
                 });
                 options.AddGraphTypes(typeof(RootQuery).Assembly);
             });

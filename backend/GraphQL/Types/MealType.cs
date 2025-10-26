@@ -15,14 +15,14 @@ public class MealType : ObjectGraphType<Meal>
         Field(x => x.CreatedAt);
         Field(x => x.UpdatedAt);
 
-        Field<CaloriesType>("calories")
+        Field<DecimalGraphType, decimal>("calories")
             .ResolveAsync(async context =>
             {
                 var meal = context.Source;
                 return await caloriesService.GetOrCalculateCaloriesForMealAsync(meal.Id);
             });
 
-        Field<NutrientsType>("nutrients")
+        Field<NutrientsType, Nutrients?>("nutrients")
             .ResolveAsync(async context =>
             {
                 var meal = context.Source;

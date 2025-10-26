@@ -17,14 +17,14 @@ namespace backend.GraphQL.Types
             Field(x => x.UpdatedAt);
             Field(x => x.ExternalId, nullable: true);
 
-            Field<CaloriesType>("calories")
+            Field<DecimalGraphType, decimal>("calories")
                 .ResolveAsync(async context =>
                 {
                     var dish = context.Source;
                     return await caloriesService.GetOrCalculateCaloriesForDishAsync(dish.Id);
                 });
 
-            Field<NutrientsType>("nutrients")
+            Field<NutrientsType, Nutrients?>("nutrients")
                 .ResolveAsync(async context =>
                 {
                     var dish = context.Source;

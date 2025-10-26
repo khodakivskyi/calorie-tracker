@@ -4,6 +4,7 @@ namespace backend.Models
     {
         public int FoodId { get; set; }
         public decimal Calories { get; set; }
+        public decimal Value { get; internal set; }
 
         public CaloriesModel() { }
         public CaloriesModel(int foodId, decimal calories)
