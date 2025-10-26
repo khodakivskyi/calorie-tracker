@@ -40,7 +40,7 @@ namespace backend.Repositories
             return affectedRows > 0;
         }
 
-        public async Task<CaloriesModel?> GetCaloriesByFoodIdAsync(int foodId)
+        public async Task<CaloriesModel?> GetCaloriesByFoodAsync(int foodId)
         {
             using var connection = new SqlConnection(_connectionString);
             const string sql = @"SELECT food_id AS FoodId, calories
@@ -49,7 +49,7 @@ namespace backend.Repositories
             return await connection.QuerySingleOrDefaultAsync<CaloriesModel>(sql, new { FoodId = foodId });
         }
 
-        public async Task<CaloriesModel?> GetCaloriesByDishIdAsync(int dishId)
+        public async Task<CaloriesModel?> GetCaloriesByDishAsync(int dishId)
         {
             using var connection = new SqlConnection(_connectionString);
             const string sql = @"SELECT ISNULL(SUM(c.calories * df.quantity / 100.0), 0) as Calories
@@ -62,7 +62,7 @@ namespace backend.Repositories
             return new CaloriesModel(dishId, result);
         }
 
-        public async Task<CaloriesModel?> GetCaloriesByMealIdAsync(int mealId)
+        public async Task<CaloriesModel?> GetCaloriesByMealAsync(int mealId)
         {
             using var connection = new SqlConnection(_connectionString);
             const string sql = @"

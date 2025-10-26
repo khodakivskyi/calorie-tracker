@@ -43,7 +43,7 @@ namespace backend.Repositories
             return affectedRows > 0;
         }
 
-        public async Task<Nutrients?> GetNutrientsByFoodIdAsync(int foodId)
+        public async Task<Nutrients?> GetNutrientsByFoodAsync(int foodId)
         {
             using var connection = new SqlConnection(_connectionString);
             const string sql = @"SELECT food_id AS FoodId, protein, fat, carbohydrates
@@ -52,7 +52,7 @@ namespace backend.Repositories
             return await connection.QuerySingleOrDefaultAsync<Nutrients>(sql, new { FoodId = foodId });
         }
 
-        public async Task<Nutrients?> GetNutrientsByDishIdAsync(int dishId)
+        public async Task<Nutrients?> GetNutrientsByDishAsync(int dishId)
         {
             using var connection = new SqlConnection(_connectionString);
             const string sql = @"
@@ -74,7 +74,7 @@ namespace backend.Repositories
             return new Nutrients(dishId, result.Protein, result.Fat, result.Carbohydrates);
         }
 
-        public async Task<Nutrients?> GetNutrientsByMealIdAsync(int mealId)
+        public async Task<Nutrients?> GetNutrientsByMealAsync(int mealId)
         {
             using var connection = new SqlConnection(_connectionString);
             const string sql = @"

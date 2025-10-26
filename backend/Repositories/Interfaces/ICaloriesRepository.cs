@@ -9,8 +9,8 @@ namespace backend.Repositories.Interfaces
         Task<CaloriesModel?> UpdateCaloriesAsync(int foodId, decimal calories);
         Task<bool> DeleteCaloriesAsync(int foodId);
 
-        Task<CaloriesModel?> GetCaloriesByFoodIdAsync(int foodId);
-        Task<CaloriesModel?> GetCaloriesByDishIdAsync(int dishId);
-        Task<CaloriesModel?> GetCaloriesByMealIdAsync(int mealId);
+        Task<CaloriesModel?> GetCaloriesByFoodAsync(int foodId);
+        Task<CaloriesModel?> GetCaloriesByDishAsync(int dishId);
+        Task<CaloriesModel?> GetCaloriesByMealAsync(int mealId);
     }
 }

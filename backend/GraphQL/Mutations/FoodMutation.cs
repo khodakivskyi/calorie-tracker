@@ -17,14 +17,22 @@ namespace backend.GraphQL.Mutations
                 .Argument<NonNullGraphType<StringGraphType>>("name")
                 .Argument<IntGraphType>("imageId")
                 .Argument<StringGraphType>("externalId")
+                .Argument<DecimalGraphType>("calories")
+                .Argument<DecimalGraphType>("protein")
+                .Argument<DecimalGraphType>("fat")
+                .Argument<DecimalGraphType>("carbohydrates")
                 .ResolveAsync(async context =>
                 {
                     var userId = context.GetArgument<int?>("userId");
                     var name = context.GetArgument<string>("name");
                     var imageId = context.GetArgument<int?>("imageId");
                     var externalId = context.GetArgument<string?>("externalId");
+                    var calories = context.GetArgument<decimal?>("calories");
+                    var protein = context.GetArgument<decimal?>("protein");
+                    var fat = context.GetArgument<decimal?>("fat");
+                    var carbohydrates = context.GetArgument<decimal?>("carbohydrates");
 
-                    return await foodService.CreateFoodAsync(userId, name, imageId, externalId);
+                    return await foodService.CreateFoodAsync(userId, name, imageId, externalId, calories, protein, fat, carbohydrates);
                 });
 
             Field<FoodType>("updateFood")
@@ -33,6 +41,10 @@ namespace backend.GraphQL.Mutations
                 .Argument<StringGraphType>("name")
                 .Argument<IntGraphType>("imageId")
                 .Argument<StringGraphType>("externalId")
+                .Argument<DecimalGraphType>("calories")
+                .Argument<DecimalGraphType>("protein")
+                .Argument<DecimalGraphType>("fat")
+                .Argument<DecimalGraphType>("carbohydrates")
                 .ResolveAsync(async context =>
                 {
                     var foodId = context.GetArgument<int>("foodId");
@@ -40,8 +52,12 @@ namespace backend.GraphQL.Mutations
                     var name = context.GetArgument<string?>("name");
                     var imageId = context.GetArgument<int?>("imageId");
                     var externalId = context.GetArgument<string?>("externalId");
+                    var calories = context.GetArgument<decimal?>("calories");
+                    var protein = context.GetArgument<decimal?>("protein");
+                    var fat = context.GetArgument<decimal?>("fat");
+                    var carbohydrates = context.GetArgument<decimal?>("carbohydrates");
 
-                    return await foodService.UpdateFoodAsync(foodId, userId, name, imageId, externalId);
+                    return await foodService.UpdateFoodAsync(foodId, userId, name, imageId, externalId, calories, protein, fat, carbohydrates);
                 });
 
             Field<BooleanGraphType>("deleteFood")
