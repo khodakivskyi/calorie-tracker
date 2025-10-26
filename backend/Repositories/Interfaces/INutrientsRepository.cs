@@ -8,8 +8,8 @@ namespace backend.Repositories.Interfaces
         Task<Nutrients?> UpdateNutrientsAsync(int foodId, decimal protein, decimal fat, decimal carbohydrates);
         Task<bool> DeleteNutrientsAsync(int foodId);
 
-        Task<Nutrients?> GetNutrientsByFoodIdAsync(int foodId);
-        Task<Nutrients?> GetNutrientsByDishIdAsync(int dishId);
-        Task<Nutrients?> GetNutrientsByMealIdAsync(int mealId);
+        Task<Nutrients?> GetNutrientsByFoodAsync(int foodId);
+        Task<Nutrients?> GetNutrientsByDishAsync(int dishId);
+        Task<Nutrients?> GetNutrientsByMealAsync(int mealId);
     }
 }

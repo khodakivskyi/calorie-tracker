@@ -17,7 +17,7 @@ namespace backend.Services
 
         public async Task<CaloriesModel> GetCaloriesByFoodAsync(int foodId)
         {
-            var calories = await _caloriesRepository.GetCaloriesByFoodIdAsync(foodId);
+            var calories = await _caloriesRepository.GetCaloriesByFoodAsync(foodId);
             if (calories == null)
                 throw new NotFoundException($"Calories record for food with id {foodId} not found");
             return calories;
@@ -45,7 +45,7 @@ namespace backend.Services
             if (calories <= 0)
                 throw new ValidationException("Calories must be greater than zero");
 
-            var existing = await _caloriesRepository.GetCaloriesByFoodIdAsync(foodId);
+            var existing = await _caloriesRepository.GetCaloriesByFoodAsync(foodId);
             if (existing == null)
                 throw new NotFoundException($"Calories record for food with id {foodId} not found");
 
@@ -58,29 +58,55 @@ namespace backend.Services
 
         public async Task<bool> DeleteCaloriesAsync(int foodId)
         {
-            var existing = await _caloriesRepository.GetCaloriesByFoodIdAsync(foodId);
+            var existing = await _caloriesRepository.GetCaloriesByFoodAsync(foodId);
             if (existing == null)
                 throw new NotFoundException($"Calories record for food with id {foodId} not found");
 
             return await _caloriesRepository.DeleteCaloriesAsync(foodId);
         }
 
-        public async Task<decimal> GetOrCalculateCaloriesAsync(int foodId)
+        public async Task<decimal> GetOrCalculateCaloriesForFoodAsync(int foodId)
         {
-            var calories = await _caloriesRepository.GetCaloriesByFoodIdAsync(foodId);
+            var calories = await _caloriesRepository.GetCaloriesByFoodAsync(foodId);
             if (calories != null)
                 return calories.Calories;
 
-            var nutrients = await _nutrientsRepository.GetNutrientsByFoodIdAsync(foodId);
+            var nutrients = await _nutrientsRepository.GetNutrientsByFoodAsync(foodId);
             if (nutrients != null)
                 return CalculateCaloriesFromNutrients(nutrients);
 
             throw new NotFoundException($"No calories or nutrients data available for food {foodId}");
         }
 
+        public async Task<decimal> GetOrCalculateCaloriesForDishAsync(int dishId)
+        {
+            var calories = await _caloriesRepository.GetCaloriesByDishAsync(dishId);
+            if (calories != null)
+                return calories.Calories;
+
+            var nutrients = await _nutrientsRepository.GetNutrientsByDishAsync(dishId);
+            if (nutrients != null)
+                return CalculateCaloriesFromNutrients(nutrients);
+
+            throw new NotFoundException($"No calories or nutrients data available for dish {dishId}");
+        }
+
         public decimal CalculateCaloriesFromNutrients(Nutrients nutrients)
         {
             return (nutrients.Protein * 4) + (nutrients.Fat * 9) + (nutrients.Carbohydrates * 4);
+        }
+
+        public async Task<decimal> GetOrCalculateCaloriesForMealAsync(int mealId)
+        {
+            var calories = await _caloriesRepository.GetCaloriesByMealAsync(mealId);
+            if (calories != null)
+                return calories.Calories;
+
+            var nutrients = await _nutrientsRepository.GetNutrientsByMealAsync(mealId);
+            if (nutrients != null)
+                return CalculateCaloriesFromNutrients(nutrients);
+
+            throw new NotFoundException($"No calories or nutrients data available for meal {mealId}");
         }
     }
 }

@@ -7,10 +7,14 @@ namespace backend.Services
     public class FoodService
     {
         private readonly IFoodRepository _foodRepository;
+        private readonly CaloriesService _caloriesService;
+        private readonly NutrientsService _nutrientsService;
 
-        public FoodService(IFoodRepository foodRepository)
+        public FoodService(IFoodRepository foodRepository, CaloriesService caloriesService, NutrientsService nutrientsService)
         {
             _foodRepository = foodRepository;
+            _caloriesService = caloriesService;
+            _nutrientsService = nutrientsService;
         }
 
         public async Task<Food> GetFoodByIdAsync(int foodId, int userId)
@@ -42,7 +46,7 @@ namespace backend.Services
             return await _foodRepository.GetFoodByExternalIdAsync(externalId);
         }
 
-        public async Task<Food> CreateFoodAsync(int? userId, string name, int? imageId, string? externalId = null)
+        public async Task<Food> CreateFoodAsync(int? userId, string name, int? imageId, string? externalId = null, decimal? calories = null, decimal? protein = null, decimal? fat = null, decimal? carbohydrates = null)
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new ValidationException("Food name cannot be empty");
@@ -53,10 +57,38 @@ namespace backend.Services
             if (createdFood == null)
                 throw new InvalidOperationException("Failed to create food");
 
+            if (calories.HasValue && calories.Value > 0)
+            {
+                await _caloriesService.CreateCaloriesAsync(createdFood.Id, calories.Value);
+            }
+
+            if (protein.HasValue && fat.HasValue && carbohydrates.HasValue)
+            {
+                var proteinValue = protein.Value;
+                var fatValue = fat.Value;
+                var carbohydratesValue = carbohydrates.Value;
+
+                await _nutrientsService.CreateNutrientsAsync(
+                    createdFood.Id,
+                    proteinValue,
+                    fatValue,
+                    carbohydratesValue
+                );
+
+                if (!calories.HasValue || calories.Value == 0)
+                {
+                    var calculatedCalories = (proteinValue * 4) + (fatValue * 9) + (carbohydratesValue * 4);
+                    if (calculatedCalories > 0)
+                    {
+                        await _caloriesService.CreateCaloriesAsync(createdFood.Id, calculatedCalories);
+                    }
+                }
+            }
+
             return createdFood;
         }
 
-        public async Task<Food> UpdateFoodAsync(int foodId, int userId, string? name = null, int? imageId = null, string? externalId = null)
+        public async Task<Food> UpdateFoodAsync(int foodId, int userId, string? name = null, int? imageId = null, string? externalId = null, decimal? calories = null, decimal? protein = null, decimal? fat = null, decimal? carbohydrates = null)
         {
             var existingFood = await this.GetFoodByIdAsync(foodId, userId);
 
@@ -78,6 +110,52 @@ namespace backend.Services
             var updatedFood = await _foodRepository.UpdateFoodAsync(existingFood);
             if (updatedFood == null)
                 throw new NotFoundException("Failed to update food");
+
+            if (calories.HasValue)
+            {
+                var existingCalories = await _caloriesService.GetCaloriesByFoodAsync(foodId);
+                if (existingCalories != null)
+                {
+                    await _caloriesService.UpdateCaloriesAsync(foodId, calories.Value);
+                }
+                else
+                {
+                    await _caloriesService.CreateCaloriesAsync(foodId, calories.Value);
+                }
+            }
+
+            if (protein.HasValue && fat.HasValue && carbohydrates.HasValue)
+            {
+                var proteinValue = protein.Value;
+                var fatValue = fat.Value;
+                var carbohydratesValue = carbohydrates.Value;
+
+                try
+                {
+                    var existingNutrients = await _nutrientsService.GetNutrientsByFoodAsync(foodId);
+                    if (existingNutrients != null)
+                    {
+                        await _nutrientsService.UpdateNutrientsAsync(foodId, proteinValue, fatValue, carbohydratesValue);
+                    }
+                }
+                catch (NotFoundException)
+                {
+                    await _nutrientsService.CreateNutrientsAsync(foodId, proteinValue, fatValue, carbohydratesValue);
+                }
+
+                if (!calories.HasValue)
+                {
+                    var calculatedCalories = (proteinValue * 4) + (fatValue * 9) + (carbohydratesValue * 4);
+                    try
+                    {
+                        await _caloriesService.UpdateCaloriesAsync(foodId, calculatedCalories);
+                    }
+                    catch (NotFoundException)
+                    {
+                        await _caloriesService.CreateCaloriesAsync(foodId, calculatedCalories);
+                    }
+                }
+            }
 
             return updatedFood;
         }

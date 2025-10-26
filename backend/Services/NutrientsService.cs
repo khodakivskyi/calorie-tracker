@@ -13,16 +13,19 @@ namespace backend.Services
             _nutrientsRepository = nutrientsRepository;
         }
 
-        public async Task<Nutrients> GetNutrientsByFoodAsync(int foodId)
+        public async Task<Nutrients?> GetNutrientsByFoodAsync(int foodId)
         {
-            if (foodId <= 0)
-                throw new ValidationException("Invalid foodId");
+            return await _nutrientsRepository.GetNutrientsByFoodAsync(foodId);
+        }
 
-            var nutrients = await _nutrientsRepository.GetNutrientsByFoodIdAsync(foodId);
-            if (nutrients == null)
-                throw new NotFoundException($"Nutrients record for food with id {foodId} not found");
+        public async Task<Nutrients?> GetNutrientsByDishAsync(int dishId)
+        {
+            return await _nutrientsRepository.GetNutrientsByDishAsync(dishId);
+        }
 
-            return nutrients;
+        public async Task<Nutrients?> GetNutrientsByMealAsync(int mealId)
+        {
+            return await _nutrientsRepository.GetNutrientsByMealAsync(mealId);
         }
 
         public async Task<Nutrients> CreateNutrientsAsync(int foodId, decimal protein, decimal fat, decimal carbohydrates)
@@ -40,7 +43,7 @@ namespace backend.Services
         {
             ValidateInput(foodId, protein, fat, carbohydrates);
 
-            var existing = await _nutrientsRepository.GetNutrientsByFoodIdAsync(foodId);
+            var existing = await _nutrientsRepository.GetNutrientsByFoodAsync(foodId);
             if (existing == null)
                 throw new NotFoundException($"Nutrients record for food with id {foodId} not found");
 
@@ -56,7 +59,7 @@ namespace backend.Services
             if (foodId <= 0)
                 throw new ValidationException("Invalid foodId");
 
-            var existing = await _nutrientsRepository.GetNutrientsByFoodIdAsync(foodId);
+            var existing = await _nutrientsRepository.GetNutrientsByFoodAsync(foodId);
             if (existing == null)
                 throw new NotFoundException($"Nutrients record for food with id {foodId} not found");
 
