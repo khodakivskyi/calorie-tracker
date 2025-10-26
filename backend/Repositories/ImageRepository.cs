@@ -14,7 +14,7 @@ namespace backend.Repositories
             _connectionString = connectionString;
         }
 
-        public async Task<Image?> GetImageByIdAsync(int id)
+        public async Task<Image?> GetImageByIdAsync(int imageId)
         {
             using var connection = new SqlConnection(_connectionString);
             const string sql = @"
@@ -23,7 +23,7 @@ namespace backend.Repositories
                 FROM images 
                 WHERE id = @Id";
 
-            return await connection.QuerySingleOrDefaultAsync<Image>(sql, new { Id = id });
+            return await connection.QuerySingleOrDefaultAsync<Image>(sql, new { Id = imageId });
         }
 
         public async Task<IEnumerable<Image>> GetImagesByOwnerAsync(int ownerId)
@@ -39,7 +39,7 @@ namespace backend.Repositories
             return await connection.QueryAsync<Image>(sql, new { OwnerId = ownerId });
         }
 
-        public async Task<Image> CreateImageAsync(Image image)
+        public async Task<Image?> CreateImageAsync(Image image)
         {
             using var connection = new SqlConnection(_connectionString);
             const string sql = @"
@@ -49,16 +49,28 @@ namespace backend.Repositories
                        INSERTED.created_at AS CreatedAt
                 VALUES (@OwnerId, @FileName, @Url)";
 
-            return await connection.QuerySingleAsync<Image>(sql, image);
+            return await connection.QuerySingleOrDefaultAsync<Image>(sql, image);
         }
 
-        //апдейт з видаленням старого?
+        public async Task<Image?> UpdateImageAsync(Image image)
+        {
+            using var connection = new SqlConnection(_connectionString);
+            const string sql = @"
+                UPDATE images
+                    SET file_name = @FileName, url = @Url
+                    WHERE id = @Id AND owner_id = @OwnerId";
 
-        public async Task<bool> DeleteImageAsync(int id, int ownerId)
+            var affectedRows = await connection.ExecuteAsync(sql, image);
+
+            if (affectedRows > 0) return await GetImageByIdAsync(image.Id);
+            else return null;
+        }
+
+        public async Task<bool> DeleteImageAsync(int imageId, int ownerId)
         {
             using var connection = new SqlConnection(_connectionString);
             const string sql = "DELETE FROM images WHERE id = @Id AND owner_id = @OwnerId";
-            var affectedRows = await connection.ExecuteAsync(sql, new { Id = id, OwnerId = ownerId });
+            var affectedRows = await connection.ExecuteAsync(sql, new { Id = imageId, OwnerId = ownerId });
             return affectedRows > 0;
         }
 

@@ -11,6 +11,7 @@ using GraphQL.Types;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using backend.Models;
 
 namespace backend
 {
@@ -29,9 +30,10 @@ namespace backend
             builder.Services.AddScoped<IMealRepository, MealRepository>(provider => new MealRepository(connectionString!));
             builder.Services.AddScoped<ICaloriesRepository, CaloriesRepository>(provider => new CaloriesRepository(connectionString!));
             builder.Services.AddScoped<INutrientsRepository, NutrientsRepository>(provider => new NutrientsRepository(connectionString!));
+
+            builder.Services.Configure<ImageSettings>(builder.Configuration.GetSection("ImageSettings"));
             builder.Services.AddScoped<IImageRepository, ImageRepository>(provider => new ImageRepository(connectionString!));
           
-
 
             builder.Services.AddControllers();
 
