@@ -21,6 +21,21 @@
       "key": "testEmail",
       "value": "",
       "type": "default"
+    },
+    {
+      "key": "foodId",
+      "value": "",
+      "type": "default"
+    },
+    {
+      "key": "dishId",
+      "value": "",
+      "type": "default"
+    },
+    {
+      "key": "mealId",
+      "value": "",
+      "type": "default"
     }
   ]
 }

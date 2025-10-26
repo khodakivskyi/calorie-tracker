@@ -203,7 +203,122 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"query\": \"query GetFoodsByUser($userId: Int!) {\\n    getFoodsByUser(userId: $userId) {\\n      id\\n      name\\n    }\\n  }\",\n  \"variables\": {\n    \"userId\": {{userId}}\n  }\n}"
+              "raw": "{\n  \"query\": \"query GetFoodsByUser($userId: Int!) {\\n    getFoodsByUser(userId: $userId) {\\n      id\\n      name\\n      calories\\n      protein\\n      fat\\n      carbohydrates\\n    }\\n  }\",\n  \"variables\": {\n    \"userId\": {{userId}}\n  }\n}"
+            },
+            "url": {
+              "raw": "{{graphqlEndpoint}}",
+              "host": ["{{graphqlEndpoint}}"]
+            }
+          }
+        },
+        {
+          "name": "Create Food",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Food created successfully\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.data.createFood).to.exist;",
+                  "    pm.expect(responseJson.data.createFood.name).to.eql(\"Test Food\");",
+                  "    pm.expect(responseJson.data.createFood.calories).to.eql(100);",
+                  "    pm.expect(responseJson.data.createFood.protein).to.eql(10);",
+                  "    pm.expect(responseJson.data.createFood.fat).to.eql(5);",
+                  "    pm.expect(responseJson.data.createFood.carbohydrates).to.eql(15);",
+                  "    ",
+                  "    // Save food ID for subsequent requests",
+                  "    pm.environment.set(\"foodId\", responseJson.data.createFood.id);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"mutation CreateFood($userId: Int, $name: String!, $calories: Decimal, $protein: Decimal, $fat: Decimal, $carbohydrates: Decimal) {\\n    createFood(userId: $userId, name: $name, calories: $calories, protein: $protein, fat: $fat, carbohydrates: $carbohydrates) {\\n      id\\n      name\\n      calories\\n      protein\\n      fat\\n      carbohydrates\\n    }\\n  }\",\n  \"variables\": {\n    \"userId\": {{userId}},\n    \"name\": \"Test Food\",\n    \"calories\": 100,\n    \"protein\": 10,\n    \"fat\": 5,\n    \"carbohydrates\": 15\n  }\n}"
+            },
+            "url": {
+              "raw": "{{graphqlEndpoint}}",
+              "host": ["{{graphqlEndpoint}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Food",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Food updated successfully\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.data.updateFood).to.exist;",
+                  "    pm.expect(responseJson.data.updateFood.name).to.eql(\"Updated Test Food\");",
+                  "    pm.expect(responseJson.data.updateFood.calories).to.eql(150);",
+                  "    pm.expect(responseJson.data.updateFood.protein).to.eql(15);",
+                  "    pm.expect(responseJson.data.updateFood.fat).to.eql(8);",
+                  "    pm.expect(responseJson.data.updateFood.carbohydrates).to.eql(20);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"mutation UpdateFood($foodId: Int!, $userId: Int!, $name: String, $calories: Decimal, $protein: Decimal, $fat: Decimal, $carbohydrates: Decimal) {\\n    updateFood(foodId: $foodId, userId: $userId, name: $name, calories: $calories, protein: $protein, fat: $fat, carbohydrates: $carbohydrates) {\\n      id\\n      name\\n      calories\\n      protein\\n      fat\\n      carbohydrates\\n    }\\n  }\",\n  \"variables\": {\n    \"foodId\": {{foodId}},\n    \"userId\": {{userId}},\n    \"name\": \"Updated Test Food\",\n    \"calories\": 150,\n    \"protein\": 15,\n    \"fat\": 8,\n    \"carbohydrates\": 20\n  }\n}"
+            },
+            "url": {
+              "raw": "{{graphqlEndpoint}}",
+              "host": ["{{graphqlEndpoint}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete Food",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Food deleted successfully\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.data.deleteFood).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"mutation DeleteFood($foodId: Int!, $userId: Int!) {\\n    deleteFood(foodId: $foodId, userId: $userId)\\n  }\",\n  \"variables\": {\n    \"foodId\": {{foodId}},\n    \"userId\": {{userId}}\n  }\n}"
             },
             "url": {
               "raw": "{{graphqlEndpoint}}",
@@ -285,6 +400,149 @@
               "host": ["{{graphqlEndpoint}}"]
             }
           }
+        },
+        {
+          "name": "Create Dish",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Dish created successfully\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.data.createDish).to.exist;",
+                  "    pm.expect(responseJson.data.createDish.name).to.eql(\"Test Dish\");",
+                  "    pm.expect(responseJson.data.createDish.weight).to.eql(200);",
+                  "    ",
+                  "    // Save dish ID for subsequent requests",
+                  "    pm.environment.set(\"dishId\", responseJson.data.createDish.id);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"mutation CreateDish($userId: Int, $name: String!, $weight: Decimal!) {\\n    createDish(userId: $userId, name: $name, weight: $weight) {\\n      id\\n      name\\n      weight\\n    }\\n  }\",\n  \"variables\": {\n    \"userId\": {{userId}},\n    \"name\": \"Test Dish\",\n    \"weight\": 200\n  }\n}"
+            },
+            "url": {
+              "raw": "{{graphqlEndpoint}}",
+              "host": ["{{graphqlEndpoint}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Dish",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Dish updated successfully\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.data.updateDish).to.exist;",
+                  "    pm.expect(responseJson.data.updateDish.name).to.eql(\"Updated Test Dish\");",
+                  "    pm.expect(responseJson.data.updateDish.weight).to.eql(250);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"mutation UpdateDish($dishId: Int!, $userId: Int!, $name: String, $weight: Decimal) {\\n    updateDish(dishId: $dishId, userId: $userId, name: $name, weight: $weight) {\\n      id\\n      name\\n      weight\\n    }\\n  }\",\n  \"variables\": {\n    \"dishId\": {{dishId}},\n    \"userId\": {{userId}},\n    \"name\": \"Updated Test Dish\",\n    \"weight\": 250\n  }\n}"
+            },
+            "url": {
+              "raw": "{{graphqlEndpoint}}",
+              "host": ["{{graphqlEndpoint}}"]
+            }
+          }
+        },
+        {
+          "name": "Add Food To Dish",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Food added to dish successfully\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.data.addFoodToDish).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"mutation AddFoodToDish($dishId: Int!, $userId: Int!, $foodId: Int!, $quantity: Decimal!) {\\n    addFoodToDish(dishId: $dishId, userId: $userId, foodId: $foodId, quantity: $quantity)\\n  }\",\n  \"variables\": {\n    \"dishId\": {{dishId}},\n    \"userId\": {{userId}},\n    \"foodId\": {{foodId}},\n    \"quantity\": 100\n  }\n}"
+            },
+            "url": {
+              "raw": "{{graphqlEndpoint}}",
+              "host": ["{{graphqlEndpoint}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete Dish",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Dish deleted successfully\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.data.deleteDish).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"mutation DeleteDish($dishId: Int!, $userId: Int!) {\\n    deleteDish(dishId: $dishId, userId: $userId)\\n  }\",\n  \"variables\": {\n    \"dishId\": {{dishId}},\n    \"userId\": {{userId}}\n  }\n}"
+            },
+            "url": {
+              "raw": "{{graphqlEndpoint}}",
+              "host": ["{{graphqlEndpoint}}"]
+            }
+          }
         }
       ]
     },
@@ -354,6 +612,217 @@
             "body": {
               "mode": "raw",
               "raw": "{\n  \"query\": \"query GetDailyCalories($userId: Int!, $date: Date!) {\\n    getDailyCalories(userId: $userId, date: $date)\\n  }\",\n  \"variables\": {\n    \"userId\": {{userId}},\n    \"date\": \"2024-01-01\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{graphqlEndpoint}}",
+              "host": ["{{graphqlEndpoint}}"]
+            }
+          }
+        },
+        {
+          "name": "Get Weekly Calories",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Get weekly calories\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.data.getWeeklyCalories).to.be.an('array');",
+                  "    pm.expect(responseJson.data.getWeeklyCalories.length).to.be.at.least(0);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"query GetWeeklyCalories($userId: Int!, $startDate: Date!) {\\n    getWeeklyCalories(userId: $userId, startDate: $startDate) {\\n      date\\n      totalCalories\\n    }\\n  }\",\n  \"variables\": {\n    \"userId\": {{userId}},\n    \"startDate\": \"2024-01-01\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{graphqlEndpoint}}",
+              "host": ["{{graphqlEndpoint}}"]
+            }
+          }
+        },
+        {
+          "name": "Get Monthly Calories",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Get monthly calories\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.data.getMonthlyCalories).to.be.an('array');",
+                  "    pm.expect(responseJson.data.getMonthlyCalories.length).to.be.at.least(0);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"query GetMonthlyCalories($userId: Int!, $year: Int!, $month: Int!) {\\n    getMonthlyCalories(userId: $userId, year: $year, month: $month) {\\n      date\\n      totalCalories\\n    }\\n  }\",\n  \"variables\": {\n    \"userId\": {{userId}},\n    \"year\": 2024,\n    \"month\": 1\n  }\n}"
+            },
+            "url": {
+              "raw": "{{graphqlEndpoint}}",
+              "host": ["{{graphqlEndpoint}}"]
+            }
+          }
+        },
+        {
+          "name": "Create Meal",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Meal created successfully\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.data.createMeal).to.exist;",
+                  "    pm.expect(responseJson.data.createMeal.name).to.eql(\"Test Meal\");",
+                  "    ",
+                  "    // Save meal ID for subsequent requests",
+                  "    pm.environment.set(\"mealId\", responseJson.data.createMeal.id);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"mutation CreateMeal($userId: Int!, $name: String!) {\\n    createMeal(userId: $userId, name: $name) {\\n      id\\n      name\\n      createdAt\\n    }\\n  }\",\n  \"variables\": {\n    \"userId\": {{userId}},\n    \"name\": \"Test Meal\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{graphqlEndpoint}}",
+              "host": ["{{graphqlEndpoint}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Meal",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Meal updated successfully\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.data.updateMeal).to.exist;",
+                  "    pm.expect(responseJson.data.updateMeal.name).to.eql(\"Updated Test Meal\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"mutation UpdateMeal($mealId: Int!, $userId: Int!, $name: String!) {\\n    updateMeal(mealId: $mealId, userId: $userId, name: $name) {\\n      id\\n      name\\n      createdAt\\n    }\\n  }\",\n  \"variables\": {\n    \"mealId\": {{mealId}},\n    \"userId\": {{userId}},\n    \"name\": \"Updated Test Meal\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{graphqlEndpoint}}",
+              "host": ["{{graphqlEndpoint}}"]
+            }
+          }
+        },
+        {
+          "name": "Add Dish To Meal",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Dish added to meal successfully\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.data.addDishToMeal).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"mutation AddDishToMeal($userId: Int!, $mealId: Int!, $dishId: Int!, $quantity: Decimal!) {\\n    addDishToMeal(userId: $userId, mealId: $mealId, dishId: $dishId, quantity: $quantity)\\n  }\",\n  \"variables\": {\n    \"userId\": {{userId}},\n    \"mealId\": {{mealId}},\n    \"dishId\": {{dishId}},\n    \"quantity\": 1\n  }\n}"
+            },
+            "url": {
+              "raw": "{{graphqlEndpoint}}",
+              "host": ["{{graphqlEndpoint}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete Meal",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Meal deleted successfully\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.data.deleteMeal).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"mutation DeleteMeal($mealId: Int!, $userId: Int!) {\\n    deleteMeal(mealId: $mealId, userId: $userId)\\n  }\",\n  \"variables\": {\n    \"mealId\": {{mealId}},\n    \"userId\": {{userId}}\n  }\n}"
             },
             "url": {
               "raw": "{{graphqlEndpoint}}",
