@@ -5,10 +5,10 @@ namespace backend.Repositories.Interfaces
     public interface IImageRepository
     {
         Task<Image?> GetImageByIdAsync(int imageId);
-        Task<IEnumerable<Image>> GetImagesByUserAsync(int userId);
+        Task<IEnumerable<Image>> GetImagesByOwnerAsync(int ownerId);
         Task<Image?> CreateImageAsync(Image image);
         Task<Image?> UpdateImageAsync(Image image);
         Task<bool> DeleteImageAsync(int imageId, int ownerId);
-        Task<bool> DeleteAllImagesByUserAsync(int userId);
+        Task<bool> DeleteAllImagesByOwnerAsync(int ownerId);
     }
 }
