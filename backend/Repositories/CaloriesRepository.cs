@@ -27,7 +27,7 @@ namespace backend.Repositories
             using var connection = new SqlConnection(_connectionString);
             const string sql = @"UPDATE calories
                         SET calories = @Calories
-                        OUTPUT food_id AS FoodId, calories
+                        OUTPUT INSERTED.food_id AS FoodId, INSERTED.calories
                         WHERE food_id = @FoodId;";
             return await connection.QuerySingleOrDefaultAsync<CaloriesModel>(sql, new { FoodId = foodId, Calories = calories });
         }

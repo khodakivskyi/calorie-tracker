@@ -29,7 +29,7 @@ namespace backend.Repositories
             using var connection = new SqlConnection(_connectionString);
             const string sql = @"UPDATE nutrients
                                 SET protein = @Protein, fat = @Fat, carbohydrates = @Carbohydrates
-                                OUTPUT food_id AS FoodId, protein, fat, carbohydrates
+                                OUTPUT INSERTED.food_id AS FoodId, INSERTED.protein, INSERTED.fat, INSERTED.carbohydrates
                                 WHERE food_id = @FoodId;";
             return await connection.QuerySingleOrDefaultAsync<Nutrients>(sql,
                 new { FoodId = foodId, Protein = protein, Fat = fat, Carbohydrates = carbohydrates });
