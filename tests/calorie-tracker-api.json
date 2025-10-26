@@ -223,6 +223,8 @@
                   "    const responseJson = pm.response.json();",
                   "    pm.expect(responseJson.data.createFood).to.exist;",
                   "    pm.expect(responseJson.data.createFood.name).to.eql(\"Test Food\");",
+                  "    pm.expect(responseJson.data.createFood.calories).to.exist;",
+                  "    pm.expect(responseJson.data.createFood.nutrients).to.exist;",
                   "    ",
                   "    // Save food ID for subsequent requests",
                   "    pm.environment.set(\"foodId\", responseJson.data.createFood.id);",
@@ -241,7 +243,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"query\": \"mutation CreateFood($userId: Int, $name: String!, $calories: Decimal, $protein: Decimal, $fat: Decimal, $carbohydrates: Decimal) {\\n    createFood(userId: $userId, name: $name, calories: $calories, protein: $protein, fat: $fat, carbohydrates: $carbohydrates) {\\n      id\\n      name\\n    }\\n  }\",\n  \"variables\": {\n    \"userId\": {{userId}},\n    \"name\": \"Test Food\",\n    \"calories\": 100,\n    \"protein\": 10,\n    \"fat\": 5,\n    \"carbohydrates\": 15\n  }\n}"
+              "raw": "{\n  \"query\": \"mutation CreateFood($userId: Int, $name: String!, $calories: Decimal, $protein: Decimal, $fat: Decimal, $carbohydrates: Decimal) {\\n    createFood(userId: $userId, name: $name, calories: $calories, protein: $protein, fat: $fat, carbohydrates: $carbohydrates) {\\n      id\\n      name\\n      calories {\\n        calories\\n      }\\n      nutrients {\\n        protein\\n        fat\\n        carbohydrates\\n      }\\n    }\\n  }\",\n  \"variables\": {\n    \"userId\": {{userId}},\n    \"name\": \"Test Food\",\n    \"calories\": 100,\n    \"protein\": 10,\n    \"fat\": 5,\n    \"carbohydrates\": 15\n  }\n}"
             },
             "url": {
               "raw": "{{graphqlEndpoint}}",
@@ -259,6 +261,11 @@
                   "pm.test(\"Food updated successfully\", function () {",
                   "    pm.response.to.have.status(200);",
                   "    const responseJson = pm.response.json();",
+                  "    ",
+                  "    if (responseJson.errors) {",
+                  "        console.log(\"GraphQL Errors:\", JSON.stringify(responseJson.errors));",
+                  "    }",
+                  "    ",
                   "    pm.expect(responseJson.data.updateFood).to.exist;",
                   "    pm.expect(responseJson.data.updateFood.name).to.eql(\"Updated Test Food\");",
                   "});"
@@ -442,6 +449,11 @@
                   "pm.test(\"Dish updated successfully\", function () {",
                   "    pm.response.to.have.status(200);",
                   "    const responseJson = pm.response.json();",
+                  "    ",
+                  "    if (responseJson.errors) {",
+                  "        console.log(\"GraphQL Errors:\", JSON.stringify(responseJson.errors));",
+                  "    }",
+                  "    ",
                   "    pm.expect(responseJson.data.updateDish).to.exist;",
                   "    pm.expect(responseJson.data.updateDish.name).to.eql(\"Updated Test Dish\");",
                   "    pm.expect(responseJson.data.updateDish.weight).to.eql(250);",
@@ -478,6 +490,11 @@
                   "pm.test(\"Food added to dish successfully\", function () {",
                   "    pm.response.to.have.status(200);",
                   "    const responseJson = pm.response.json();",
+                  "    ",
+                  "    if (responseJson.errors) {",
+                  "        console.log(\"GraphQL Errors:\", JSON.stringify(responseJson.errors));",
+                  "    }",
+                  "    ",
                   "    pm.expect(responseJson.data.addFoodToDish).to.be.true;",
                   "});"
                 ]
@@ -512,6 +529,11 @@
                   "pm.test(\"Dish deleted successfully\", function () {",
                   "    pm.response.to.have.status(200);",
                   "    const responseJson = pm.response.json();",
+                  "    ",
+                  "    if (responseJson.errors) {",
+                  "        console.log(\"GraphQL Errors:\", JSON.stringify(responseJson.errors));",
+                  "    }",
+                  "    ",
                   "    pm.expect(responseJson.data.deleteDish).to.be.true;",
                   "});"
                 ]
@@ -729,6 +751,11 @@
                   "pm.test(\"Meal updated successfully\", function () {",
                   "    pm.response.to.have.status(200);",
                   "    const responseJson = pm.response.json();",
+                  "    ",
+                  "    if (responseJson.errors) {",
+                  "        console.log(\"GraphQL Errors:\", JSON.stringify(responseJson.errors));",
+                  "    }",
+                  "    ",
                   "    pm.expect(responseJson.data.updateMeal).to.exist;",
                   "    pm.expect(responseJson.data.updateMeal.name).to.eql(\"Updated Test Meal\");",
                   "});"
