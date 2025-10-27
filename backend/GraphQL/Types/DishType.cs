@@ -1,12 +1,12 @@
 ﻿using backend.Models;
-using backend.Repositories.Interfaces;
+using backend.Services;
 using GraphQL.Types;
 
 namespace backend.GraphQL.Types
 {
     public class DishType : ObjectGraphType<Dish>
     {
-        public DishType(ICaloriesRepository caloriesRepository, INutrientsRepository nutrientsRepository)
+        public DishType(CaloriesService caloriesService, NutrientsService nutrientsService)
         {
             Field(x => x.Id);
             Field(x => x.OwnerId, nullable: true);
@@ -17,18 +17,18 @@ namespace backend.GraphQL.Types
             Field(x => x.UpdatedAt);
             Field(x => x.ExternalId, nullable: true);
 
-            Field<CaloriesType>("calories")
-                    .ResolveAsync(async context =>
-                    {
-                        var dish = context.Source;
-                        return await caloriesRepository.GetCaloriesByDishIdAsync(dish.Id);
-                    });
-
-            Field<NutrientsType>("nutrients")
+            Field<DecimalGraphType, decimal>("calories")
                 .ResolveAsync(async context =>
                 {
                     var dish = context.Source;
-                    return await nutrientsRepository.GetNutrientsByDishIdAsync(dish.Id);
+                    return await caloriesService.GetOrCalculateCaloriesForDishAsync(dish.Id);
+                });
+
+            Field<NutrientsType, Nutrients?>("nutrients")
+                .ResolveAsync(async context =>
+                {
+                    var dish = context.Source;
+                    return await nutrientsService.GetNutrientsByDishAsync(dish.Id);
                 });
         }
     }

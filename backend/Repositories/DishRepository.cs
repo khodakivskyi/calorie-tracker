@@ -95,7 +95,7 @@ namespace backend.Repositories
         public async Task<bool> DeleteDishAsync(int id)
         {
             using var connection = new SqlConnection(_connectionString);
-            const string sql = "DELETE FROM dishes WHERE id = @Id AND owner_id = @OwnerId";
+            const string sql = "DELETE FROM dishes WHERE id = @Id";
             var affectedRows = await connection.ExecuteAsync(sql, new { Id = id });
             return affectedRows > 0;
         }

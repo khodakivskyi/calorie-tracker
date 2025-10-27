@@ -99,7 +99,7 @@ namespace backend.Repositories
                        INSERTED.updated_at AS UpdatedAt, INSERTED.external_id AS ExternalId
                 WHERE id = @Id AND owner_id = @OwnerId;";
 
-            return await connection.QuerySingleOrDefaultAsync<Food>(sql, food);
+            return await connection.QueryFirstOrDefaultAsync<Food>(sql, food);
         }
 
         public async Task<bool> DeleteFoodAsync(int foodId, int userId)

@@ -1,5 +1,5 @@
 ﻿using backend.Models;
-using backend.Repositories.Interfaces;
+using backend.Services;
 using GraphQL.Types;
 
 
@@ -7,7 +7,7 @@ namespace backend.GraphQL.Types;
 
 public class MealType : ObjectGraphType<Meal>
 {
-    public MealType(ICaloriesRepository caloriesRepository, INutrientsRepository nutrientsRepository)
+    public MealType(CaloriesService caloriesService, NutrientsService nutrientsService)
     {
         Field(x => x.Id);
         Field(x => x.OwnerId);
@@ -15,18 +15,18 @@ public class MealType : ObjectGraphType<Meal>
         Field(x => x.CreatedAt);
         Field(x => x.UpdatedAt);
 
-        Field<CaloriesType>("calories")
+        Field<DecimalGraphType, decimal>("calories")
             .ResolveAsync(async context =>
             {
                 var meal = context.Source;
-                return await caloriesRepository.GetCaloriesByMealIdAsync(meal.Id);
+                return await caloriesService.GetOrCalculateCaloriesForMealAsync(meal.Id);
             });
 
-        Field<NutrientsType>("nutrients")
+        Field<NutrientsType, Nutrients?>("nutrients")
             .ResolveAsync(async context =>
             {
                 var meal = context.Source;
-                return await nutrientsRepository.GetNutrientsByMealIdAsync(meal.Id);
+                return await nutrientsService.GetNutrientsByMealAsync(meal.Id);
             });
     }
 }
