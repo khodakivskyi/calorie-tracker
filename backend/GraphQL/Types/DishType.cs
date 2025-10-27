@@ -6,7 +6,7 @@ namespace backend.GraphQL.Types
 {
     public class DishType : ObjectGraphType<Dish>
     {
-        public DishType(CaloriesService caloriesService, NutrientsService nutrientsService)
+        public DishType(CaloriesService caloriesService, NutrientsService nutrientsService, ImageService imageService)
         {
             Field(x => x.Id);
             Field(x => x.OwnerId, nullable: true);
@@ -29,6 +29,24 @@ namespace backend.GraphQL.Types
                 {
                     var dish = context.Source;
                     return await nutrientsService.GetNutrientsByDishAsync(dish.Id);
+                });
+
+            Field<StringGraphType, string?>("image")
+                .ResolveAsync(async context =>
+                {
+                    var dish = context.Source;
+                    if (dish.ImageId == null)
+                        return null;
+
+                    try
+                    {
+                        var image = await imageService.GetImageByIdAsync(dish.ImageId.Value);
+                        return image.Url;
+                    }
+                    catch
+                    {
+                        return null;
+                    }
                 });
         }
     }

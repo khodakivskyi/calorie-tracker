@@ -24,9 +24,8 @@ namespace backend.Controllers
 
                 return Ok(new
                 {
-                    imageId = image.Id,
-                    url = image.Url,
-                    fileName = image.FileName
+                    success = true,
+                    imageId = image.Id
                 });
             }
             catch (ValidationException ex)
@@ -48,9 +47,8 @@ namespace backend.Controllers
 
                 return Ok(new
                 {
-                    imageId = image.Id,
-                    url = image.Url,
-                    fileName = image.FileName
+                    success = true,
+                    imageId = image.Id
                 });
             }
             catch (ValidationException ex)
