@@ -170,7 +170,7 @@ namespace backend.Services
             if (food.OwnerId != userId)
                 throw new ValidationException("You can only delete your own foods");
 
-            return await _foodRepository.DeleteFoodAsync(foodId, userId);
+            return await _foodRepository.DeleteFoodAsync(foodId);
         }
 
         public async Task<bool> DeleteAllFoodsByUserAsync(int userId)

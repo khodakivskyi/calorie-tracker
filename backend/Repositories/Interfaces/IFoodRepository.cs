@@ -16,7 +16,7 @@ namespace backend.Repositories.Interfaces
         Task<IEnumerable<Food>> GetPrivateFoodsByUserAsync(int userId);
         Task<Food?> CreateFoodAsync(Food food);
         Task<Food?> UpdateFoodAsync(Food food);
-        Task<bool> DeleteFoodAsync(int foodId, int userId);
+        Task<bool> DeleteFoodAsync(int foodId);
         Task<bool> DeleteAllFoodsByUserAsync(int userId);
     }
 }

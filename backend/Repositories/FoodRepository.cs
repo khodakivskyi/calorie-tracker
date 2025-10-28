@@ -102,11 +102,11 @@ namespace backend.Repositories
             return await connection.QueryFirstOrDefaultAsync<Food>(sql, food);
         }
 
-        public async Task<bool> DeleteFoodAsync(int foodId, int userId)
+        public async Task<bool> DeleteFoodAsync(int foodId)
         {
             using var connection = new SqlConnection(_connectionString);
-            const string sql = "DELETE FROM foods WHERE id = @Id AND owner_id = @UserId"; ;
-            var affectedRows = await connection.ExecuteAsync(sql, new { Id = foodId, UserId = userId });
+            const string sql = "DELETE FROM foods WHERE id = @Id"; ;
+            var affectedRows = await connection.ExecuteAsync(sql, new { Id = foodId });
             return affectedRows > 0;
         }
 

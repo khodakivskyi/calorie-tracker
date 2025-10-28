@@ -11,6 +11,7 @@ using GraphQL.Types;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using backend.Models;
 
 namespace backend
 {
@@ -29,8 +30,12 @@ namespace backend
             builder.Services.AddScoped<IMealRepository, MealRepository>(provider => new MealRepository(connectionString!));
             builder.Services.AddScoped<ICaloriesRepository, CaloriesRepository>(provider => new CaloriesRepository(connectionString!));
             builder.Services.AddScoped<INutrientsRepository, NutrientsRepository>(provider => new NutrientsRepository(connectionString!));
-          
 
+            builder.Services.Configure<ImageSettings>(builder.Configuration.GetSection("ImageSettings"));
+            builder.Services.AddScoped<IImageRepository, ImageRepository>(provider => new ImageRepository(connectionString!));
+
+
+            builder.Services.Configure<ImageSettings>(builder.Configuration.GetSection("ImageSettings"));
 
             builder.Services.AddControllers();
 
@@ -50,6 +55,7 @@ namespace backend
             builder.Services.AddScoped<MealService>();
             builder.Services.AddScoped<NutrientsService>();
             builder.Services.AddScoped<CaloriesService>();
+            builder.Services.AddScoped<ImageService>();
 
             builder.Services.AddSingleton<IErrorInfoProvider, MyErrorInfoProvider>();
             builder.Services.AddScoped<UserType>();
@@ -62,6 +68,7 @@ namespace backend
             builder.Services.AddScoped<MealDishType>();
             builder.Services.AddScoped<CaloriesDataType>();
             builder.Services.AddScoped<AuthPayloadType>();
+            builder.Services.AddScoped<ImageType>();
 
             builder.Services.AddScoped<RootQuery>();
             builder.Services.AddScoped<RootMutation>();
@@ -105,6 +112,7 @@ namespace backend
             }
 
             app.UseCors();
+            app.UseStaticFiles();
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseGraphQL<ISchema>("/graphql");
