@@ -2,6 +2,7 @@
 using backend.Services;
 using GraphQL;
 using GraphQL.Types;
+using Microsoft.AspNetCore.Identity;
 
 namespace backend.GraphQL.Mutations
 {
@@ -20,7 +21,9 @@ namespace backend.GraphQL.Mutations
                     var email = context.GetArgument<string>("email");
                     var password = context.GetArgument<string>("password");
                     var name = context.GetArgument<string?>("name");
+
                     var user = await userService.CreateUserAsync(email, password, name);
+
 
                     var token = jwtService.GenerateToken(user.Id, user.Email);
                     return new
