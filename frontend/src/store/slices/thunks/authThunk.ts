@@ -12,12 +12,17 @@ export const registerUser = createAsyncThunk<string, RegisterParams, { rejectVal
         const {email, password, name} = params;
 
         try {
-            const response = await fetch('http://localhost:5000/graphql', {
+            const response = await fetch('http://localhost:5066/graphql', {
                 method: 'POST',
-                headers: {'Content-Type': 'application/json'},
+                headers: {'Content-Type': 'application/json',
+                    'GraphQL-Require-Preflight': 'true'},
                 body: JSON.stringify({
-                    query: `mutation RegisterUser($email: String!, $password: String!, $name: String) {
-                            registerUser(email: $email, password: $password, name: $name)}`,
+                    query: `mutation CreateUser($email: String!, $password: String!, $name: String) {
+                                createUser(email: $email, password: $password, name: $name) {
+                                    user { id email name }
+                                    token
+                                }
+                            }`,
                     variables: {email, password, name},
                 })
             });
