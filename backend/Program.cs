@@ -1,17 +1,18 @@
-using backend.Repositories;
-using backend.Repositories.Interfaces;
-using backend.Services;
 using backend.GraphQL;
 using backend.GraphQL.Mutations;
 using backend.GraphQL.Queries;
 using backend.GraphQL.Types;
+using backend.Models;
+using backend.Repositories;
+using backend.Repositories.Interfaces;
+using backend.Services;
+using DotNetEnv;
 using GraphQL;
 using GraphQL.Execution;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using backend.Models;
 
 namespace backend
 {
@@ -19,6 +20,7 @@ namespace backend
     {
         public static void Main(string[] args)
         {
+            Env.Load();
             var builder = WebApplication.CreateBuilder(args);
 
             builder.Logging.AddConsole();
@@ -104,6 +106,34 @@ namespace backend
                 };
             });
 
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll",
+                    policy => policy
+                        .WithOrigins("http://localhost:5173")
+                        .AllowAnyMethod()
+                        .AllowAnyHeader());
+            });
+
+            builder.Services.Configure<AuthMessageSenderOptions>(options =>
+            {
+                options.SmtpHost = Environment.GetEnvironmentVariable("SMTP_HOST")
+                    ?? throw new InvalidOperationException("SMTP_HOST is not set");
+                options.SmtpPort = int.Parse(Environment.GetEnvironmentVariable("SMTP_PORT")
+                    ?? throw new InvalidOperationException("SMTP_PORT is not set"));
+                options.SmtpUsername = Environment.GetEnvironmentVariable("SMTP_USERNAME")
+                    ?? throw new InvalidOperationException("SMTP_USERNAME is not set");
+                options.SmtpPassword = Environment.GetEnvironmentVariable("SMTP_PASSWORD")
+                    ?? throw new InvalidOperationException("SMTP_PASSWORD is not set");
+                options.FromEmail = Environment.GetEnvironmentVariable("FROM_EMAIL")
+                    ?? throw new InvalidOperationException("FROM_EMAIL is not set");
+                options.FromName = Environment.GetEnvironmentVariable("FROM_NAME")
+                    ?? throw new InvalidOperationException("FROM_NAME is not set");
+                options.EnableSsl = Environment.GetEnvironmentVariable("ENABLE_SSL") == "true";
+            });
+
+            builder.Services.AddTransient<Services.Interfaces.IEmailSender, EmailSender>();
+
             var app = builder.Build();
 
             if (app.Environment.IsDevelopment())
@@ -111,7 +141,7 @@ namespace backend
                 app.UseGraphQLGraphiQL("/ui/graphiql");
             }
 
-            app.UseCors();
+            app.UseCors("AllowAll");
             app.UseStaticFiles();
             app.UseAuthentication();
             app.UseAuthorization();

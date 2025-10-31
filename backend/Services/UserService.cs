@@ -3,16 +3,19 @@ using backend.Models;
 using backend.Exceptions;
 using System.Security.Cryptography;
 using backend.Repositories.Interfaces;
+using backend.Services.Interfaces;
 
 namespace backend.Services
 {
     public class UserService
     {
         private readonly IUserRepository _userRepository;
+        private readonly IEmailSender _emailSender;
 
-        public UserService(IUserRepository userRepository)
+        public UserService(IUserRepository userRepository, IEmailSender emailSender)
         {
             _userRepository = userRepository;
+            _emailSender = emailSender;
         }
 
         public async Task<User> GetUserByIdAsync(int id)
@@ -100,12 +103,17 @@ namespace backend.Services
             string salt = GenerateSalt();
             string passwordHash = HashPassword(password, salt);
 
-            var newUser = new User(email, passwordHash, salt, name);
+            string verificationToken = GenerateEmailToken();
+            DateTime verificationExpires = DateTime.UtcNow.AddHours(12);
+
+            var newUser = new User(email, passwordHash, salt, name, verificationToken, verificationExpires);
 
             var createdUser = await _userRepository.CreateUserAsync(newUser);
             if (createdUser == null)
                 throw new InvalidOperationException("User creation failed");
 
+            if(createdUser.EmailVerificationToken != null)
+                await SendVerificationEmailAsync(createdUser.Email, createdUser.Id, createdUser.EmailVerificationToken);
             return createdUser;
         }
 
@@ -116,12 +124,36 @@ namespace backend.Services
             if (user == null)
                 throw new ValidationException("Invalid email or password");
 
+            if(!user.EmailConfirmed)
+                throw new ValidationException("Please verify your email before logging in");
+
             var hashedPassword = HashPassword(password, user.Salt);
 
             if (hashedPassword != user.PasswordHash)
                 throw new ValidationException("Invalid email or password");
 
             return user;
+        }
+
+        public async Task<bool> VerifyEmailAsync(int userId, string token)
+        {
+            var user = await _userRepository.GetUserByIdAsync(userId);
+
+            if (user == null)
+                throw new ValidationException("User not found");
+
+            if (user.EmailVerificationToken != token)
+                throw new ValidationException("Invalid verification token");
+
+            if (user.EmailVerificationExpires < DateTime.UtcNow)
+                throw new ValidationException("Verification token expired");
+
+            user.EmailConfirmed = true;
+            user.EmailVerificationToken = null;
+            user.EmailVerificationExpires = null;
+
+            var updatedUser = await _userRepository.UpdateUserAsync(user);
+            return updatedUser?.EmailConfirmed ?? false;
         }
 
         private string HashPassword(string password, string salt)
@@ -140,6 +172,35 @@ namespace backend.Services
             var saltBytes = new byte[32];
             rng.GetBytes(saltBytes);
             return Convert.ToBase64String(saltBytes);
+        }
+
+        private static string GenerateEmailToken()
+        {
+            var tokenBytes = new byte[32];
+            using var rng = RandomNumberGenerator.Create();
+            rng.GetBytes(tokenBytes);
+            return Convert.ToBase64String(tokenBytes)
+                .Replace("+", "-")
+                .Replace("/", "_")
+                .Replace("=", "");
+        }
+
+        private async Task SendVerificationEmailAsync(string email, int userId, string token)
+        {
+            var frontendUrl = Environment.GetEnvironmentVariable("FRONTEND_URL") ?? "http://localhost:5173";
+            var verificationLink = $"{frontendUrl}/verify-email?userId={userId}&token={Uri.EscapeDataString(token)}";
+
+            var message = $@"
+                <h2>Welcome to Calorie Tracker!</h2>
+                <p>Please verify your email address by clicking the link below:</p>
+                <p><a href='{verificationLink}' style='background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;'>Verify Email</a></p>
+                <p>Or copy this link to your browser:</p>
+                <p style='word-break: break-all; font-family: monospace;'>{verificationLink}</p>
+                <p>This link will expire in 12 hours.</p>
+                <p>If you didn't create an account, please ignore this email.</p>
+            ";
+
+            await _emailSender.SendEmailAsync(email, "Verify your email", message);
         }
     }
 }
