@@ -11,14 +11,11 @@ namespace backend.Services
     {
         private readonly IUserRepository _userRepository;
         private readonly IEmailSender _emailSender;
-        private readonly IConfiguration _configuration;
 
-
-        public UserService(IUserRepository userRepository, IEmailSender emailSender, IConfiguration configuration)
+        public UserService(IUserRepository userRepository, IEmailSender emailSender)
         {
             _userRepository = userRepository;
             _emailSender = emailSender;
-            _configuration = configuration;
         }
 
         public async Task<User> GetUserByIdAsync(int id)
@@ -140,7 +137,23 @@ namespace backend.Services
 
         public async Task<bool> VerifyEmailAsync(int userId, string token)
         {
-            throw new NotImplementedException();
+            var user = await _userRepository.GetUserByIdAsync(userId);
+
+            if (user == null)
+                throw new ValidationException("User not found");
+
+            if (user.EmailVerificationToken != token)
+                throw new ValidationException("Invalid verification token");
+
+            if (user.EmailVerificationExpires < DateTime.UtcNow)
+                throw new ValidationException("Verification token expired");
+
+            user.EmailConfirmed = true;
+            user.EmailVerificationToken = null;
+            user.EmailVerificationExpires = null;
+
+            var updatedUser = await _userRepository.UpdateUserAsync(user);
+            return updatedUser?.EmailConfirmed ?? false;
         }
 
         private string HashPassword(string password, string salt)
@@ -178,12 +191,12 @@ namespace backend.Services
             var verificationLink = $"{frontendUrl}/verify-email?userId={userId}&token={Uri.EscapeDataString(token)}";
 
             var message = $@"
-                <h2>Welcome to Calorie Tracker! 🎉</h2>
+                <h2>Welcome to Calorie Tracker!</h2>
                 <p>Please verify your email address by clicking the link below:</p>
                 <p><a href='{verificationLink}' style='background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;'>Verify Email</a></p>
                 <p>Or copy this link to your browser:</p>
                 <p style='word-break: break-all; font-family: monospace;'>{verificationLink}</p>
-                <p>This link will expire in 24 hours.</p>
+                <p>This link will expire in 12 hours.</p>
                 <p>If you didn't create an account, please ignore this email.</p>
             ";
 

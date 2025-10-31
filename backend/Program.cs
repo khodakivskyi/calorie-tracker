@@ -20,10 +20,10 @@ namespace backend
     {
         public static void Main(string[] args)
         {
+            Env.Load();
             var builder = WebApplication.CreateBuilder(args);
 
             builder.Logging.AddConsole();
-            Env.Load();
 
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
             builder.Services.AddScoped<IUserRepository, UserRepository>(provider => new UserRepository(connectionString!));
