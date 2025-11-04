@@ -1,61 +1,37 @@
-import {useEffect, useState} from "react";
+import {useEffect} from "react";
+import {useAppDispatch, useAppSelector} from "../store";
+import {verifyEmail} from "../store/slices/thunks/authThunk";
 
 export default function VerifyEmailPage() {
-    const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
-    const [message, setMessage] = useState("");
+    const dispatch = useAppDispatch();
+    const {verificationStatus, error} = useAppSelector(state => state.auth);
 
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);
         const userId = params.get("userId");
         const token = params.get("token");
 
-        if (!userId || !token) {
-            setStatus("error");
-            setMessage("Invalid verification link");
-            return;
+        if (userId && token) {
+            dispatch(verifyEmail({userId: Number(userId), token}));
         }
+    }, [dispatch]);
 
-        const verifyEmail = async () => {
-            try {
-                const response = await fetch("http://localhost:5066/graphql", {
-                    method: "POST",
-                    headers: {"Content-Type": "application/json"},
-                    body: JSON.stringify({
-                        query: `
-                            mutation VerifyEmail($userId: Int!, $token: String!) {
-                            verifyEmail(userId: $userId, token: $token)}
-                            `,
-                        variables: {userId: Number(userId), token},
-                    }),
-                });
-
-                const result = await response.json();
-
-                if (result.data?.verifyEmail === true) {
-                    setStatus("success");
-                    setMessage("✅ Email successfully verified! You can now log in.");
-                } else {
-                    setStatus("error");
-                    setMessage("Verification failed. Please try again or request a new link.");
-                }
-            } catch (error) {
-                setStatus("error");
-                console.error(error);
-                setMessage("Verification failed. Please try again or request a new link.");
-            }
-        };
-
-        (async () => {
-            await verifyEmail();
-        })();
-
-    }, []);
+    const renderMessage = () => {
+        switch (verificationStatus) {
+            case 'loading':
+                return <p>Verifying your email...</p>;
+            case 'success':
+                return <p>✅ Email successfully verified! You can now log in.</p>;
+            case 'error':
+                return <p>{error || "Verification failed. Please try again or request a new link."}</p>;
+            default:
+                return <p>Invalid verification link</p>;
+        }
+    };
 
     return (
         <div style={{textAlign: "center", marginTop: "3rem"}}>
-            {status === "loading" && <p>Verifying your email...</p>}
-            {status === "success" && <p style={{color: "green"}}>{message}</p>}
-            {status === "error" && <p style={{color: "red"}}>{message}</p>}
+            {renderMessage()}
         </div>
     );
 }
