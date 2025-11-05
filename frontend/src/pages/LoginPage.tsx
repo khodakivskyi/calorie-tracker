@@ -1,6 +1,6 @@
-import RegisterForm from "../components/RegisterForm.tsx";
+import LoginForm from "../components/LoginForm.tsx";
 
-export default function RegisterPage() {
+export default function LoginPage() {
     return (
         <div className="min-h-screen bg-gradient-to-br from-primary-50 via-accent-50 to-teal-50 flex items-center justify-center p-4">
             <div className="w-full max-w-md">
@@ -9,11 +9,11 @@ export default function RegisterPage() {
 
                     <div className="text-center mb-8">
                         <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                            Створити аккаунт
+                            Увійти в аккаунт
                         </h1>
                     </div>
 
-                    <RegisterForm/>
+                    <LoginForm/>
                 </div>
             </div>
         </div>

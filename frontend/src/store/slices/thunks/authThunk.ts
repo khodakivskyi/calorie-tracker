@@ -79,3 +79,44 @@ export const verifyEmail = createAsyncThunk<boolean, VerifyEmailParams, { reject
         }
     }
 );
+
+interface AuthenticateUserParams {
+    email: string;
+    password: string;
+}
+
+export const authenticateUser = createAsyncThunk<string, AuthenticateUserParams, { rejectValue: string }>(
+    'auth/authenticateUser',
+    async (params: AuthenticateUserParams, thunkAPI) => {
+        const {email, password} = params;
+
+        try{
+            const response = await fetch(API_CONFIG.GRAPHQL_URL, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    query: `query AuthenticateUser($email: String!, $password: String!) {
+                                authenticateUser(email: $email, password: $password)
+                            }`,
+                    variables: {email, password},
+                }),
+            });
+
+            const data = await response.json();
+
+            if (data?.errors) {
+                return thunkAPI.rejectWithValue(String(data.errors[0]?.message ?? 'Authentication failed'));
+            }
+
+            if (data?.data?.authenticateUser) {
+                return data.data.authenticateUser;
+            }
+
+            return thunkAPI.rejectWithValue('Authentication failed');
+        }
+        catch(error: unknown) {
+            const message = error instanceof Error ? error.message : String(error ?? 'Network error');
+            return thunkAPI.rejectWithValue(message);
+        }
+    }
+)

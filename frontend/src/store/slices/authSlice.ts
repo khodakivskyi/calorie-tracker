@@ -1,24 +1,40 @@
 import {createSlice} from '@reduxjs/toolkit';
-import {registerUser, verifyEmail} from "./thunks/authThunk.ts";
+import {registerUser, verifyEmail, authenticateUser} from "./thunks/authThunk.ts";
 
 type AuthState = {
     loading: boolean;
     error: string | null;
     userEmail: string | null;
     verificationStatus: 'idle' | 'loading' | 'success' | 'error';
+    isAuthenticated: boolean;
+    token: string | null;
+    authLoading: boolean;
 };
 
 const initialState: AuthState = {
     loading: false,
     error: null,
     userEmail: null,
-    verificationStatus: 'idle'
+    verificationStatus: 'idle',
+    isAuthenticated: false,
+    token: null,
+    authLoading: false,
 };
 
 const authSlice = createSlice({
     name: 'auth',
     initialState,
-    reducers: {},
+    reducers: {
+        logout: (state) => {
+            state.isAuthenticated = false;
+            state.token = null;
+            state.userEmail = null;
+            state.error = null;
+        },
+        clearError: (state) => {
+            state.error = null;
+        }
+    },
     extraReducers: builder => {
         builder
             .addCase(registerUser.pending, state => {
@@ -44,8 +60,25 @@ const authSlice = createSlice({
             .addCase(verifyEmail.rejected, (state, action) => {
                 state.verificationStatus = 'error';
                 state.error = (action as { payload?: string }).payload ?? action.error.message ?? 'Verification failed';
+            })
+            .addCase(authenticateUser.pending, state => {
+                state.authLoading = true;
+                state.error = null;
+            })
+            .addCase(authenticateUser.fulfilled, (state, action) => {
+                state.authLoading = false;
+                state.isAuthenticated = true;
+                state.token = action.payload;
+                state.error = null;
+            })
+            .addCase(authenticateUser.rejected, (state, action) => {
+                state.authLoading = false;
+                state.isAuthenticated = false;
+                state.token = null;
+                state.error = (action as { payload?: string }).payload ?? action.error.message ?? 'Authentication failed';
             });
     }
 });
 
+export const { logout, clearError } = authSlice.actions;
 export default authSlice.reducer;
