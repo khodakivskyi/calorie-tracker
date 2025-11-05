@@ -27,6 +27,7 @@ namespace backend
 
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
             builder.Services.AddScoped<IUserRepository, UserRepository>(provider => new UserRepository(connectionString!));
+            builder.Services.AddScoped<ITokenRepository, TokenRepository>(provider => new TokenRepository(connectionString!));
             builder.Services.AddScoped<IFoodRepository, FoodRepository>(provider => new FoodRepository(connectionString!));
             builder.Services.AddScoped<IDishRepository, DishRepository>(provider => new DishRepository(connectionString!));
             builder.Services.AddScoped<IMealRepository, MealRepository>(provider => new MealRepository(connectionString!));

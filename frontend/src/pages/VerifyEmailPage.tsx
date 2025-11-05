@@ -8,11 +8,10 @@ export default function VerifyEmailPage() {
 
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);
-        const userId = params.get("userId");
         const token = params.get("token");
 
-        if (userId && token) {
-            dispatch(verifyEmail({userId: Number(userId), token}));
+        if (token) {
+            dispatch(verifyEmail({token}));
         }
     }, [dispatch]);
 

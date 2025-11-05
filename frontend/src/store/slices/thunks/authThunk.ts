@@ -41,24 +41,23 @@ export const registerUser = createAsyncThunk<string, RegisterParams, { rejectVal
 );
 
 interface VerifyEmailParams {
-    userId: number;
     token: string;
 }
 
 export const verifyEmail = createAsyncThunk<boolean, VerifyEmailParams, { rejectValue: string }>(
     'auth/verifyEmail',
     async (params: VerifyEmailParams, thunkAPI) => {
-        const {userId, token} = params;
+        const {token} = params;
 
         try {
             const response = await fetch(API_CONFIG.GRAPHQL_URL, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({
-                    query: `mutation VerifyEmail($userId: Int!, $token: String!) {
-                                verifyEmail(userId: $userId, token: $token)
+                    query: `mutation VerifyEmail($token: String!) {
+                                verifyEmail(token: $token)
                             }`,
-                    variables: {userId, token},
+                    variables: {token},
                 }),
             });
 

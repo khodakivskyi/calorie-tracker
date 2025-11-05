@@ -64,14 +64,12 @@ namespace backend.GraphQL.Mutations
                 });
 
             Field<BooleanGraphType>("verifyEmail")
-                .Argument<NonNullGraphType<IntGraphType>>("userId")
                 .Argument<NonNullGraphType<StringGraphType>>("token")
                 .ResolveAsync(async context =>
                 {
-                    var userId = context.GetArgument<int>("userId");
                     var token = context.GetArgument<string>("token");
 
-                    return await userService.VerifyEmailAsync(userId, token);
+                    return await userService.VerifyEmailAsync(token);
                 });
         }
     }

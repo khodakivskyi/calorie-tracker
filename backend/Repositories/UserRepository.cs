@@ -18,8 +18,7 @@ namespace backend.Repositories
         {
             using var connection = new SqlConnection(_connectionString);
             const string sql = "SELECT id, name, email, password_hash AS PasswordHash, salt, " +
-                              "email_confirmed AS EmailConfirmed, email_verification_token AS EmailVerificationToken, " +
-                              "email_verification_expires AS EmailVerificationExpires " +
+                              "email_confirmed AS EmailConfirmed " +
                               "FROM users WHERE id = @Id";
             return await connection.QueryFirstOrDefaultAsync<User>(sql, new { Id = id });
         }
@@ -28,8 +27,7 @@ namespace backend.Repositories
         {
             using var connection = new SqlConnection(_connectionString);
             const string sql = "SELECT id, name, email, password_hash AS PasswordHash, salt, " +
-                              "email_confirmed AS EmailConfirmed, email_verification_token AS EmailVerificationToken, " +
-                              "email_verification_expires AS EmailVerificationExpires " +
+                              "email_confirmed AS EmailConfirmed " +
                               "FROM users WHERE email = @Email";
             return await connection.QueryFirstOrDefaultAsync<User>(sql, new { Email = email });
         }
@@ -38,8 +36,8 @@ namespace backend.Repositories
         {
             using var connection = new SqlConnection(_connectionString);
             const string sql = @"
-             INSERT INTO users (name, email, password_hash, salt, email_confirmed, email_verification_token, email_verification_expires) 
-             VALUES (@Name, @Email, @PasswordHash, @Salt, @EmailConfirmed, @EmailVerificationToken, @EmailVerificationExpires);
+             INSERT INTO users (name, email, password_hash, salt, email_confirmed) 
+             VALUES (@Name, @Email, @PasswordHash, @Salt, @EmailConfirmed);
              SELECT CAST(SCOPE_IDENTITY() as int);";
 
             var userId = await connection.QuerySingleAsync<int>(sql, user);
@@ -52,8 +50,7 @@ namespace backend.Repositories
             const string sql = @"
                 UPDATE users
                 SET name = @Name, email = @Email, password_hash = @PasswordHash, salt = @Salt,
-                    email_confirmed = @EmailConfirmed, email_verification_token = @EmailVerificationToken,
-                    email_verification_expires = @EmailVerificationExpires
+                    email_confirmed = @EmailConfirmed
                 WHERE id = @Id";
 
             var affectedRows = await connection.ExecuteAsync(sql, user);

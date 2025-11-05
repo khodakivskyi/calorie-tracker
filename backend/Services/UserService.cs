@@ -10,11 +10,16 @@ namespace backend.Services
     public class UserService
     {
         private readonly IUserRepository _userRepository;
+        private readonly ITokenRepository _tokenRepository;
         private readonly IEmailSender _emailSender;
 
-        public UserService(IUserRepository userRepository, IEmailSender emailSender)
+        public UserService(
+            IUserRepository userRepository, 
+            ITokenRepository tokenRepository,
+            IEmailSender emailSender)
         {
             _userRepository = userRepository;
+            _tokenRepository = tokenRepository;
             _emailSender = emailSender;
         }
 
@@ -103,17 +108,27 @@ namespace backend.Services
             string salt = GenerateSalt();
             string passwordHash = HashPassword(password, salt);
 
-            string verificationToken = GenerateEmailToken();
-            DateTime verificationExpires = DateTime.UtcNow.AddHours(12);
-
-            var newUser = new User(email, passwordHash, salt, name, verificationToken, verificationExpires);
+            var newUser = new User(email, passwordHash, salt, name);
 
             var createdUser = await _userRepository.CreateUserAsync(newUser);
             if (createdUser == null)
                 throw new InvalidOperationException("User creation failed");
 
-            if(createdUser.EmailVerificationToken != null)
-                await SendVerificationEmailAsync(createdUser.Email, createdUser.Id, createdUser.EmailVerificationToken);
+            string token = GenerateVerificationToken();
+            DateTime expiresAt = DateTime.UtcNow.AddHours(12);
+
+            var verificationToken = await _tokenRepository.CreateTokenAsync(
+                createdUser.Id, 
+                token,
+                "email_verification", 
+                expiresAt
+            );
+
+            if (verificationToken != null)
+            {
+                await SendVerificationEmailAsync(createdUser.Email, verificationToken.GetFullToken());
+            }
+
             return createdUser;
         }
 
@@ -135,24 +150,37 @@ namespace backend.Services
             return user;
         }
 
-        public async Task<bool> VerifyEmailAsync(int userId, string token)
+        public async Task<bool> VerifyEmailAsync(string fullToken)
         {
-            var user = await _userRepository.GetUserByIdAsync(userId);
+            var parts = fullToken.Split('.');
+            if (parts.Length != 2 || !int.TryParse(parts[0], out int userId))
+                throw new ValidationException("Invalid token format");
 
+            var token = parts[1];
+
+            var verificationToken = await _tokenRepository.GetTokenAsync(token);
+
+            if (verificationToken == null)
+                throw new ValidationException("Invalid verification token");
+
+            if (verificationToken.UserId != userId)
+                throw new ValidationException("Token user mismatch");
+
+            if (verificationToken.TokenType != "email_verification")
+                throw new ValidationException("Invalid token type");
+
+            if (!verificationToken.IsValid())
+                throw new ValidationException("Verification token expired or already used");
+
+            var user = await _userRepository.GetUserByIdAsync(userId);
             if (user == null)
                 throw new ValidationException("User not found");
 
-            if (user.EmailVerificationToken != token)
-                throw new ValidationException("Invalid verification token");
-
-            if (user.EmailVerificationExpires < DateTime.UtcNow)
-                throw new ValidationException("Verification token expired");
-
             user.EmailConfirmed = true;
-            user.EmailVerificationToken = null;
-            user.EmailVerificationExpires = null;
-
             var updatedUser = await _userRepository.UpdateUserAsync(user);
+
+            await _tokenRepository.MarkAsUsedAsync(verificationToken.Id);
+
             return updatedUser?.EmailConfirmed ?? false;
         }
 
@@ -174,7 +202,7 @@ namespace backend.Services
             return Convert.ToBase64String(saltBytes);
         }
 
-        private static string GenerateEmailToken()
+        private string GenerateVerificationToken()
         {
             var tokenBytes = new byte[32];
             using var rng = RandomNumberGenerator.Create();
@@ -185,10 +213,10 @@ namespace backend.Services
                 .Replace("=", "");
         }
 
-        private async Task SendVerificationEmailAsync(string email, int userId, string token)
+        private async Task SendVerificationEmailAsync(string email, string fullToken)
         {
             var frontendUrl = Environment.GetEnvironmentVariable("FRONTEND_URL") ?? "http://localhost:5173";
-            var verificationLink = $"{frontendUrl}/verify-email?userId={userId}&token={Uri.EscapeDataString(token)}";
+            var verificationLink = $"{frontendUrl}/verify-email?token={Uri.EscapeDataString(fullToken)}";
 
             var message = $@"
                 <h2>Welcome to Calorie Tracker!</h2>
