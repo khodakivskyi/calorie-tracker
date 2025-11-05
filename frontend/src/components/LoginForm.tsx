@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+import {Link} from 'react-router-dom';
 import {useAppDispatch, useAppSelector} from "../store";
 import {authenticateUser} from "../store/slices/thunks/authThunk.ts";
 
@@ -8,7 +9,6 @@ export default function LoginForm() {
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [name, setName] = useState('');
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -25,12 +25,9 @@ export default function LoginForm() {
                         </svg>
                     </div>
                     <div className="ml-4">
-                        <h3 className="text-lg font-semibold text-green-800">Реєстрація успішна! 🎉</h3>
+                        <h3 className="text-lg font-semibold text-green-800">Успішний вхід! 🎉</h3>
                         <p className="text-green-700 mt-1">
-                            Лист з підтвердженням надіслано на <span className="font-semibold">{userEmail}</span>
-                        </p>
-                        <p className="text-green-600 text-sm mt-2">
-                            Перевірте вашу пошту та підтвердіть email для завершення реєстрації.
+                            Ви увійшли як <span className="font-semibold">{userEmail}</span>
                         </p>
                     </div>
                 </div>
@@ -40,20 +37,6 @@ export default function LoginForm() {
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-                    Ім'я
-                </label>
-                <input
-                    id="name"
-                    type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="Введіть ваше ім'я"
-                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition duration-200 ease-in-out"
-                />
-            </div>
-
             <div>
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
                     Email <span className="text-red-500">*</span>
@@ -112,18 +95,18 @@ export default function LoginForm() {
                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
-                        Реєстрація...
+                        Вхід...
                     </span>
                 ) : (
-                    'Зареєструватися'
+                    'Увійти'
                 )}
             </button>
 
             <p className="text-sm text-center text-gray-600">
-                Вже маєте акаунт?{' '}
-                <a href="/login" className="text-primary-600 hover:text-primary-700 font-semibold hover:underline">
-                    Увійти
-                </a>
+                Ще не маєте аккаунт?{' '}
+                <Link to="/" className="text-primary-600 hover:text-primary-700 font-semibold hover:underline">
+                    Зареєструватися
+                </Link>
             </p>
         </form>
     )

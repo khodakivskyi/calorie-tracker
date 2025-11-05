@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+import {Link} from 'react-router-dom';
 import {useAppDispatch, useAppSelector} from "../store";
 import {registerUser} from "../store/slices/thunks/authThunk.ts";
 
@@ -120,10 +121,10 @@ export default function RegisterForm() {
             </button>
 
             <p className="text-sm text-center text-gray-600">
-                Вже маєте акаунт?{' '}
-                <a href="/login" className="text-primary-600 hover:text-primary-700 font-semibold hover:underline">
+                Вже маєте аккаунт?{' '}
+                <Link to="/login" className="text-primary-600 hover:text-primary-700 font-semibold hover:underline">
                     Увійти
-                </a>
+                </Link>
             </p>
         </form>
     )

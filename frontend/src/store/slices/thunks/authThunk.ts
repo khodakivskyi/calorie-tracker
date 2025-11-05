@@ -96,7 +96,10 @@ export const authenticateUser = createAsyncThunk<string, AuthenticateUserParams,
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({
                     query: `query AuthenticateUser($email: String!, $password: String!) {
-                                authenticateUser(email: $email, password: $password)
+                                authenticateUser(email: $email, password: $password) {
+                                    user { id email name }
+                                    token
+                                }
                             }`,
                     variables: {email, password},
                 }),
@@ -108,8 +111,9 @@ export const authenticateUser = createAsyncThunk<string, AuthenticateUserParams,
                 return thunkAPI.rejectWithValue(String(data.errors[0]?.message ?? 'Authentication failed'));
             }
 
-            if (data?.data?.authenticateUser) {
-                return data.data.authenticateUser;
+            if (data?.data?.authenticateUser?.user?.email) {
+                // localStorage.setItem('token', data.data.authenticateUser.token);
+                return data.data.authenticateUser.user.email;
             }
 
             return thunkAPI.rejectWithValue('Authentication failed');

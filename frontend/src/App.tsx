@@ -1,17 +1,16 @@
-/*import {useState} from 'react'*/
-
-//react-router-dom
-
-import RegisterPage from "./pages/RegisterPage.tsx";
-import VerifyEmailPage from "./pages/VerifyEmailPage.tsx";
+import { Routes, Route } from 'react-router-dom'
+import RegisterPage from "./pages/RegisterPage.tsx"
+import VerifyEmailPage from "./pages/VerifyEmailPage.tsx"
+import LoginPage from "./pages/LoginPage.tsx"
 
 function App() {
-    const currentPath = window.location.pathname;
-    if (currentPath === "/verify-email") {
-        return <VerifyEmailPage />;
-    }
-
-    return <RegisterPage />
+    return (
+        <Routes>
+            <Route path="/" element={<RegisterPage />} />
+            <Route path="/verify-email" element={<VerifyEmailPage />} />
+            <Route path="/login" element={<LoginPage />} />
+        </Routes>
+    )
 }
 
 export default App
