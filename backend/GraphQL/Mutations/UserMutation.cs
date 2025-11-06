@@ -24,13 +24,7 @@ namespace backend.GraphQL.Mutations
 
                     var user = await userService.CreateUserAsync(email, password, name);
 
-
-                    var token = jwtService.GenerateToken(user.Id, user.Email);
-                    return new
-                    {
-                        user,
-                        token
-                    };
+                    return new { user };
                 });
 
             Field<NonNullGraphType<AuthPayloadType>>("updateUser")

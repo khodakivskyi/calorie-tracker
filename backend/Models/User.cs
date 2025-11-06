@@ -9,6 +9,10 @@
         public string Salt { get; set; } = string.Empty;
         public bool EmailConfirmed { get; set; } = false;
 
+
+        public string? RefreshToken {  get; set; }
+        public DateTime? RefreshTokenExpires { get; set; }
+
         public User() { }
 
         public User(string email, string passwordHash, string salt, string? name)

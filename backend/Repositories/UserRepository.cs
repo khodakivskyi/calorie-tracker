@@ -14,22 +14,32 @@ namespace backend.Repositories
             _connectionString = connectionString;
         }
 
-        public async Task<User?> GetUserByIdAsync(int id)
+        public async Task<User?> GetUserByIdAsync(int userId)
         {
             using var connection = new SqlConnection(_connectionString);
-            const string sql = "SELECT id, name, email, password_hash AS PasswordHash, salt, " +
-                              "email_confirmed AS EmailConfirmed " +
-                              "FROM users WHERE id = @Id";
-            return await connection.QueryFirstOrDefaultAsync<User>(sql, new { Id = id });
+            const string sql = @"
+                SELECT id, name, email, password_hash AS PasswordHash, salt, email_confirmed AS EmailConfirmed
+                FROM users WHERE id = @UserId";
+            return await connection.QueryFirstOrDefaultAsync<User>(sql, new { UserId = userId });
         }
 
         public async Task<User?> GetUserByEmailAsync(string email)
         {
             using var connection = new SqlConnection(_connectionString);
-            const string sql = "SELECT id, name, email, password_hash AS PasswordHash, salt, " +
-                              "email_confirmed AS EmailConfirmed " +
-                              "FROM users WHERE email = @Email";
+            const string sql = @"
+                SELECT id, name, email, password_hash AS PasswordHash, salt, email_confirmed AS EmailConfirmed
+                FROM users WHERE email = @Email";
             return await connection.QueryFirstOrDefaultAsync<User>(sql, new { Email = email });
+        }
+
+        public async Task<User?> GetUserWithRefreshTokenAsync(int userId)
+        {
+            using var connection = new SqlConnection(_connectionString);
+            const string sql = @"
+                SELECT id, name, email, password_hash AS PasswordHash, salt, email_confirmed AS EmailConfirmed,
+                       refresh_token AS RefreshToken, refresh_token_expires AS RefreshTokenExpires
+                FROM users WHERE id = @UserId";
+            return await connection.QueryFirstOrDefaultAsync<User>(sql, new { UserId = userId });
         }
 
         public async Task<User?> CreateUserAsync(User user)
@@ -49,8 +59,13 @@ namespace backend.Repositories
             using var connection = new SqlConnection(_connectionString);
             const string sql = @"
                 UPDATE users
-                SET name = @Name, email = @Email, password_hash = @PasswordHash, salt = @Salt,
-                    email_confirmed = @EmailConfirmed
+                SET name = @Name, 
+                    email = @Email, 
+                    password_hash = @PasswordHash, 
+                    salt = @Salt,
+                    email_confirmed = @EmailConfirmed,
+                    refresh_token = @RefreshToken,
+                    refresh_token_expires = @RefreshTokenExpires
                 WHERE id = @Id";
 
             var affectedRows = await connection.ExecuteAsync(sql, user);
@@ -60,11 +75,11 @@ namespace backend.Repositories
             else return null;
         }
 
-        public async Task<bool> DeleteUserAsync(int id)
+        public async Task<bool> DeleteUserAsync(int userId)
         {
             using var connection = new SqlConnection(_connectionString);
-            const string sql = "DELETE FROM users WHERE id = @Id";
-            var affectedRows = await connection.ExecuteAsync(sql, new { Id = id });
+            const string sql = "DELETE FROM users WHERE id = @UserId";
+            var affectedRows = await connection.ExecuteAsync(sql, new { UserId = userId });
             return affectedRows > 0;
         }
     }
