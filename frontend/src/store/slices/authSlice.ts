@@ -1,5 +1,5 @@
 import {createSlice} from '@reduxjs/toolkit';
-import {registerUser, verifyEmail, authenticateUser} from "./thunks/authThunk.ts";
+import {registerUser, verifyEmail, authenticateUser, refreshToken} from "./thunks/authThunk.ts";
 
 type AuthState = {
     loading: boolean;
@@ -9,6 +9,12 @@ type AuthState = {
     isAuthenticated: boolean;
     token: string | null;
     authLoading: boolean;
+    accessToken: string | null;
+    user: {
+        id: number;
+        email: string;
+        name: string;
+    } | null;
 };
 
 const initialState: AuthState = {
@@ -19,12 +25,17 @@ const initialState: AuthState = {
     isAuthenticated: false,
     token: null,
     authLoading: false,
+    accessToken: null,
+    user: null
 };
 
 const authSlice = createSlice({
     name: 'auth',
     initialState,
     reducers: {
+        setAccessToken: (state, action) => {
+            state.accessToken = action.payload;
+        },
         logout: (state) => {
             state.isAuthenticated = false;
             state.token = null;
@@ -37,48 +48,56 @@ const authSlice = createSlice({
     },
     extraReducers: builder => {
         builder
+            // Register
             .addCase(registerUser.pending, state => {
                 state.loading = true;
                 state.error = null;
             })
-            .addCase(registerUser.fulfilled, (state, action) => {
+            .addCase(registerUser.fulfilled, (state) => {
                 state.loading = false;
-                state.userEmail = action.payload;
             })
             .addCase(registerUser.rejected, (state, action) => {
                 state.loading = false;
-                state.error = (action as { payload?: string }).payload ?? action.error.message ?? 'Unknown error';
+                state.error = action.payload ?? 'Registration failed';
             })
-            .addCase(verifyEmail.pending, state => {
-                state.verificationStatus = 'loading';
-                state.error = null;
-            })
-            .addCase(verifyEmail.fulfilled, state => {
-                state.verificationStatus = 'success';
-                state.error = null;
-            })
-            .addCase(verifyEmail.rejected, (state, action) => {
-                state.verificationStatus = 'error';
-                state.error = (action as { payload?: string }).payload ?? action.error.message ?? 'Verification failed';
-            })
+            // Login
             .addCase(authenticateUser.pending, state => {
-                state.authLoading = true;
+                state.loading = true;
                 state.error = null;
             })
             .addCase(authenticateUser.fulfilled, (state, action) => {
-                state.authLoading = false;
+                state.loading = false;
                 state.isAuthenticated = true;
-                state.token = action.payload;
-                state.error = null;
+                state.accessToken = action.payload.accessToken;
+                state.user = action.payload.user;
             })
             .addCase(authenticateUser.rejected, (state, action) => {
-                state.authLoading = false;
+                state.loading = false;
+                state.error = action.payload ?? 'Login failed';
+            })
+            // Verify Email
+            .addCase(verifyEmail.pending, state => {
+                state.verificationStatus = 'loading';
+            })
+            .addCase(verifyEmail.fulfilled, state => {
+                state.verificationStatus = 'success';
+            })
+            .addCase(verifyEmail.rejected, (state, action) => {
+                state.verificationStatus = 'error';
+                state.error = action.payload ?? 'Verification failed';
+            })
+            // Refresh Token
+            .addCase(refreshToken.fulfilled, (state, action) => {
+                state.accessToken = action.payload;
+                state.isAuthenticated = true;
+            })
+            .addCase(refreshToken.rejected, (state) => {
                 state.isAuthenticated = false;
-                state.token = null;
-                state.error = (action as { payload?: string }).payload ?? action.error.message ?? 'Authentication failed';
+                state.accessToken = null;
+                state.user = null;
             });
     }
 });
 
-export const { logout, clearError } = authSlice.actions;
+export const { setAccessToken, logout, clearError } = authSlice.actions;
 export default authSlice.reducer;

@@ -1,5 +1,5 @@
 import {createAsyncThunk} from '@reduxjs/toolkit';
-import {API_CONFIG} from '../../../config/api';
+import {graphqlRequest} from "../../../config/graphqlClient.ts";
 
 interface RegisterParams {
     email: string;
@@ -21,7 +21,6 @@ export const registerUser = createAsyncThunk<string, RegisterParams, { rejectVal
                     query: `mutation CreateUser($email: String!, $password: String!, $name: String) {
                                 createUser(email: $email, password: $password, name: $name) {
                                     user { id email name }
-                                    token
                                 }
                             }`,
                     variables: {email, password, name},
@@ -111,7 +110,6 @@ export const authenticateUser = createAsyncThunk<string, AuthenticateUserParams,
             }
 
             if (data?.data?.authenticateUser?.user?.email) {
-                // localStorage.setItem('token', data.data.authenticateUser.token);
                 return data.data.authenticateUser.user.email;
             }
 
@@ -122,4 +120,6 @@ export const authenticateUser = createAsyncThunk<string, AuthenticateUserParams,
             return thunkAPI.rejectWithValue(message);
         }
     }
-)
+);
+
+export const refreshToken = createAsyncThunk<string,
