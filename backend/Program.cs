@@ -1,17 +1,18 @@
-using backend.Repositories;
-using backend.Repositories.Interfaces;
-using backend.Services;
 using backend.GraphQL;
 using backend.GraphQL.Mutations;
 using backend.GraphQL.Queries;
 using backend.GraphQL.Types;
+using backend.Models;
+using backend.Repositories;
+using backend.Repositories.Interfaces;
+using backend.Services;
+using backend.Services.External;
 using GraphQL;
 using GraphQL.Execution;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using backend.Models;
 
 namespace backend
 {
@@ -49,6 +50,9 @@ namespace backend
                 });
             });
 
+
+            builder.Services.AddHttpClient(); 
+
             builder.Services.AddScoped<UserService>();
             builder.Services.AddScoped<FoodService>();
             builder.Services.AddScoped<DishService>();
@@ -56,6 +60,8 @@ namespace backend
             builder.Services.AddScoped<NutrientsService>();
             builder.Services.AddScoped<CaloriesService>();
             builder.Services.AddScoped<ImageService>();
+            builder.Services.AddScoped<FatSecretService>();
+
 
             builder.Services.AddSingleton<IErrorInfoProvider, MyErrorInfoProvider>();
             builder.Services.AddScoped<UserType>();
@@ -118,7 +124,7 @@ namespace backend
             app.UseGraphQL<ISchema>("/graphql");
 
             app.MapControllers();
-
+            
             app.Run();
         }
     }

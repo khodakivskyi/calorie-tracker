@@ -9,6 +9,7 @@ namespace backend.GraphQL.Queries
     {
         public FoodQuery(FoodService foodService)
         {
+
             Field<FoodType>("getFoodById")
                 .Argument<NonNullGraphType<IntGraphType>>("foodId")
                 .Argument<NonNullGraphType<IntGraphType>>("userId")

@@ -1,6 +1,7 @@
-﻿using backend.Models;
-using backend.Exceptions;
+﻿using backend.Exceptions;
+using backend.Models;
 using backend.Repositories.Interfaces;
+using backend.Services.External;
 
 namespace backend.Services
 {
