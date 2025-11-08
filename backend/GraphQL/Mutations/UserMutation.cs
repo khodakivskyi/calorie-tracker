@@ -8,7 +8,7 @@ namespace backend.GraphQL.Mutations
 {
     public class UserMutation : ObjectGraphType
     {
-        public UserMutation(UserService userService, JwtService jwtService)
+        public UserMutation(UserService userService, TokenService tokenService)
         {
             Name = "UserMutations";
 
@@ -40,12 +40,25 @@ namespace backend.GraphQL.Mutations
                     var name = context.GetArgument<string?>("name");
 
                     var user = await userService.UpdateUserAsync(userId, email, password, name);
-                    var token = jwtService.GenerateToken(user.Id, user.Email);
+                    var (accessToken, refreshToken ) = await tokenService.GenerateTokensAsync(user);
+
+                    var httpContext = context.RequestServices?.GetService<IHttpContextAccessor>()?.HttpContext;
+                    if (httpContext != null)
+                    {
+                        httpContext.Response.Cookies.Append("refreshToken", refreshToken, new CookieOptions
+                        {
+                            HttpOnly = true,
+                            Secure = true,
+                            SameSite = SameSiteMode.Strict,
+                            Expires = DateTimeOffset.UtcNow.AddDays(7),
+                            Path = "/graphql"
+                        });
+                    }
 
                     return new
                     {
                         user,
-                        token
+                        accessToken
                     };
                 });
 

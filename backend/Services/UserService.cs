@@ -117,10 +117,11 @@ namespace backend.Services
             string token = GenerateVerificationToken();
             DateTime expiresAt = DateTime.UtcNow.AddHours(12);
 
+            await _tokenRepository.DeleteTokensByUserAsync(createdUser.Id);
+
             var verificationToken = await _tokenRepository.CreateTokenAsync(
-                createdUser.Id, 
+                createdUser.Id,
                 token,
-                "email_verification", 
                 expiresAt
             );
 
@@ -160,17 +161,11 @@ namespace backend.Services
 
             var verificationToken = await _tokenRepository.GetTokenAsync(token);
 
-            if (verificationToken == null)
+            if (verificationToken == null || verificationToken.UserId != userId)
                 throw new ValidationException("Invalid verification token");
 
-            if (verificationToken.UserId != userId)
-                throw new ValidationException("Token user mismatch");
-
-            if (verificationToken.TokenType != "email_verification")
-                throw new ValidationException("Invalid token type");
-
-            if (!verificationToken.IsValid())
-                throw new ValidationException("Verification token expired or already used");
+            if (!verificationToken.IsExpired())
+                throw new ValidationException("Verification token expired");
 
             var user = await _userRepository.GetUserByIdAsync(userId);
             if (user == null)
@@ -179,7 +174,7 @@ namespace backend.Services
             user.EmailConfirmed = true;
             var updatedUser = await _userRepository.UpdateUserAsync(user);
 
-            await _tokenRepository.MarkAsUsedAsync(verificationToken.Id);
+            await _tokenRepository.DeleteTokenAsync(verificationToken.Id);
 
             return updatedUser?.EmailConfirmed ?? false;
         }

@@ -59,6 +59,7 @@ namespace backend
             builder.Services.AddScoped<NutrientsService>();
             builder.Services.AddScoped<CaloriesService>();
             builder.Services.AddScoped<ImageService>();
+            builder.Services.AddScoped<TokenService>();
 
             builder.Services.AddSingleton<IErrorInfoProvider, MyErrorInfoProvider>();
             builder.Services.AddScoped<UserType>();
@@ -86,8 +87,16 @@ namespace backend
                 options.AddGraphTypes(typeof(RootQuery).Assembly);
             });
 
-            var jwtKey = builder.Configuration["JwtSettings:SecretKey"];
-            var expiryMinutes = builder.Configuration.GetValue<int>("JwtSettings:ExpiryMinutes", 15);
+            var jwtKey = Environment.GetEnvironmentVariable("JWT_SECRET_KEY")
+                ?? throw new InvalidOperationException("JWT_SECRET_KEY is not set.");
+            var expiryMinutesRaw = Environment.GetEnvironmentVariable("JWT_EXPIRY_MINS")
+               ?? throw new InvalidOperationException("JWT_EXPIRY_MINS is not set.");
+
+            if (!int.TryParse(expiryMinutesRaw, out var expiryMinutes))
+            {
+                throw new InvalidOperationException("JWT_EXPIRY_MINS must be int");
+            }
+
             builder.Services.AddSingleton(new JwtService(jwtKey!, expiryMinutes));
 
             builder.Services.AddAuthentication(options =>
