@@ -37,7 +37,7 @@ jobs:
         fi
     - name: Run dotnet format (check)
       working-directory: ./backend
-      run: dotnet format --verify-no-changes
+      run: dotnet format backend.sln --verify-no-changes
     - name: Restore dependencies
       run: dotnet restore
       working-directory: ./backend
