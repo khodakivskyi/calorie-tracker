@@ -122,7 +122,8 @@ namespace backend
                     policy => policy
                         .WithOrigins("http://localhost:5173")
                         .AllowAnyMethod()
-                        .AllowAnyHeader());
+                        .AllowAnyHeader()
+                        .AllowCredentials());
             });
 
             builder.Services.Configure<AuthMessageSenderOptions>(options =>

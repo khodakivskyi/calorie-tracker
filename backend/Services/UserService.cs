@@ -164,7 +164,7 @@ namespace backend.Services
             if (verificationToken == null || verificationToken.UserId != userId)
                 throw new ValidationException("Invalid verification token");
 
-            if (!verificationToken.IsExpired())
+            if (verificationToken.IsExpired())
                 throw new ValidationException("Verification token expired");
 
             var user = await _userRepository.GetUserByIdAsync(userId);
