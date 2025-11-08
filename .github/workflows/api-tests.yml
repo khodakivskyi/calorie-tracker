@@ -110,6 +110,8 @@ jobs:
           },
           "AllowedHosts": "*"
         }' > backend/appsettings.Testing.json
+    - name: Export JWT secret
+      run: echo "JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}" >> $GITHUB_ENV
     
     - name: Start API Server
       run: |
