@@ -36,7 +36,7 @@ namespace backend.GraphQL.Queries
                         httpContext.Response.Cookies.Append("refreshToken", refreshToken, new CookieOptions
                         {
                             HttpOnly = true,
-                            Secure = true, 
+                            Secure = true,
                             SameSite = SameSiteMode.Strict,
                             Expires = DateTimeOffset.UtcNow.AddDays(7),
                             Path = "/graphql"

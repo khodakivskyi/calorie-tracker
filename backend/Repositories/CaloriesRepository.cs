@@ -57,7 +57,7 @@ namespace backend.Repositories
                                 INNER JOIN foods f ON df.food_id = f.id
                                 INNER JOIN calories c ON c.food_id = f.id
                                 WHERE df.dish_id = @DishId";
-            
+
             var result = await connection.QueryFirstOrDefaultAsync<decimal>(sql, new { DishId = dishId });
             return CaloriesModel.ForDish(dishId, result);
         }

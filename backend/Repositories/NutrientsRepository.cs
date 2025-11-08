@@ -67,10 +67,10 @@ namespace backend.Repositories
             ";
 
             var result = await connection.QueryFirstOrDefaultAsync<(decimal Protein, decimal Fat, decimal Carbohydrates)>(sql, new { DishId = dishId });
-            
+
             if (result.Protein == 0 && result.Fat == 0 && result.Carbohydrates == 0)
                 return null;
-                
+
             return new Nutrients(dishId, result.Protein, result.Fat, result.Carbohydrates);
         }
 
@@ -89,10 +89,10 @@ namespace backend.Repositories
             ";
 
             var result = await connection.QueryFirstOrDefaultAsync<(decimal Protein, decimal Fat, decimal Carbohydrates)>(sql, new { MealId = mealId });
-            
+
             if (result.Protein == 0 && result.Fat == 0 && result.Carbohydrates == 0)
                 return null;
-                
+
             return new Nutrients(mealId, result.Protein, result.Fat, result.Carbohydrates);
         }
     }

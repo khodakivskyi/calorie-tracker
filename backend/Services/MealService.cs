@@ -18,7 +18,7 @@ namespace backend.Services
             var meal = await _mealRepository.GetMealByIdAsync(id);
             if (meal == null)
                 throw new NotFoundException($"Meal with id {id} not found");
-            
+
             return meal;
         }
 
@@ -40,7 +40,7 @@ namespace backend.Services
             return createdMeal;
         }
 
-        public async Task<Meal> UpdateMealAsync(int mealId, int userId, string name) 
+        public async Task<Meal> UpdateMealAsync(int mealId, int userId, string name)
         {
             var existingMeal = await this.GetMealByIdAsync(mealId);
 
@@ -81,7 +81,7 @@ namespace backend.Services
                 throw new ValidationException("Quantity must be greater than 0");
 
             var meal = await GetMealByIdAsync(mealId);
-            
+
             if (meal.OwnerId != userId)
                 throw new ValidationException("You can only modify your own meals");
 
@@ -97,7 +97,7 @@ namespace backend.Services
                 throw new ValidationException("Quantity must be greater than 0");
 
             var meal = await GetMealByIdAsync(mealId);
-            
+
             if (meal.OwnerId != userId)
                 throw new ValidationException("You can only modify your own meals");
 
@@ -110,7 +110,7 @@ namespace backend.Services
         public async Task<bool> RemoveDishFromMealAsync(int userId, int mealId, int dishId)
         {
             var meal = await GetMealByIdAsync(mealId);
-            
+
             if (meal.OwnerId != userId)
                 throw new ValidationException("You can only modify your own meals");
 
@@ -147,7 +147,7 @@ namespace backend.Services
             var totalCalories = await _mealRepository.GetDailyCaloriesAsync(userId, date);
             return totalCalories;
         }
-        
+
         public async Task<Dictionary<DateTime, decimal>> GetWeeklyCaloriesAsync(int userId, DateTime startDate)
         {
             return await _mealRepository.GetWeeklyCaloriesAsync(userId, startDate);

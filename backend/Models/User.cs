@@ -10,7 +10,7 @@
         public bool EmailConfirmed { get; set; } = false;
 
 
-        public string? RefreshToken {  get; set; }
+        public string? RefreshToken { get; set; }
         public DateTime? RefreshTokenExpires { get; set; }
 
         public User() { }

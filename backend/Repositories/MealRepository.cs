@@ -20,7 +20,7 @@ namespace backend.Repositories
             using var connection = new SqlConnection(_connectionString);
             const string sql = @"SELECT id, owner_id AS OwnerId, name, created_at AS CreatedAt, updated_at AS UpdatedAt 
                                  FROM meals WHERE id = @Id";
-            return await connection.QueryFirstOrDefaultAsync<Meal>(sql, new { Id = id});
+            return await connection.QueryFirstOrDefaultAsync<Meal>(sql, new { Id = id });
         }
 
         public async Task<IEnumerable<Meal>> GetMealsByUserAsync(int userId)
@@ -59,7 +59,7 @@ namespace backend.Repositories
             using var connection = new SqlConnection(_connectionString);
             const string sql = @"DELETE FROM meals_dishes WHERE meal_id = @Id;
                                  DELETE FROM meals WHERE id = @Id";
-            var affectedRows = await connection.ExecuteAsync(sql, new { Id = id});
+            var affectedRows = await connection.ExecuteAsync(sql, new { Id = id });
             return affectedRows > 0;
         }
 

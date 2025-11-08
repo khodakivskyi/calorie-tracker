@@ -14,7 +14,7 @@
         public Image? Image { get; set; }
 
         public Dish() { }
-        
+
         public Dish(int? ownerId, string name, decimal weight, int? imgId, string? externalId = null)
         {
             OwnerId = ownerId;

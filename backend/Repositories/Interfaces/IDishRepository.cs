@@ -18,7 +18,7 @@ namespace backend.Repositories.Interfaces
         Task<Dish?> UpdateDishAsync(Dish dish);
         Task<bool> DeleteDishAsync(int dishId);
         Task<bool> DeleteAllDishesByUserAsync(int userId);
-        
+
         // Dish-Food relationship
         Task<bool> AddFoodAsync(int dishId, int foodId, decimal quantity);
         Task<bool> UpdateFoodQuantityAsync(int dishId, int foodId, decimal quantity);

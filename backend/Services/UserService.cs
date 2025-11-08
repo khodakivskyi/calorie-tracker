@@ -14,7 +14,7 @@ namespace backend.Services
         private readonly IEmailSender _emailSender;
 
         public UserService(
-            IUserRepository userRepository, 
+            IUserRepository userRepository,
             ITokenRepository tokenRepository,
             IEmailSender emailSender)
         {
@@ -140,7 +140,7 @@ namespace backend.Services
             if (user == null)
                 throw new ValidationException("Invalid email or password");
 
-            if(!user.EmailConfirmed)
+            if (!user.EmailConfirmed)
                 throw new ValidationException("Please verify your email before logging in");
 
             var hashedPassword = HashPassword(password, user.Salt);

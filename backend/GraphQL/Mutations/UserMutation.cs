@@ -12,7 +12,7 @@ namespace backend.GraphQL.Mutations
         {
             Name = "UserMutations";
 
-            Field <NonNullGraphType<AuthPayloadType>>("createUser")
+            Field<NonNullGraphType<AuthPayloadType>>("createUser")
                 .Argument<NonNullGraphType<StringGraphType>>("email")
                 .Argument<NonNullGraphType<StringGraphType>>("password")
                 .Argument<StringGraphType>("name")
@@ -40,7 +40,7 @@ namespace backend.GraphQL.Mutations
                     var name = context.GetArgument<string?>("name");
 
                     var user = await userService.UpdateUserAsync(userId, email, password, name);
-                    var (accessToken, refreshToken ) = await tokenService.GenerateTokensAsync(user);
+                    var (accessToken, refreshToken) = await tokenService.GenerateTokensAsync(user);
 
                     var httpContext = context.RequestServices?.GetService<IHttpContextAccessor>()?.HttpContext;
                     if (httpContext != null)
