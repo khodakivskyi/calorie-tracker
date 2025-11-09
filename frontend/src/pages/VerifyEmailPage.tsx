@@ -10,10 +10,10 @@ export default function VerifyEmailPage() {
         const params = new URLSearchParams(window.location.search);
         const token = params.get("token");
 
-        if (token) {
+        if (token && verificationStatus === 'idle') {
             dispatch(verifyEmail({token}));
-        }
-    }, [dispatch]);
+            }
+        }, [dispatch, verificationStatus]);
 
     const renderContent = () => {
         switch (verificationStatus) {

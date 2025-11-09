@@ -44,6 +44,8 @@ namespace backend
 
             builder.Services.AddControllers();
 
+            builder.Services.AddHttpContextAccessor();
+
             builder.Services.AddCors(options =>
             {
                 options.AddDefaultPolicy(policy =>

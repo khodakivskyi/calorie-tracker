@@ -67,6 +67,7 @@ export default function LoginForm() {
                     type="password"
                     value={password}
                     required
+                    minLength={6}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Мінімум 6 символів"
                     className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition duration-200 ease-in-out"

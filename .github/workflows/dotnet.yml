@@ -35,12 +35,12 @@ jobs:
         else
           echo "NuGet cache miss – packages will be restored from remote."
         fi
-    - name: Run dotnet format (check)
-      working-directory: ./backend
-      run: dotnet format backend.sln --verify-no-changes
     - name: Restore dependencies
       run: dotnet restore
       working-directory: ./backend
+    - name: Run dotnet format (check)
+      working-directory: ./backend
+      run: dotnet format backend.sln --verify-no-changes --no-restore
     - name: Build
       run: dotnet build --no-restore
       working-directory: ./backend

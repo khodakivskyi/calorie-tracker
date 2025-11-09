@@ -127,7 +127,16 @@ namespace backend.Services
 
             if (verificationToken != null)
             {
-                await SendVerificationEmailAsync(createdUser.Email, verificationToken.GetFullToken());
+                try
+                {
+                    await SendVerificationEmailAsync(createdUser.Email, verificationToken.GetFullToken());
+                }
+                catch (Exception ex)
+                {
+                    await _tokenRepository.DeleteTokenAsync(verificationToken.Id);
+                    await _userRepository.DeleteUserAsync(createdUser.Id);
+                    throw new InvalidOperationException("Failed to send verification email", ex);
+                }
             }
 
             return createdUser;

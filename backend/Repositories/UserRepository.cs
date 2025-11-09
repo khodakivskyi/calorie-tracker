@@ -18,8 +18,14 @@ namespace backend.Repositories
         {
             using var connection = new SqlConnection(_connectionString);
             const string sql = @"
-                SELECT id, name, email, password_hash AS PasswordHash, salt, email_confirmed AS EmailConfirmed
-                FROM users WHERE id = @UserId";
+                SELECT id, name, email,
+                       password_hash AS PasswordHash,
+                       salt,
+                       email_confirmed AS EmailConfirmed,
+                       refresh_token AS RefreshToken,
+                       refresh_token_expires AS RefreshTokenExpires
+                FROM users
+                WHERE id = @UserId";
             return await connection.QueryFirstOrDefaultAsync<User>(sql, new { UserId = userId });
         }
 
@@ -32,15 +38,6 @@ namespace backend.Repositories
             return await connection.QueryFirstOrDefaultAsync<User>(sql, new { Email = email });
         }
 
-        public async Task<User?> GetUserWithRefreshTokenAsync(int userId)
-        {
-            using var connection = new SqlConnection(_connectionString);
-            const string sql = @"
-                SELECT id, name, email, password_hash AS PasswordHash, salt, email_confirmed AS EmailConfirmed,
-                       refresh_token AS RefreshToken, refresh_token_expires AS RefreshTokenExpires
-                FROM users WHERE id = @UserId";
-            return await connection.QueryFirstOrDefaultAsync<User>(sql, new { UserId = userId });
-        }
 
         public async Task<User?> CreateUserAsync(User user)
         {

@@ -1,10 +1,15 @@
 import {store} from "../store";
 import {setAccessToken, logout} from "../store/slices/authSlice.ts";
 import {API_CONFIG} from "./api.ts";
-import type { GraphQLError } from "graphql";
+import type {GraphQLError} from "graphql";
 
 let isRefreshing = false;
-let pendingRequests: Array<(token: string) => void> = [];
+type PendingRequest = {
+    callback: (token: string) => Promise<void>;
+    reject: (reason?: unknown) => void;
+};
+
+const pendingRequests: PendingRequest[] = [];
 
 export async function graphqlRequest<T>(
     query: string,
@@ -15,7 +20,7 @@ export async function graphqlRequest<T>(
             "Content-Type": "application/json",
         };
 
-        if(token){
+        if (token) {
             headers[`Authorization`] = `Bearer ${token}`;
         }
 
@@ -38,20 +43,31 @@ export async function graphqlRequest<T>(
         return error.message.includes("Unauthorized") || code === "UNAUTHORIZED";
     });
 
-    if (isUnauthorized && !isRefreshing) {
+    if (isUnauthorized) {
         if (isRefreshing) {
-            return new Promise((resolve) => {
-                pendingRequests.push(async (newToken) => {
-                    const retryResponse = await  makeRequest(newToken);
-                    const retryData = await retryResponse.json();
-                    resolve(retryData.data);
-                })
+            return new Promise((resolve, reject) => {
+                pendingRequests.push({
+                    reject,
+                    callback: async (newToken) => {
+                        try {
+                            const retryResponse = await makeRequest(newToken);
+                            const retryData = await retryResponse.json();
+
+                            if (retryData.errors) {
+                                reject(new Error(retryData.errors[0]?.message ?? "GraphQL error"));
+                            } else {
+                                resolve(retryData.data);
+                            }
+                        } catch (err) {
+                            reject(err instanceof Error ? err : new Error("Unknown error during token refresh"));
+                        }
+                    },
+                });
             });
         }
 
         isRefreshing = true;
-
-        try{
+        try {
             const refreshResponse = await fetch(API_CONFIG.GRAPHQL_URL, {
                 method: `POST`,
                 headers: {"Content-Type": "application/json"},
@@ -60,33 +76,30 @@ export async function graphqlRequest<T>(
             });
 
             const refreshData = await refreshResponse.json();
-
-            if(refreshData.data?.refreshToken){
-                const newAccessToken = refreshData.data.refreshToken;
-
-                store.dispatch(setAccessToken(newAccessToken));
-
-                pendingRequests.forEach(cb => cb(newAccessToken));
-                pendingRequests = [];
-                isRefreshing = false;
-
-                response = await makeRequest(newAccessToken);
-                data = await response.json();
+            const newAccessToken = refreshData.data?.refreshToken;
+            if (!newAccessToken) {
+                throw new Error(refreshData.errors?.[0]?.message ?? "Failed to refresh token");
             }
-        } catch (error){
+
+            store.dispatch(setAccessToken(newAccessToken));
+
+            const queued = pendingRequests.splice(0);
+            queued.forEach((pending) => void pending.callback(newAccessToken));
+
+            response = await makeRequest(newAccessToken);
+            data = await response.json();
+        } catch (error) {
+            const normalizedError = error instanceof Error ? error : new Error("Unknown error during token refresh");
+            const queued = pendingRequests.splice(0);
+            queued.forEach((pending) => pending.reject(normalizedError));
             store.dispatch(logout());
+            throw normalizedError;
+        } finally {
             isRefreshing = false;
-            pendingRequests = [];
-
-            if (error instanceof Error) {
-                throw error;
-            } else {
-                throw new Error('Unknown error during token refresh');
-            }
         }
     }
 
-    if(data.errors){
+    if (data.errors) {
         throw new Error(data.errors[0]?.message || 'GraphQL error');
     }
 
