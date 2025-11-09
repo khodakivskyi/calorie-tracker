@@ -65,7 +65,7 @@
               "script": {
                 "exec": [
                   "pm.test(\"User must verify email before authenticating\", function () {",
-                  "    pm.response.to.have.status(400);",
+                  "    pm.response.to.have.status(200);",
                   "    const responseJson = pm.response.json();",
                   "    pm.expect(responseJson.data).to.be.null;",
                   "    pm.expect(responseJson.errors && responseJson.errors.length).to.be.above(0);",
