@@ -11,6 +11,7 @@ using GraphQL;
 using GraphQL.Execution;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -22,6 +23,7 @@ namespace backend
         {
             Env.Load();
             var builder = WebApplication.CreateBuilder(args);
+            var env = builder.Environment;
 
             builder.Logging.AddConsole();
 
@@ -126,22 +128,40 @@ namespace backend
                         .AllowCredentials());
             });
 
-            builder.Services.Configure<AuthMessageSenderOptions>(options =>
+            if (env.IsEnvironment("Testing"))
             {
-                options.SmtpHost = Environment.GetEnvironmentVariable("SMTP_HOST")
-                    ?? throw new InvalidOperationException("SMTP_HOST is not set");
-                options.SmtpPort = int.Parse(Environment.GetEnvironmentVariable("SMTP_PORT")
-                    ?? throw new InvalidOperationException("SMTP_PORT is not set"));
-                options.SmtpUsername = Environment.GetEnvironmentVariable("SMTP_USERNAME")
-                    ?? throw new InvalidOperationException("SMTP_USERNAME is not set");
-                options.SmtpPassword = Environment.GetEnvironmentVariable("SMTP_PASSWORD")
-                    ?? throw new InvalidOperationException("SMTP_PASSWORD is not set");
-                options.FromEmail = Environment.GetEnvironmentVariable("FROM_EMAIL")
-                    ?? throw new InvalidOperationException("FROM_EMAIL is not set");
-                options.FromName = Environment.GetEnvironmentVariable("FROM_NAME")
-                    ?? throw new InvalidOperationException("FROM_NAME is not set");
-                options.EnableSsl = Environment.GetEnvironmentVariable("ENABLE_SSL") == "true";
-            });
+                builder.Services.Configure<AuthMessageSenderOptions>(options =>
+                {
+                    options.SmtpHost = "localhost";
+                    options.SmtpPort = 25;
+                    options.SmtpUsername = "ci";
+                    options.SmtpPassword = "ci";
+                    options.FromEmail = "ci@example.com";
+                    options.FromName = "CI";
+                    options.EnableSsl = false;
+                });
+
+                builder.Services.AddSingleton<Services.Interfaces.IEmailSender, NoopEmailSender>();
+            }
+            else
+            {
+                builder.Services.Configure<AuthMessageSenderOptions>(options =>
+                {
+                    options.SmtpHost = Environment.GetEnvironmentVariable("SMTP_HOST")
+                        ?? throw new InvalidOperationException("SMTP_HOST is not set");
+                    options.SmtpPort = int.Parse(Environment.GetEnvironmentVariable("SMTP_PORT")
+                        ?? throw new InvalidOperationException("SMTP_PORT is not set"));
+                    options.SmtpUsername = Environment.GetEnvironmentVariable("SMTP_USERNAME")
+                        ?? throw new InvalidOperationException("SMTP_USERNAME is not set");
+                    options.SmtpPassword = Environment.GetEnvironmentVariable("SMTP_PASSWORD")
+                        ?? throw new InvalidOperationException("SMTP_PASSWORD is not set");
+                    options.FromEmail = Environment.GetEnvironmentVariable("FROM_EMAIL")
+                        ?? throw new InvalidOperationException("FROM_EMAIL is not set");
+                    options.FromName = Environment.GetEnvironmentVariable("FROM_NAME")
+                        ?? throw new InvalidOperationException("FROM_NAME is not set");
+                    options.EnableSsl = Environment.GetEnvironmentVariable("ENABLE_SSL") == "true";
+                });
+            }
 
             builder.Services.AddTransient<Services.Interfaces.IEmailSender, EmailSender>();
 
