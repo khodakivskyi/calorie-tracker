@@ -1,12 +1,28 @@
 USE calorie_tracker
 GO
 
-ALTER TABLE users 
-ADD refresh_token NVARCHAR(256) NULL,
-    refresh_token_expires DATETIME2 NULL
+IF COL_LENGTH('users', 'refresh_token') IS NULL
+BEGIN
+    ALTER TABLE users 
+    ADD refresh_token NVARCHAR(256) NULL;
+END
+
+IF COL_LENGTH('users', 'refresh_token_expires') IS NULL
+BEGIN
+    ALTER TABLE users 
+    ADD refresh_token_expires DATETIME2 NULL;
+END
 GO
 
-CREATE INDEX IX_users_refresh_token ON users (refresh_token)
-WHERE refresh_token IS NOT NULL
+IF NOT EXISTS (
+    SELECT 1
+    FROM sys.indexes
+    WHERE name = 'IX_users_refresh_token'
+      AND object_id = OBJECT_ID('users')
+)
+BEGIN
+    CREATE INDEX IX_users_refresh_token ON users (refresh_token)
+    WHERE refresh_token IS NOT NULL
+END
 GO
 

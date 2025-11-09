@@ -164,7 +164,19 @@ namespace backend
                         ?? throw new InvalidOperationException("FROM_EMAIL is not set");
                     options.FromName = Environment.GetEnvironmentVariable("FROM_NAME")
                         ?? throw new InvalidOperationException("FROM_NAME is not set");
-                    options.EnableSsl = Environment.GetEnvironmentVariable("ENABLE_SSL") == "true";
+                    var enableSslRaw = Environment.GetEnvironmentVariable("ENABLE_SSL");
+                    if (string.IsNullOrWhiteSpace(enableSslRaw))
+                    {
+                        options.EnableSsl = false;
+                    }
+                    else if (bool.TryParse(enableSslRaw, out var enableSsl))
+                    {
+                        options.EnableSsl = enableSsl;
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException("ENABLE_SSL must be set to 'true' or 'false'.");
+                    }
                 });
 
                 builder.Services.AddTransient<Services.Interfaces.IEmailSender, EmailSender>();

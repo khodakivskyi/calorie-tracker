@@ -173,29 +173,6 @@ jobs:
           exit 1
         fi
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '18'
-    - name: Cache npm
-      id: cache-npm-second
-      uses: actions/cache@v4
-      with:
-        path: ~/.npm
-        key: npm-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
-          npm-
-    - name: npm cache status (second setup)
-      run: |
-        if [ "${{ steps.cache-npm-second.outputs.cache-hit }}" = "true" ]; then
-          echo "npm cache hit (second setup) – using cached packages."
-        else
-          echo "npm cache miss (second setup) – packages will be fetched from registry."
-        fi
-
-    - name: Install Newman
-      run: npm install -g newman
-    
     - name: Run API Tests
       run: |
         newman run tests/calorie-tracker-api.json \
