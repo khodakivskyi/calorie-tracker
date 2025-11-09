@@ -28,13 +28,11 @@
                   "pm.test(\"User created successfully\", function () {",
                   "    pm.response.to.have.status(200);",
                   "    const responseJson = pm.response.json();",
-                  "    pm.expect(responseJson.data.createUser.token).to.exist;",
+                  "    pm.expect(responseJson.errors).to.be.undefined;",
                   "    ",
                   "    const expectedEmail = pm.environment.get(\"testEmail\");",
                   "    pm.expect(responseJson.data.createUser.user.email).to.eql(expectedEmail);",
                   "    ",
-                  "    // Save token for subsequent requests",
-                  "    pm.environment.set(\"authToken\", responseJson.data.createUser.token);",
                   "    pm.environment.set(\"userId\", responseJson.data.createUser.user.id);",
                   "});"
                 ]
@@ -51,7 +49,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"query\": \"mutation CreateUser($email: String!, $password: String!, $name: String) {\\n    createUser(email: $email, password: $password, name: $name) {\\n      user {\\n        id\\n        email\\n        name\\n      }\\n      token\\n    }\\n  }\",\n  \"variables\": {\n    \"email\": \"{{testEmail}}\",\n    \"password\": \"password123\",\n    \"name\": \"Test User\"\n  }\n}"
+              "raw": "{\n  \"query\": \"mutation CreateUser($email: String!, $password: String!, $name: String) {\\n    createUser(email: $email, password: $password, name: $name) {\\n      user {\\n        id\\n        email\\n        name\\n      }\\n    }\\n  }\",\n  \"variables\": {\n    \"email\": \"{{testEmail}}\",\n    \"password\": \"password123\",\n    \"name\": \"Test User\"\n  }\n}"
             },
             "url": {
               "raw": "{{graphqlEndpoint}}",
@@ -66,16 +64,12 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "pm.test(\"User authenticated successfully\", function () {",
-                  "    pm.response.to.have.status(200);",
+                  "pm.test(\"User must verify email before authenticating\", function () {",
+                  "    pm.response.to.have.status(400);",
                   "    const responseJson = pm.response.json();",
-                  "    pm.expect(responseJson.data.authenticateUser.token).to.exist;",
-                  "    ",
-                  "    const expectedEmail = pm.environment.get(\"testEmail\");",
-                  "    pm.expect(responseJson.data.authenticateUser.user.email).to.eql(expectedEmail);",
-                  "    ",
-                  "    // Save token",
-                  "    pm.environment.set(\"authToken\", responseJson.data.authenticateUser.token);",
+                  "    pm.expect(responseJson.data).to.be.null;",
+                  "    pm.expect(responseJson.errors && responseJson.errors.length).to.be.above(0);",
+                  "    pm.expect(responseJson.errors[0].message).to.contain(\"verify your email\");",
                   "});"
                 ]
               }
@@ -91,7 +85,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"query\": \"query AuthenticateUser($email: String!, $password: String!) {\\n    authenticateUser(email: $email, password: $password) {\\n      user {\\n        id\\n        email\\n        name\\n      }\\n      token\\n    }\\n  }\",\n  \"variables\": {\n    \"email\": \"{{testEmail}}\",\n    \"password\": \"password123\"\n  }\n}"
+              "raw": "{\n  \"query\": \"query AuthenticateUser($email: String!, $password: String!) {\\n    authenticateUser(email: $email, password: $password) {\\n      user {\\n        id\\n        email\\n        name\\n      }\\n      accessToken\\n    }\\n  }\",\n  \"variables\": {\n    \"email\": \"{{testEmail}}\",\n    \"password\": \"password123\"\n  }\n}"
             },
             "url": {
               "raw": "{{graphqlEndpoint}}",
