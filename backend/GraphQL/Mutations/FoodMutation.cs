@@ -1,6 +1,7 @@
 ﻿using backend.GraphQL.Types;
 using backend.Models;
 using backend.Services;
+using backend.Services.External;
 using GraphQL;
 using GraphQL.Types;
 
@@ -8,9 +9,21 @@ namespace backend.GraphQL.Mutations
 {
     public class FoodMutation : ObjectGraphType
     {
-        public FoodMutation(FoodService foodService)
+        public FoodMutation(FoodService foodService, FatSecretService fatSecretService)
         {
             Name = "FoodMutations";
+
+            Field<ListGraphType<FoodType>>("searchFoodsFromFatSecret")
+               .Argument<NonNullGraphType<StringGraphType>>("query")
+               .Argument<IntGraphType>("userId")
+               .ResolveAsync(async context =>
+               {
+                   var query = context.GetArgument<string>("query");
+                   var userId = context.GetArgument<int?>("userId");
+
+                   var foods = await fatSecretService.SearchFoodsAsync(query, userId);
+                   return foods;
+               });
 
             Field<FoodType>("createFood")
                 .Argument<IntGraphType>("userId")

@@ -18,7 +18,7 @@ namespace backend
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -112,6 +112,26 @@ namespace backend
 
             var app = builder.Build();
 
+            using (var scope = app.Services.CreateScope())
+            {
+                var config = scope.ServiceProvider.GetRequiredService<IConfiguration>();
+                bool seedDatabase = config.GetValue<bool>("FatSecret:SeedDatabase");
+
+                if (seedDatabase)
+                {
+                    var fatSecretService = scope.ServiceProvider.GetRequiredService<FatSecretService>();
+                    try
+                    {
+                        Console.WriteLine("Seeding foods from FatSecret API...");
+                        await fatSecretService.SearchFoodsAsync("rice");
+                        Console.WriteLine("Seeding completed successfully!");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error while seeding database: {ex.Message}");
+                    }
+                }
+            }
             if (app.Environment.IsDevelopment())
             {
                 app.UseGraphQLGraphiQL("/ui/graphiql");

@@ -9,8 +9,6 @@ namespace backend.Services.External
     {
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
-        private readonly NutrientsService _nutrientsService;
-        private readonly CaloriesService _caloriesService;
         private readonly FoodService _foodService;
 
         private string? _cachedToken;
@@ -19,14 +17,10 @@ namespace backend.Services.External
         public FatSecretService(
             HttpClient httpClient,
             IConfiguration config,
-            NutrientsService nutrientsService,
-            CaloriesService caloriesService,
             FoodService foodService)
         {
             _httpClient = httpClient;
             _config = config;
-            _nutrientsService = nutrientsService;
-            _caloriesService = caloriesService;
             _foodService = foodService;
         }
 
@@ -84,19 +78,17 @@ namespace backend.Services.External
                 if (!string.IsNullOrWhiteSpace(r.BrandName))
                     name = $"{name} ({r.BrandName})";
 
-                var details = await GetFoodDetailsAsync(r.Id);
-
                 decimal? calories = null;
                 decimal? protein = null;
                 decimal? fat = null;
                 decimal? carbs = null;
 
-                if (details != null)
+                if (!string.IsNullOrWhiteSpace(r.Description))
                 {
-                    calories = (decimal)details.Value.Calories;
-                    protein = (decimal)details.Value.Protein;
-                    fat = (decimal)details.Value.Fat;
-                    carbs = (decimal)details.Value.Carbs;
+                    calories = ExtractNutrientValue(r.Description, "Calories");
+                    fat = ExtractNutrientValue(r.Description, "Fat");
+                    carbs = ExtractNutrientValue(r.Description, "Carbs");
+                    protein = ExtractNutrientValue(r.Description, "Protein");
                 }
 
                 var createdFood = await _foodService.CreateFoodAsync(
@@ -116,7 +108,32 @@ namespace backend.Services.External
             return foods;
         }
 
-        public async Task<(double Calories, double Protein, double Fat, double Carbs)?> GetFoodDetailsAsync(string foodId)
+        private static decimal? ExtractNutrientValue(string description, string nutrient)
+        {
+            try
+            {
+                var parts = description.Split('|', StringSplitOptions.TrimEntries);
+                foreach (var part in parts)
+                {
+                    if (part.StartsWith(nutrient, StringComparison.OrdinalIgnoreCase))
+                    {
+                        var valuePart = part.Split(':')[1].Trim();
+
+                        var numeric = new string(valuePart.Where(c => char.IsDigit(c) || c == '.' || c == ',').ToArray());
+
+                        if (decimal.TryParse(numeric, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var result))
+                            return Math.Round(result, 2);
+                    }
+                }
+                return null;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+        //СТАРИЙ МЕТОД ДЛЯ ОТРИМАННЯ ДЕТАЛЕЙ ПРОДУКТУ
+        /*public async Task<(double Calories, double Protein, double Fat, double Carbs)?> GetFoodDetailsAsync(string foodId)
         {
             var token = await GetAccessTokenAsync();
             _httpClient.DefaultRequestHeaders.Authorization =
@@ -133,7 +150,8 @@ namespace backend.Services.External
 
             var json = await response.Content.ReadAsStringAsync();
             var data = JsonConvert.DeserializeObject<FoodResponse>(json);
-
+           // Console.WriteLine("Raw JSON:");
+            //Console.WriteLine(json);
             var serving = data?.Food?.Servings?.Serving?.FirstOrDefault();
             if (serving == null)
                 return null;
@@ -155,6 +173,6 @@ namespace backend.Services.External
                 Fat: Math.Round(fat * factor, 2),
                 Carbs: Math.Round(carbs * factor, 2)
             );
-        }
+        }*/
     }
 }
