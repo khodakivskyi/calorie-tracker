@@ -120,11 +120,14 @@ namespace backend
                 };
             });
 
+            var frontendOrigin = Environment.GetEnvironmentVariable("FRONTEND_URL")
+                ?? throw new InvalidOperationException("FRONTEND_URL is not set");
+
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowAll",
                     policy => policy
-                        .WithOrigins("http://localhost:5173")
+                        .WithOrigins(frontendOrigin)
                         .AllowAnyMethod()
                         .AllowAnyHeader()
                         .AllowCredentials());
