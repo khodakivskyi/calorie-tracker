@@ -2,16 +2,17 @@
 using backend.Services;
 using GraphQL;
 using GraphQL.Types;
+using Microsoft.AspNetCore.Identity;
 
 namespace backend.GraphQL.Mutations
 {
     public class UserMutation : ObjectGraphType
     {
-        public UserMutation(UserService userService, JwtService jwtService)
+        public UserMutation(UserService userService, TokenService tokenService)
         {
             Name = "UserMutations";
 
-            Field <NonNullGraphType<AuthPayloadType>>("createUser")
+            Field<NonNullGraphType<AuthPayloadType>>("createUser")
                 .Argument<NonNullGraphType<StringGraphType>>("email")
                 .Argument<NonNullGraphType<StringGraphType>>("password")
                 .Argument<StringGraphType>("name")
@@ -20,14 +21,10 @@ namespace backend.GraphQL.Mutations
                     var email = context.GetArgument<string>("email");
                     var password = context.GetArgument<string>("password");
                     var name = context.GetArgument<string?>("name");
+
                     var user = await userService.CreateUserAsync(email, password, name);
 
-                    var token = jwtService.GenerateToken(user.Id, user.Email);
-                    return new
-                    {
-                        user,
-                        token
-                    };
+                    return new { user };
                 });
 
             Field<NonNullGraphType<AuthPayloadType>>("updateUser")
@@ -43,12 +40,25 @@ namespace backend.GraphQL.Mutations
                     var name = context.GetArgument<string?>("name");
 
                     var user = await userService.UpdateUserAsync(userId, email, password, name);
-                    var token = jwtService.GenerateToken(user.Id, user.Email);
+                    var (accessToken, refreshToken) = await tokenService.GenerateTokensAsync(user);
+
+                    var httpContext = context.RequestServices?.GetService<IHttpContextAccessor>()?.HttpContext;
+                    if (httpContext != null)
+                    {
+                        httpContext.Response.Cookies.Append("refreshToken", refreshToken, new CookieOptions
+                        {
+                            HttpOnly = true,
+                            Secure = true,
+                            SameSite = SameSiteMode.Strict,
+                            Expires = DateTimeOffset.UtcNow.AddDays(7),
+                            Path = "/graphql"
+                        });
+                    }
 
                     return new
                     {
                         user,
-                        token
+                        accessToken
                     };
                 });
 
@@ -58,6 +68,15 @@ namespace backend.GraphQL.Mutations
                 {
                     var userId = context.GetArgument<int>("userId");
                     return await userService.DeleteUserAsync(userId);
+                });
+
+            Field<BooleanGraphType>("verifyEmail")
+                .Argument<NonNullGraphType<StringGraphType>>("token")
+                .ResolveAsync(async context =>
+                {
+                    var token = context.GetArgument<string>("token");
+
+                    return await userService.VerifyEmailAsync(token);
                 });
         }
     }

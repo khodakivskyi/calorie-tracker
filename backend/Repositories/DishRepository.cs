@@ -23,7 +23,7 @@ namespace backend.Repositories
                                  WHERE id = @Id AND (owner_id = @UserId OR owner_id IS NULL)";
             return await connection.QueryFirstOrDefaultAsync<Dish>(sql, new { Id = dishId, UserId = userId });
         }
-        
+
         public async Task<IEnumerable<Dish>> GetDishesByUserAsync(int userId)
         {
             using var connection = new SqlConnection(_connectionString);
@@ -145,9 +145,9 @@ namespace backend.Repositories
                                 FROM dishes_foods df
                                 INNER JOIN foods f ON df.food_id = f.id
                                 WHERE df.dish_id = @DishId;";
-            
+
             var results = await connection.QueryAsync(sql, new { DishId = dishId });
-            
+
             return results.Select(r => (
                 food: new Food(
                     ownerId: r.owner_id,

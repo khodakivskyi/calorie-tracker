@@ -1,17 +1,19 @@
-using backend.Repositories;
-using backend.Repositories.Interfaces;
-using backend.Services;
 using backend.GraphQL;
 using backend.GraphQL.Mutations;
 using backend.GraphQL.Queries;
 using backend.GraphQL.Types;
+using backend.Models;
+using backend.Repositories;
+using backend.Repositories.Interfaces;
+using backend.Services;
+using DotNetEnv;
 using GraphQL;
 using GraphQL.Execution;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using backend.Models;
 
 namespace backend
 {
@@ -19,12 +21,15 @@ namespace backend
     {
         public static void Main(string[] args)
         {
+            Env.Load();
             var builder = WebApplication.CreateBuilder(args);
+            var env = builder.Environment;
 
             builder.Logging.AddConsole();
 
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
             builder.Services.AddScoped<IUserRepository, UserRepository>(provider => new UserRepository(connectionString!));
+            builder.Services.AddScoped<ITokenRepository, TokenRepository>(provider => new TokenRepository(connectionString!));
             builder.Services.AddScoped<IFoodRepository, FoodRepository>(provider => new FoodRepository(connectionString!));
             builder.Services.AddScoped<IDishRepository, DishRepository>(provider => new DishRepository(connectionString!));
             builder.Services.AddScoped<IMealRepository, MealRepository>(provider => new MealRepository(connectionString!));
@@ -38,6 +43,8 @@ namespace backend
             builder.Services.Configure<ImageSettings>(builder.Configuration.GetSection("ImageSettings"));
 
             builder.Services.AddControllers();
+
+            builder.Services.AddHttpContextAccessor();
 
             builder.Services.AddCors(options =>
             {
@@ -56,6 +63,7 @@ namespace backend
             builder.Services.AddScoped<NutrientsService>();
             builder.Services.AddScoped<CaloriesService>();
             builder.Services.AddScoped<ImageService>();
+            builder.Services.AddScoped<TokenService>();
 
             builder.Services.AddSingleton<IErrorInfoProvider, MyErrorInfoProvider>();
             builder.Services.AddScoped<UserType>();
@@ -83,8 +91,16 @@ namespace backend
                 options.AddGraphTypes(typeof(RootQuery).Assembly);
             });
 
-            var jwtKey = builder.Configuration["JwtSettings:SecretKey"];
-            var expiryMinutes = builder.Configuration.GetValue<int>("JwtSettings:ExpiryMinutes", 15);
+            var jwtKey = Environment.GetEnvironmentVariable("JWT_SECRET_KEY")
+                ?? throw new InvalidOperationException("JWT_SECRET_KEY is not set.");
+            var expiryMinutesRaw = Environment.GetEnvironmentVariable("JWT_EXPIRY_MINS")
+               ?? throw new InvalidOperationException("JWT_EXPIRY_MINS is not set.");
+
+            if (!int.TryParse(expiryMinutesRaw, out var expiryMinutes))
+            {
+                throw new InvalidOperationException("JWT_EXPIRY_MINS must be int");
+            }
+
             builder.Services.AddSingleton(new JwtService(jwtKey!, expiryMinutes));
 
             builder.Services.AddAuthentication(options =>
@@ -104,6 +120,68 @@ namespace backend
                 };
             });
 
+            var frontendOrigin = Environment.GetEnvironmentVariable("FRONTEND_URL")
+                ?? throw new InvalidOperationException("FRONTEND_URL is not set");
+
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll",
+                    policy => policy
+                        .WithOrigins(frontendOrigin)
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()
+                        .AllowCredentials());
+            });
+
+            if (env.IsEnvironment("Testing"))
+            {
+                builder.Services.Configure<AuthMessageSenderOptions>(options =>
+                {
+                    options.SmtpHost = "localhost";
+                    options.SmtpPort = 25;
+                    options.SmtpUsername = "ci";
+                    options.SmtpPassword = "ci";
+                    options.FromEmail = "ci@example.com";
+                    options.FromName = "CI";
+                    options.EnableSsl = false;
+                });
+
+                builder.Services.AddSingleton<Services.Interfaces.IEmailSender, NoopEmailSender>();
+            }
+            else
+            {
+                builder.Services.Configure<AuthMessageSenderOptions>(options =>
+                {
+                    options.SmtpHost = Environment.GetEnvironmentVariable("SMTP_HOST")
+                        ?? throw new InvalidOperationException("SMTP_HOST is not set");
+                    options.SmtpPort = int.Parse(Environment.GetEnvironmentVariable("SMTP_PORT")
+                        ?? throw new InvalidOperationException("SMTP_PORT is not set"));
+                    options.SmtpUsername = Environment.GetEnvironmentVariable("SMTP_USERNAME")
+                        ?? throw new InvalidOperationException("SMTP_USERNAME is not set");
+                    options.SmtpPassword = Environment.GetEnvironmentVariable("SMTP_PASSWORD")
+                        ?? throw new InvalidOperationException("SMTP_PASSWORD is not set");
+                    options.FromEmail = Environment.GetEnvironmentVariable("FROM_EMAIL")
+                        ?? throw new InvalidOperationException("FROM_EMAIL is not set");
+                    options.FromName = Environment.GetEnvironmentVariable("FROM_NAME")
+                        ?? throw new InvalidOperationException("FROM_NAME is not set");
+                    var enableSslRaw = Environment.GetEnvironmentVariable("ENABLE_SSL");
+                    if (string.IsNullOrWhiteSpace(enableSslRaw))
+                    {
+                        options.EnableSsl = false;
+                    }
+                    else if (bool.TryParse(enableSslRaw, out var enableSsl))
+                    {
+                        options.EnableSsl = enableSsl;
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException("ENABLE_SSL must be set to 'true' or 'false'.");
+                    }
+                });
+
+                builder.Services.AddTransient<Services.Interfaces.IEmailSender, EmailSender>();
+            }
+
             var app = builder.Build();
 
             if (app.Environment.IsDevelopment())
@@ -111,7 +189,7 @@ namespace backend
                 app.UseGraphQLGraphiQL("/ui/graphiql");
             }
 
-            app.UseCors();
+            app.UseCors("AllowAll");
             app.UseStaticFiles();
             app.UseAuthentication();
             app.UseAuthorization();

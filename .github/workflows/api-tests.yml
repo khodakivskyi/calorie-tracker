@@ -26,11 +26,41 @@ jobs:
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
+    - name: Cache NuGet
+      id: cache-nuget
+      uses: actions/cache@v4
+      with:
+        path: ~/.nuget/packages
+        key: dotnet-${{ hashFiles('backend/**/*.csproj') }}
+        restore-keys: |
+          dotnet-
+    - name: NuGet cache status
+      run: |
+        if [ "${{ steps.cache-nuget.outputs.cache-hit }}" = "true" ]; then
+          echo "NuGet cache hit – using cached packages."
+        else
+          echo "NuGet cache miss – packages will be restored from remote."
+        fi
     
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
         node-version: '18'
+    - name: Cache npm
+      id: cache-npm
+      uses: actions/cache@v4
+      with:
+        path: ~/.npm
+        key: npm-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          npm-
+    - name: npm cache status
+      run: |
+        if [ "${{ steps.cache-npm.outputs.cache-hit }}" = "true" ]; then
+          echo "npm cache hit – using cached packages."
+        else
+          echo "npm cache miss – packages will be fetched from registry."
+        fi
     
     - name: Install Newman
       run: npm install -g newman
@@ -56,8 +86,16 @@ jobs:
       run: |
         docker cp database/Scripts/01_CreateTables.sql ${{ job.services.mssql.id }}:/tmp/
         docker cp database/Scripts/02_SeedData.sql ${{ job.services.mssql.id }}:/tmp/
+        docker cp database/Scripts/04_AddEmailVerification.sql ${{ job.services.mssql.id }}:/tmp/
+        docker cp database/Scripts/05_CreateVerificationTokensTable.sql ${{ job.services.mssql.id }}:/tmp/
+        docker cp database/Scripts/06_AddRefreshToken.sql ${{ job.services.mssql.id }}:/tmp/
+        docker cp database/Scripts/07_RemoveVerificationTokenColumns.sql ${{ job.services.mssql.id }}:/tmp/
         docker exec ${{ job.services.mssql.id }} /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P TestPassword123! -C -d calorie_tracker -i /tmp/01_CreateTables.sql
         docker exec ${{ job.services.mssql.id }} /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P TestPassword123! -C -d calorie_tracker -i /tmp/02_SeedData.sql
+        docker exec ${{ job.services.mssql.id }} /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P TestPassword123! -C -d calorie_tracker -i /tmp/04_AddEmailVerification.sql
+        docker exec ${{ job.services.mssql.id }} /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P TestPassword123! -C -d calorie_tracker -i /tmp/05_CreateVerificationTokensTable.sql
+        docker exec ${{ job.services.mssql.id }} /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P TestPassword123! -C -d calorie_tracker -i /tmp/06_AddRefreshToken.sql
+        docker exec ${{ job.services.mssql.id }} /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P TestPassword123! -C -d calorie_tracker -i /tmp/07_RemoveVerificationTokenColumns.sql
     
     - name: Create Test Configuration
       run: |
@@ -80,6 +118,12 @@ jobs:
           },
           "AllowedHosts": "*"
         }' > backend/appsettings.Testing.json
+    - name: Set frontend origin
+      run: echo "FRONTEND_URL=http://localhost:5173" >> $GITHUB_ENV
+    - name: Export JWT secret
+      run: echo "JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}" >> $GITHUB_ENV
+    - name: Export JWT expiry
+      run: echo "JWT_EXPIRY_MINS=${{ secrets.JWT_EXPIRY_MINS }}" >> $GITHUB_ENV
     
     - name: Start API Server
       run: |
@@ -129,14 +173,6 @@ jobs:
           exit 1
         fi
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '18'
-
-    - name: Install Newman
-      run: npm install -g newman
-    
     - name: Run API Tests
       run: |
         newman run tests/calorie-tracker-api.json \

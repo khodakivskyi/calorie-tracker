@@ -53,7 +53,7 @@ namespace backend.Services
 
             var food = new Food(userId, name, imageId, externalId);
             var createdFood = await _foodRepository.CreateFoodAsync(food);
-            
+
             if (createdFood == null)
                 throw new InvalidOperationException("Failed to create food");
 
@@ -163,7 +163,7 @@ namespace backend.Services
         public async Task<bool> DeleteFoodAsync(int foodId, int userId)
         {
             var food = await this.GetFoodByIdAsync(foodId, userId);
-            
+
             if (food.OwnerId == null)
                 throw new ValidationException("You cannot delete global foods");
 

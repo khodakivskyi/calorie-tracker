@@ -7,7 +7,7 @@ namespace backend.GraphQL.Types
         public AuthPayloadType()
         {
             Field<NonNullGraphType<UserType>>("user");
-            Field<NonNullGraphType<StringGraphType>>("token");
+            Field<NonNullGraphType<StringGraphType>>("accessToken");
         }
     }
 }

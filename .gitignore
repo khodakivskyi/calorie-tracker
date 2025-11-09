@@ -41,3 +41,9 @@ Thumbs.db
 # Visual Studio
 # ===============================
 .vs/
+
+# ===============================
+# Environment Variables
+# ===============================
+backend/.env
+.env

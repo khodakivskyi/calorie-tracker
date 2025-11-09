@@ -25,7 +25,7 @@ namespace backend.Services
         public async Task<IEnumerable<Dish>> GetDishesByUserAsync(int userId)
         {
             return await _dishRepository.GetDishesByUserAsync(userId);
-        } 
+        }
 
         public async Task<IEnumerable<Dish>> GetPrivateDishesByUserAsync(int userId)
         {
@@ -53,7 +53,7 @@ namespace backend.Services
 
             var dish = new Dish(userId, name, weight, imageId, externalId);
             var createdDish = await _dishRepository.CreateDishAsync(dish);
-            
+
             if (createdDish == null)
                 throw new InvalidOperationException("Failed to create dish");
 
@@ -92,7 +92,7 @@ namespace backend.Services
         public async Task<bool> DeleteDishAsync(int dishId, int userId)
         {
             var dish = await this.GetDishByIdAsync(dishId, userId);
-            
+
             if (dish.OwnerId == null)
                 throw new ValidationException("You cannot delete global dishes");
 
@@ -114,7 +114,7 @@ namespace backend.Services
                 throw new ValidationException("Quantity must be greater than 0");
 
             var dish = await this.GetDishByIdAsync(dishId, userId);
-            
+
             if (dish.OwnerId == null)
                 throw new ValidationException("You cannot modify global dishes");
 
@@ -134,7 +134,7 @@ namespace backend.Services
                 throw new ValidationException("Quantity must be greater than 0");
 
             var dish = await this.GetDishByIdAsync(dishId, userId);
-            
+
             if (dish.OwnerId == null)
                 throw new ValidationException("You cannot modify global dishes");
 
@@ -151,7 +151,7 @@ namespace backend.Services
         public async Task<bool> RemoveFoodFromDishAsync(int userId, int dishId, int foodId)
         {
             var dish = await this.GetDishByIdAsync(dishId, userId);
-            
+
             if (dish.OwnerId == null)
                 throw new ValidationException("You cannot modify global dishes");
 
