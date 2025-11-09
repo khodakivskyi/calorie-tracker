@@ -71,20 +71,20 @@ export const authenticateUser = createAsyncThunk<
             const data = await graphqlRequest<{
                 authenticateUser: {
                     user: { id: number, email: string, name: string | null };
-                    token: string;
+                    accessToken: string;
                 }
             }>(
                 `query AuthenticateUser($email: String!, $password: String!) {
                     authenticateUser(email: $email, password: $password) {
                         user { id email name }
-                        token
+                        accessToken
                     }
                 }`,
                 params as unknown as Record<string, unknown>
             );
 
             return {
-                accessToken: data.authenticateUser.token,
+                accessToken: data.authenticateUser.accessToken,
                 user: data.authenticateUser.user
             }
         } catch (error: unknown) {
