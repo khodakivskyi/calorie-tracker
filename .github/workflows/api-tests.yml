@@ -118,6 +118,8 @@ jobs:
           },
           "AllowedHosts": "*"
         }' > backend/appsettings.Testing.json
+    - name: Set frontend origin
+      run: echo "FRONTEND_URL=http://localhost:5173" >> $GITHUB_ENV
     - name: Export JWT secret
       run: echo "JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}" >> $GITHUB_ENV
     - name: Export JWT expiry
