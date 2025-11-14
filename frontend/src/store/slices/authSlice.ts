@@ -34,11 +34,9 @@ const authSlice = createSlice({
     reducers: {
         registerUserRequest: (
             state,
-            action: PayloadAction<{ email: string; password: string; name?: string }>
         ) => {
             state.loading = true;
             state.error = null;
-            state.userEmail = action.payload.email;
         },
         registerUserSuccess: (state, action: PayloadAction<string>) => {
             state.loading = false;
@@ -70,10 +68,15 @@ const authSlice = createSlice({
             state.error = action.payload;
         },
 
-        verifyEmailRequest: state => {
+        verifyEmailRequest: (
+            state,
+            action: PayloadAction<{ email: string; token: string }>
+        ) => {
             state.verificationStatus = 'loading';
+            state.error = null;
+            state.userEmail = action.payload.email;
         },
-        verifyEmailSuccess: state => {
+        verifyEmailSuccess: (state) => {
             state.verificationStatus = 'success';
         },
         verifyEmailFailure: (state, action: PayloadAction<string>) => {

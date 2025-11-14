@@ -1,19 +1,19 @@
 import {useEffect} from "react";
 import {useAppDispatch, useAppSelector} from "../store";
-import {verifyEmail} from "../store/slices/thunks/authThunk";
+import {verifyEmailRequest} from "../store/slices/authSlice.ts";
 
 export default function VerifyEmailPage() {
     const dispatch = useAppDispatch();
-    const {verificationStatus, error} = useAppSelector(state => state.auth);
+    const {verificationStatus, error, userEmail } = useAppSelector(state => state.auth);
 
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);
         const token = params.get("token");
 
-        if (token && verificationStatus === 'idle') {
-            dispatch(verifyEmail({token}));
+        if (token && verificationStatus === 'idle' && userEmail) {
+            dispatch(verifyEmailRequest({ email: userEmail, token}));
             }
-        }, [dispatch, verificationStatus]);
+        }, [dispatch, verificationStatus, userEmail]);
 
     const renderContent = () => {
         switch (verificationStatus) {
