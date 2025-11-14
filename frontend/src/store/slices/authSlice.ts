@@ -1,5 +1,4 @@
-import {createSlice} from '@reduxjs/toolkit';
-import {registerUser, verifyEmail, authenticateUser} from "./thunks/authThunk.ts";
+import {createSlice, type PayloadAction} from '@reduxjs/toolkit';
 
 type AuthUser = {
     id: number;
@@ -33,10 +32,55 @@ const authSlice = createSlice({
     name: 'auth',
     initialState,
     reducers: {
-        setAccessToken: (state, action) => {
+        registerUserRequest: state => {
+            state.loading = true;
+            state.error = null;
+        },
+        registerUserSuccess: (state, action: PayloadAction<string>) => {
+            state.loading = false;
+            state.userEmail = action.payload;
+        },
+        registerUserFailure: (state, action: PayloadAction<string>) => {
+            state.loading = false;
+            state.error = action.payload;
+        },
+
+        authenticateUserRequest: state => {
+            state.authLoading = true;
+            state.error = null;
+        },
+        authenticateUserSuccess: (
+            state,
+            action: PayloadAction<{ accessToken: string; user: AuthUser }>
+        ) => {
+            state.authLoading = false;
+            state.isAuthenticated = true;
+            state.accessToken = action.payload.accessToken;
+            state.user = action.payload.user;
+        },
+        authenticateUserFailure: (state, action: PayloadAction<string>) => {
+            state.authLoading = false;
+            state.isAuthenticated = false;
+            state.accessToken = null;
+            state.user = null;
+            state.error = action.payload;
+        },
+
+        verifyEmailRequest: state => {
+            state.verificationStatus = 'loading';
+        },
+        verifyEmailSuccess: state => {
+            state.verificationStatus = 'success';
+        },
+        verifyEmailFailure: (state, action: PayloadAction<string>) => {
+            state.verificationStatus = 'error';
+            state.error = action.payload;
+        },
+
+        setAccessToken: (state, action: PayloadAction<string | null>) => {
             state.accessToken = action.payload;
         },
-        logout: (state) => {
+        logout: state => {
             state.isAuthenticated = false;
             state.accessToken = null;
             state.user = null;
@@ -46,59 +90,21 @@ const authSlice = createSlice({
             state.loading = false;
             state.authLoading = false;
         },
-        /*clearError: (state) => {
-            state.error = null;
-        }*/
-    },
-    extraReducers: builder => {
-        builder
-
-            // Register
-            .addCase(registerUser.pending, (state) => {
-                state.loading = true;
-                state.error = null;
-            })
-            .addCase(registerUser.fulfilled, (state, action) => {
-                state.loading = false;
-                state.userEmail = action.payload; // for default email-input value in loginForm
-            })
-            .addCase(registerUser.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.payload ?? 'Registration failed';
-            })
-
-            // Login
-            .addCase(authenticateUser.pending, (state) => {
-                state.authLoading = true;
-                state.error = null;
-            })
-            .addCase(authenticateUser.fulfilled, (state, action) => {
-                state.authLoading = false;
-                state.isAuthenticated = true;
-                state.accessToken = action.payload.accessToken;
-                state.user = action.payload.user;
-            })
-            .addCase(authenticateUser.rejected, (state, action) => {
-                state.authLoading = false;
-                state.isAuthenticated = false;
-                state.accessToken = null;
-                state.user = null;
-                state.error = action.payload ?? 'Login failed';
-            })
-
-            // Verify Email
-            .addCase(verifyEmail.pending, (state) => {
-                state.verificationStatus = 'loading';
-            })
-            .addCase(verifyEmail.fulfilled, (state) => {
-                state.verificationStatus = 'success';
-            })
-            .addCase(verifyEmail.rejected, (state, action) => {
-                state.verificationStatus = 'error';
-                state.error = action.payload ?? 'Verification failed';
-            })
     }
 });
 
-export const { setAccessToken, logout, /*clearError*/ } = authSlice.actions;
+export const {
+    registerUserRequest,
+    registerUserSuccess,
+    registerUserFailure,
+    authenticateUserRequest,
+    authenticateUserSuccess,
+    authenticateUserFailure,
+    verifyEmailRequest,
+    verifyEmailSuccess,
+    verifyEmailFailure,
+    setAccessToken,
+    logout,
+} = authSlice.actions;
+
 export default authSlice.reducer;
