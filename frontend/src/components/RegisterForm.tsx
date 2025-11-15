@@ -13,7 +13,7 @@ export default function RegisterForm() {
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        dispatch(registerUserRequest({email, password, name: name || undefined}))
+        dispatch(registerUserRequest(email, password, name))
     }
 
     if (userEmail) {

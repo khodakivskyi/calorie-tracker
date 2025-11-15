@@ -10,12 +10,12 @@ const verifyEmailMutation = `
     mutation VerifyEmail($token: String!) { verifyEmail(token: $token) }`;
 
 type VerifyEmailResponse = { verifyEmail: boolean };
-type RegisterUserRequestAction = ReturnType<typeof verifyEmailRequest>;
+type VerifyEmailRequestAction = ReturnType<typeof verifyEmailRequest>;
 
 export const registerUserEpic: Epic<AuthAction, AuthAction, RootState> = action$ =>
     action$.pipe(
         ofType(verifyEmailRequest.type),
-        mergeMap((action: RegisterUserRequestAction) =>
+        mergeMap((action: VerifyEmailRequestAction) =>
             from( graphqlRequest<VerifyEmailResponse>(verifyEmailMutation, action.payload)).pipe(
                 map(res => res.verifyEmail ? verifyEmailSuccess() : verifyEmailFailure("Verification failed")),
                 catchError(err =>

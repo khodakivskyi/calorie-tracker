@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {Link} from 'react-router-dom';
 import {useAppDispatch, useAppSelector} from "../store";
-import {authenticateUser} from "../store/slices/thunks/authThunk.ts";
+import {authenticateUserRequest} from "../store/slices/authSlice.ts";
 
 export default function LoginForm() {
     const dispatch = useAppDispatch();
@@ -18,7 +18,7 @@ export default function LoginForm() {
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        dispatch(authenticateUser({email, password}))
+        dispatch(authenticateUserRequest(email, password))
     }
 
     if (userEmail) {

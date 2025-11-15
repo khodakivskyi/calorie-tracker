@@ -32,11 +32,16 @@ const authSlice = createSlice({
     name: 'auth',
     initialState,
     reducers: {
-        registerUserRequest: (
-            state,
-        ) => {
-            state.loading = true;
-            state.error = null;
+        registerUserRequest: {
+            reducer(state) {
+                state.loading = true;
+                state.error = null;
+            },
+            prepare(email: string, password: string, name?: string | null) {
+                return {
+                    payload: { email, password, name: name ?? null}
+                };
+            }
         },
         registerUserSuccess: (state, action: PayloadAction<string>) => {
             state.loading = false;
@@ -47,9 +52,17 @@ const authSlice = createSlice({
             state.error = action.payload;
         },
 
-        authenticateUserRequest: state => {
-            state.authLoading = true;
-            state.error = null;
+
+        authenticateUserRequest: {
+            reducer(state) {
+                state.authLoading = true;
+                state.error = null;
+            },
+            prepare(email: string, password: string) {
+                return {
+                    payload: { email, password }
+                };
+            }
         },
         authenticateUserSuccess: (
             state,
@@ -68,6 +81,7 @@ const authSlice = createSlice({
             state.error = action.payload;
         },
 
+
         verifyEmailRequest: (
             state,
             action: PayloadAction<{ email: string; token: string }>
@@ -83,6 +97,7 @@ const authSlice = createSlice({
             state.verificationStatus = 'error';
             state.error = action.payload;
         },
+
 
         setAccessToken: (state, action: PayloadAction<string | null>) => {
             state.accessToken = action.payload;
