@@ -1,4 +1,5 @@
 import {useEffect} from "react";
+import {Link} from "react-router-dom";
 import {useAppDispatch, useAppSelector} from "../store";
 import {verifyEmailRequest} from "../store/slices/authSlice.ts";
 
@@ -12,8 +13,17 @@ export default function VerifyEmailPage() {
 
         if (token && verificationStatus === 'idle') {
             dispatch(verifyEmailRequest(token));
-            }
-        }, [dispatch, verificationStatus, userEmail]);
+        }
+    }, [dispatch, verificationStatus]);
+
+    const getEmailForLogin = (): string | null => {
+        if (userEmail) {
+            return userEmail;
+        }
+        return typeof window !== 'undefined'
+            ? localStorage.getItem('pendingVerificationEmail') 
+            : null;
+    };
 
     const renderContent = () => {
         switch (verificationStatus) {
@@ -40,12 +50,12 @@ export default function VerifyEmailPage() {
                         <p className="text-gray-600 mb-8 text-center max-w-md">
                             Ваш email успішно верифіковано. Тепер ви можете увійти в систему та почати користуватися додатком.
                         </p>
-                        <a 
-                            href="/login" 
+                        <Link 
+                            to={`/login${getEmailForLogin() ? `?email=${encodeURIComponent(getEmailForLogin()!)}` : ''}`}
                             className="bg-gradient-to-r from-primary-500 to-accent-600 hover:from-primary-600 hover:to-accent-700 text-white font-semibold py-3 px-8 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
                         >
                             Увійти в систему
-                        </a>
+                        </Link>
                     </div>
                 );
             case 'error':

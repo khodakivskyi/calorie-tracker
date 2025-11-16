@@ -46,6 +46,9 @@ const authSlice = createSlice({
         registerUserSuccess: (state, action: PayloadAction<string>) => {
             state.loading = false;
             state.userEmail = action.payload;
+            if (typeof window !== 'undefined') {
+                localStorage.setItem('pendingVerificationEmail', action.payload);
+            }
         },
         registerUserFailure: (state, action: PayloadAction<string>) => {
             state.loading = false;

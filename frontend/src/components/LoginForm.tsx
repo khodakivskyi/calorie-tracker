@@ -1,27 +1,32 @@
 import React, {useState, useEffect} from 'react';
-import {Link} from 'react-router-dom';
+import {Link, useLocation} from 'react-router-dom';
 import {useAppDispatch, useAppSelector} from "../store";
 import {authenticateUserRequest} from "../store/slices/authSlice.ts";
 
 export default function LoginForm() {
     const dispatch = useAppDispatch();
-    const {loading, error, userEmail} = useAppSelector(state => state.auth);
+    const location = useLocation();
+    const {loading, error, userEmail, isAuthenticated, user} = useAppSelector(state => state.auth);
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
     useEffect(() => {
-        if (userEmail) {
+        const params = new URLSearchParams(location.search);
+        const emailFromUrl = params.get("email");
+        if (emailFromUrl) {
+            setEmail(emailFromUrl);
+        } else if (userEmail) {
             setEmail(userEmail);
         }
-    }, [userEmail]);
+    }, [location.search, userEmail]);
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         dispatch(authenticateUserRequest(email, password))
     }
 
-    if (userEmail) {
+    if (isAuthenticated && user) {
         return (
             <div className="bg-green-50 border-l-4 border-green-500 p-6 rounded-lg shadow-sm">
                 <div className="flex items-center">
@@ -33,7 +38,7 @@ export default function LoginForm() {
                     <div className="ml-4">
                         <h3 className="text-lg font-semibold text-green-800">Успішний вхід! 🎉</h3>
                         <p className="text-green-700 mt-1">
-                            Ви увійшли як <span className="font-semibold">{userEmail}</span>
+                            Ви увійшли як <span className="font-semibold">{user.email}</span>
                         </p>
                     </div>
                 </div>
