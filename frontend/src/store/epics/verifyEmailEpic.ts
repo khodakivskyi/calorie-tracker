@@ -9,7 +9,7 @@ import type {RootState} from "../slices/rootReducer.ts";
 const verifyEmailMutation = `
     mutation VerifyEmail($token: String!) { verifyEmail(token: $token) }`;
 
-type VerifyEmailResponse = { verifyEmail: boolean };
+type VerifyEmailResponse = { verifyEmail: boolean | null };
 type VerifyEmailRequestAction = ReturnType<typeof verifyEmailRequest>;
 
 export const verifyEmailEpic: Epic<AuthAction, AuthAction, RootState> = action$ =>

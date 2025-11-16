@@ -8,19 +8,26 @@ import React from "react";
 
 type IconComponent = React.FunctionComponent<React.SVGProps<SVGSVGElement>>;
 
-const iconMap: Record<string, IconComponent> = {
+const iconMap = {
     home: HomeIcon,
     analytics: AnalyticsIcon,
     plan: PlanIcon,
     setting: SettingIcon,
-};
+} as const;
 
-const navItems = [
+type IconKey = keyof typeof iconMap;
+
+const navItems: Array<{path: string; icon: IconKey; label: string}> = [
     {path: '/home', icon: 'home', label: 'Home'},
     {path: '/analytics', icon: 'analytics', label: 'Analytics'},
     {path: '/plan', icon: 'plan', label: 'Plan'},
     {path: '/setting', icon: 'setting', label: 'Setting'},
 ];
+
+const getIcon = (icon: IconKey): IconComponent => {
+    const IconComponent = iconMap[icon];
+    return IconComponent ?? HomeIcon;
+};
 
 export default function NavigationMenu() {
     const location = useLocation();
@@ -35,7 +42,7 @@ export default function NavigationMenu() {
             <div className="mx-auto max-w-md bg-white rounded-t-3xl shadow-lg px-4 py-2">
                 <div className="flex items-center justify-around">
                     {leftItems.map((item) => {
-                        const IconComponent = iconMap[item.icon];
+                        const IconComponent = getIcon(item.icon);
                         return (
                             <Link
                                 key={item.path}
@@ -59,7 +66,7 @@ export default function NavigationMenu() {
                     </Link>
 
                     {rightItems.map((item) => {
-                        const IconComponent = iconMap[item.icon];
+                        const IconComponent = getIcon(item.icon);
                         return (
                             <Link
                                 key={item.path}
