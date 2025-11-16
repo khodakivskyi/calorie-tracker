@@ -3,8 +3,18 @@ name: API Tests
 on:
   push:
     branches: [ "master" ]
+    paths:
+      - 'backend/**'
+      - 'tests/**'
+      - 'database/**'
+      - '.github/workflows/api-tests.yml'
   pull_request:
     branches: [ "master" ]
+    paths:
+      - 'backend/**'
+      - 'tests/**'
+      - 'database/**'
+      - '.github/workflows/api-tests.yml'
 
 jobs:
   api-tests:
