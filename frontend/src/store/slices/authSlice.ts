@@ -82,13 +82,16 @@ const authSlice = createSlice({
         },
 
 
-        verifyEmailRequest: (
-            state,
-            action: PayloadAction<{ email: string; token: string }>
-        ) => {
-            state.verificationStatus = 'loading';
-            state.error = null;
-            state.userEmail = action.payload.email;
+        verifyEmailRequest: {
+            reducer(state) {
+                state.verificationStatus = 'loading';
+                state.error = null;
+            },
+            prepare(token: string) {
+                return {
+                    payload: { token }
+                };
+            }
         },
         verifyEmailSuccess: (state) => {
             state.verificationStatus = 'success';

@@ -12,7 +12,7 @@ const verifyEmailMutation = `
 type VerifyEmailResponse = { verifyEmail: boolean };
 type VerifyEmailRequestAction = ReturnType<typeof verifyEmailRequest>;
 
-export const registerUserEpic: Epic<AuthAction, AuthAction, RootState> = action$ =>
+export const verifyEmailEpic: Epic<AuthAction, AuthAction, RootState> = action$ =>
     action$.pipe(
         ofType(verifyEmailRequest.type),
         mergeMap((action: VerifyEmailRequestAction) =>

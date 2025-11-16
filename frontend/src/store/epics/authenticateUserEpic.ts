@@ -20,7 +20,7 @@ type AuthenticateResponse = {
 }
 type AuthenticateUserRequestAction = ReturnType<typeof authenticateUserRequest>;
 
-export const registerUserEpic: Epic<AuthAction, AuthAction, RootState> = action$ =>
+export const authenticateUserEpic: Epic<AuthAction, AuthAction, RootState> = action$ =>
     action$.pipe(
         ofType(authenticateUserRequest.type),
         mergeMap((action: AuthenticateUserRequestAction) =>
