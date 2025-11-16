@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {Link} from 'react-router-dom';
 import {useAppDispatch, useAppSelector} from "../store";
-import {registerUser} from "../store/slices/thunks/authThunk.ts";
+import {registerUserRequest} from "../store/slices/authSlice.ts";
 
 export default function RegisterForm() {
     const dispatch = useAppDispatch();
@@ -13,7 +13,7 @@ export default function RegisterForm() {
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        dispatch(registerUser({email, password, name: name || undefined}))
+        dispatch(registerUserRequest(email, password, name))
     }
 
     if (userEmail) {
