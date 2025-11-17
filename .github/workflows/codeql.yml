@@ -3,8 +3,16 @@ name: "CodeQL Advanced"
 on:
   push:
     branches: [ "master" ]
+    paths:
+      - 'backend/**'
+      - 'frontend/**'
+      - '.github/workflows/codeql.yml'
   pull_request:
     branches: [ "master" ]
+    paths:
+      - 'backend/**'
+      - 'frontend/**'
+      - '.github/workflows/codeql.yml'
   schedule:
     - cron: '27 15 * * 3'
 
@@ -23,34 +31,61 @@ jobs:
         include:
           - language: csharp
             build-mode: manual
+            paths: 'backend/**'
           - language: javascript-typescript
-            build-mode: none 
+            build-mode: none
+            paths: 'frontend/**'
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Check if files changed
+      id: check-changes
+      run: |
+        if [ "${{ github.event_name }}" = "schedule" ]; then
+          echo "changed=true" >> $GITHUB_OUTPUT
+        elif [ "${{ github.event_name }}" = "push" ]; then
+          if git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep -q "${{ matrix.paths }}"; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
+        elif [ "${{ github.event_name }}" = "pull_request" ]; then
+          if git diff --name-only ${{ github.event.pull_request.base.sha }} HEAD | grep -q "${{ matrix.paths }}"; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
+        else
+          echo "changed=true" >> $GITHUB_OUTPUT
+        fi
 
     - name: Initialize CodeQL
+      if: steps.check-changes.outputs.changed == 'true'
       uses: github/codeql-action/init@v4
       with:
         languages: ${{ matrix.language }}
         build-mode: ${{ matrix.build-mode }}
 
     - name: Setup .NET
-      if: matrix.language == 'csharp'
+      if: steps.check-changes.outputs.changed == 'true' && matrix.language == 'csharp'
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
     - name: Restore backend packages
-      if: matrix.language == 'csharp'
+      if: steps.check-changes.outputs.changed == 'true' && matrix.language == 'csharp'
       run: dotnet restore
       working-directory: backend
     - name: Build backend
-      if: matrix.language == 'csharp'
+      if: steps.check-changes.outputs.changed == 'true' && matrix.language == 'csharp'
       run: dotnet build --no-restore
       working-directory: backend
 
     - name: Perform CodeQL Analysis
+      if: steps.check-changes.outputs.changed == 'true'
       uses: github/codeql-action/analyze@v4
       with:
         category: "/language:${{matrix.language}}"
