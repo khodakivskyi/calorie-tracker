@@ -3,7 +3,7 @@ import { from, of } from 'rxjs';
 import { mergeMap, map, catchError } from 'rxjs/operators';
 import { verifyEmailRequest,  verifyEmailSuccess, verifyEmailFailure } from '../slices/authSlice';
 import { graphqlRequest } from '../../config/graphqlClient';
-import type { AuthAction } from '../types/authTypes.ts';
+import type { RootEpicAction } from './rootEpic.ts';
 import type {RootState} from "../slices/rootReducer.ts";
 
 const verifyEmailMutation = `
@@ -12,7 +12,7 @@ const verifyEmailMutation = `
 type VerifyEmailResponse = { verifyEmail: boolean | null };
 type VerifyEmailRequestAction = ReturnType<typeof verifyEmailRequest>;
 
-export const verifyEmailEpic: Epic<AuthAction, AuthAction, RootState> = action$ =>
+export const verifyEmailEpic: Epic<RootEpicAction, RootEpicAction, RootState> = action$ =>
     action$.pipe(
         ofType(verifyEmailRequest.type),
         mergeMap((action: VerifyEmailRequestAction) =>

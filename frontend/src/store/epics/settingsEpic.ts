@@ -5,8 +5,7 @@ import {updateProfileRequest, updateProfileSuccess, updateProfileFailure} from '
 import {authenticateUserSuccess} from '../slices/authSlice';
 import {graphqlRequest} from '../../config/graphqlClient';
 import type {RootState} from "../slices/rootReducer.ts";
-import type {SettingsAction} from '../types/settingsTypes';
-import type {AuthAction} from '../types/authTypes.ts';
+import type {RootEpicAction} from './rootEpic.ts';
 
 const updateUserMutation = `
     mutation UpdateUser($userId: Int!, $name: String, $password: String) {
@@ -22,9 +21,8 @@ type UpdateUserResponse = {
 };
 
 type UpdateProfileRequestAction = ReturnType<typeof updateProfileRequest>;
-type SettingsEpicAction = SettingsAction | AuthAction;
 
-export const updateProfileEpic: Epic<SettingsEpicAction, SettingsEpicAction, RootState> = (action$, state$) =>
+export const updateProfileEpic: Epic<RootEpicAction, RootEpicAction, RootState> = (action$, state$) =>
     action$.pipe(
         ofType(updateProfileRequest.type),
         mergeMap((action: UpdateProfileRequestAction) => {
