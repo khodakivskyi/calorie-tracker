@@ -26,12 +26,12 @@ export default function RegisterForm() {
                         </svg>
                     </div>
                     <div className="ml-4">
-                        <h3 className="text-lg font-semibold text-green-800">Реєстрація успішна! 🎉</h3>
+                        <h3 className="text-lg font-semibold text-green-800">Registration successful! 🎉</h3>
                         <p className="text-green-700 mt-1">
-                            Лист з підтвердженням надіслано на <span className="font-semibold">{userEmail}</span>
+                            A verification email has been sent to <span className="font-semibold">{userEmail}</span>
                         </p>
                         <p className="text-green-600 text-sm mt-2">
-                            Перевірте вашу пошту та підтвердіть email для завершення реєстрації.
+                            Please check your email and verify your email address to complete registration.
                         </p>
                     </div>
                 </div>
@@ -43,14 +43,14 @@ export default function RegisterForm() {
         <form onSubmit={handleSubmit} className="space-y-6">
             <div>
                 <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-                    Ім'я
+                    Name
                 </label>
                 <input
                     id="name"
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    placeholder="Введіть ваше ім'я"
+                    placeholder="Enter your name"
                     className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition duration-200 ease-in-out"
                 />
             </div>
@@ -72,7 +72,7 @@ export default function RegisterForm() {
 
             <div>
                 <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-                    Пароль <span className="text-red-500">*</span>
+                    Password <span className="text-red-500">*</span>
                 </label>
                 <input
                     id="password"
@@ -81,7 +81,7 @@ export default function RegisterForm() {
                     required
                     minLength={6}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Мінімум 6 символів"
+                    placeholder="Minimum 6 characters"
                     className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition duration-200 ease-in-out"
                 />
             </div>
@@ -114,17 +114,17 @@ export default function RegisterForm() {
                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
-                        Реєстрація...
+                        Registering...
                     </span>
                 ) : (
-                    'Зареєструватися'
+                    'Sign Up'
                 )}
             </button>
 
             <p className="text-sm text-center text-gray-600">
-                Вже маєте аккаунт?{' '}
+                Already have an account?{' '}
                 <Link to="/login" className="text-primary-600 hover:text-primary-700 font-semibold hover:underline">
-                    Увійти
+                    Log In
                 </Link>
             </p>
         </form>

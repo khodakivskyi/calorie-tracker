@@ -9,7 +9,7 @@ export default function LoginPage() {
 
                     <div className="text-center mb-8">
                         <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                            Увійти в аккаунт
+                            Log In
                         </h1>
                     </div>
 

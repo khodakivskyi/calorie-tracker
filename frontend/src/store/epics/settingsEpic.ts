@@ -28,7 +28,7 @@ export const updateProfileEpic: Epic<RootEpicAction, RootEpicAction, RootState> 
         mergeMap((action: UpdateProfileRequestAction) => {
             const userId = state$.value.auth.user?.id;
             if (!userId) {
-                return of(updateProfileFailure('Користувач не автентифікований'));
+                return of(updateProfileFailure('User is not authenticated'));
             }
 
             return from(
@@ -46,7 +46,7 @@ export const updateProfileEpic: Epic<RootEpicAction, RootEpicAction, RootState> 
                     }),
                 ]),
                 catchError(err =>
-                    of(updateProfileFailure(err instanceof Error ? err.message : 'Помилка оновлення профілю'))
+                    of(updateProfileFailure(err instanceof Error ? err.message : 'Failed to update profile'))
                 )
             );
         })

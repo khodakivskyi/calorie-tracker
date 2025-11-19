@@ -31,7 +31,7 @@ const settingsSlice = createSlice({
         updateProfileSuccess: (state) => {
             state.loading = false;
             state.error = null;
-            state.success = 'Профіль успішно оновлено';
+            state.success = 'Profile updated successfully';
         },
         updateProfileFailure: (state, action: PayloadAction<string>) => {
             state.loading = false;

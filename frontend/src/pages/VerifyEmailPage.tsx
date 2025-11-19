@@ -34,8 +34,8 @@ export default function VerifyEmailPage() {
                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
-                        <h2 className="text-2xl font-semibold text-gray-800 mb-2">Верифікація email...</h2>
-                        <p className="text-gray-600">Зачекайте, будь ласка</p>
+                        <h2 className="text-2xl font-semibold text-gray-800 mb-2">Verifying email...</h2>
+                        <p className="text-gray-600">Please wait</p>
                     </div>
                 );
             case 'success':
@@ -46,15 +46,15 @@ export default function VerifyEmailPage() {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                         </div>
-                        <h2 className="text-3xl font-bold text-gray-900 mb-4">Email підтверджено! 🎉</h2>
+                        <h2 className="text-3xl font-bold text-gray-900 mb-4">Email verified! 🎉</h2>
                         <p className="text-gray-600 mb-8 text-center max-w-md">
-                            Ваш email успішно верифіковано. Тепер ви можете увійти в систему та почати користуватися додатком.
+                            Your email has been successfully verified. You can now log in and start using the application.
                         </p>
                         <Link 
                             to={`/login${getEmailForLogin() ? `?email=${encodeURIComponent(getEmailForLogin()!)}` : ''}`}
                             className="bg-gradient-to-r from-primary-500 to-accent-600 hover:from-primary-600 hover:to-accent-700 text-white font-semibold py-3 px-8 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
                         >
-                            Увійти в систему
+                            Log In
                         </Link>
                     </div>
                 );
@@ -66,22 +66,22 @@ export default function VerifyEmailPage() {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                         </div>
-                        <h2 className="text-3xl font-bold text-gray-900 mb-4">Помилка верифікації</h2>
+                        <h2 className="text-3xl font-bold text-gray-900 mb-4">Verification Error</h2>
                         <p className="text-gray-600 mb-8 text-center max-w-md">
-                            {error || "Не вдалося верифікувати email. Посилання може бути застарілим або недійсним."}
+                            {error || "Failed to verify email. The link may be expired or invalid."}
                         </p>
                         <div className="flex gap-4">
                             <a 
                                 href="/register" 
                                 className="border-2 border-gray-300 hover:border-gray-400 text-gray-700 font-semibold py-3 px-8 rounded-lg transition-all duration-200"
                             >
-                                Зареєструватися знову
+                                Register Again
                             </a>
                             <a 
                                 href="/login" 
                                 className="bg-gradient-to-r from-primary-500 to-accent-600 hover:from-primary-600 hover:to-accent-700 text-white font-semibold py-3 px-8 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200"
                             >
-                                Спробувати увійти
+                                Try Logging In
                             </a>
                         </div>
                     </div>
@@ -94,15 +94,15 @@ export default function VerifyEmailPage() {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                             </svg>
                         </div>
-                        <h2 className="text-3xl font-bold text-gray-900 mb-4">Недійсне посилання</h2>
+                        <h2 className="text-3xl font-bold text-gray-900 mb-4">Invalid Link</h2>
                         <p className="text-gray-600 mb-8 text-center max-w-md">
-                            Посилання для верифікації недійсне або відсутнє. Будь ласка, перевірте ваш email та спробуйте знову.
+                            The verification link is invalid or missing. Please check your email and try again.
                         </p>
                         <a 
                             href="/register" 
                             className="bg-gradient-to-r from-primary-500 to-accent-600 hover:from-primary-600 hover:to-accent-700 text-white font-semibold py-3 px-8 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200"
                         >
-                            На головну
+                            Go to Home
                         </a>
                     </div>
                 );

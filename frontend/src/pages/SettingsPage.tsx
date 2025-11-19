@@ -69,7 +69,7 @@ export default function SettingsPage() {
             <div className="min-h-screen pb-24 p-4">
                 <div className="max-w-2xl mx-auto">
                     <div className="bg-red-50 border-l-4 border-red-500 p-6 rounded-lg shadow-sm">
-                        <p className="text-red-700">Будь ласка, увійдіть в систему</p>
+                        <p className="text-red-700">Please log in to your account</p>
                     </div>
                 </div>
             </div>
@@ -80,7 +80,7 @@ export default function SettingsPage() {
         <div className="min-h-screen pb-24 bg-green-50">
             <div className="max-w-2xl mx-auto p-4 space-y-6">
                 <div className="bg-white rounded-2xl shadow-lg p-6">
-                    <h1 className="text-2xl font-bold text-gray-900 mb-6">Налаштування профілю</h1>
+                    <h1 className="text-2xl font-bold text-gray-900 mb-6">Profile Settings</h1>
 
                     {/* Success/Error*/}
                     {success && (
@@ -97,7 +97,7 @@ export default function SettingsPage() {
 
                     {/* Profile Section */}
                     <div className="mb-8">
-                        <h2 className="text-lg font-semibold text-gray-800 mb-4">Інформація профілю</h2>
+                        <h2 className="text-lg font-semibold text-gray-800 mb-4">Profile Information</h2>
 
                         <form onSubmit={handleUpdateProfile} className="space-y-4">
                             <div>
@@ -111,19 +111,19 @@ export default function SettingsPage() {
                                     disabled
                                     className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-gray-50 text-gray-500 cursor-not-allowed"
                                 />
-                                <p className="text-xs text-gray-500 mt-1">Email не можна змінити</p>
+                                <p className="text-xs text-gray-500 mt-1">Email cannot be changed</p>
                             </div>
 
                             <div>
                                 <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-                                    Ім'я
+                                    Name
                                 </label>
                                 <input
                                     id="name"
                                     type="text"
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
-                                    placeholder="Ваше ім'я"
+                                    placeholder="Your name"
                                     className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition duration-200"
                                 />
                             </div>
@@ -137,26 +137,26 @@ export default function SettingsPage() {
                                         : 'bg-gradient-to-r from-primary-500 to-accent-600 hover:from-primary-600 hover:to-accent-700 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl'
                                 }`}
                             >
-                                {loading ? 'Збереження...' : 'Зберегти зміни'}
+                                {loading ? 'Saving...' : 'Save Changes'}
                             </button>
                         </form>
                     </div>
 
                     {/* Password */}
                     <div className="mb-8 border-t border-gray-200 pt-8">
-                        <h2 className="text-lg font-semibold text-gray-800 mb-4">Зміна пароля</h2>
+                        <h2 className="text-lg font-semibold text-gray-800 mb-4">Change Password</h2>
 
                         <form onSubmit={handleChangePassword} className="space-y-4">
                             <div>
                                 <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700 mb-2">
-                                    Новий пароль <span className="text-red-500">*</span>
+                                    New Password <span className="text-red-500">*</span>
                                 </label>
                                 <input
                                     id="newPassword"
                                     type="password"
                                     value={newPassword}
                                     onChange={(e) => setNewPassword(e.target.value)}
-                                    placeholder="Мінімум 6 символів"
+                                    placeholder="Minimum 6 characters"
                                     minLength={6}
                                     required
                                     className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition duration-200"
@@ -166,20 +166,20 @@ export default function SettingsPage() {
                             <div>
                                 <label htmlFor="confirmPassword"
                                        className="block text-sm font-medium text-gray-700 mb-2">
-                                    Підтвердження пароля <span className="text-red-500">*</span>
+                                    Confirm Password <span className="text-red-500">*</span>
                                 </label>
                                 <input
                                     id="confirmPassword"
                                     type="password"
                                     value={confirmPassword}
                                     onChange={(e) => setConfirmPassword(e.target.value)}
-                                    placeholder="Повторіть новий пароль"
+                                    placeholder="Repeat new password"
                                     minLength={6}
                                     required
                                     className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition duration-200"
                                 />
                                 {newPassword && confirmPassword && newPassword !== confirmPassword && (
-                                    <p className="text-xs text-red-500 mt-1">Паролі не співпадають</p>
+                                    <p className="text-xs text-red-500 mt-1">Passwords do not match</p>
                                 )}
                             </div>
 
@@ -192,20 +192,20 @@ export default function SettingsPage() {
                                         : 'bg-gradient-to-r from-primary-500 to-accent-600 hover:from-primary-600 hover:to-accent-700 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl'
                                 }`}
                             >
-                                {loading ? 'Зміна пароля...' : 'Змінити пароль'}
+                                {loading ? 'Changing password...' : 'Change Password'}
                             </button>
                         </form>
                     </div>
 
                     {/* Security */}
                     <div className="border-t border-gray-200 pt-8">
-                        <h2 className="text-lg font-semibold text-gray-800 mb-4">Безпека</h2>
+                        <h2 className="text-lg font-semibold text-gray-800 mb-4">Security</h2>
 
                         <button
                             onClick={handleLogout}
                             className="w-full py-3 px-6 rounded-lg font-semibold text-white bg-red-500 hover:bg-red-600 transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl"
                         >
-                            Вийти з аккаунту
+                            Log Out
                         </button>
                     </div>
                 </div>
