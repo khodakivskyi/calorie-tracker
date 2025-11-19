@@ -1,11 +1,12 @@
 import React, {useState, useEffect} from 'react';
-import {Link, useLocation} from 'react-router-dom';
+import {Link, useLocation, useNavigate} from 'react-router-dom';
 import {useAppDispatch, useAppSelector} from "../store";
 import {authenticateUserRequest} from "../store/slices/authSlice.ts";
 
 export default function LoginForm() {
     const dispatch = useAppDispatch();
     const location = useLocation();
+    const navigate = useNavigate();
     const {loading, error, userEmail, isAuthenticated, user} = useAppSelector(state => state.auth);
 
     const [email, setEmail] = useState('');
@@ -26,25 +27,11 @@ export default function LoginForm() {
         dispatch(authenticateUserRequest(email, password))
     }
 
-    if (isAuthenticated && user) {
-        return (
-            <div className="bg-green-50 border-l-4 border-green-500 p-6 rounded-lg shadow-sm">
-                <div className="flex items-center">
-                    <div className="flex-shrink-0">
-                        <svg className="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                    </div>
-                    <div className="ml-4">
-                        <h3 className="text-lg font-semibold text-green-800">Успішний вхід! 🎉</h3>
-                        <p className="text-green-700 mt-1">
-                            Ви увійшли як <span className="font-semibold">{user.email}</span>
-                        </p>
-                    </div>
-                </div>
-            </div>
-        );
-    }
+    useEffect(()=>{
+        if(user && isAuthenticated){
+            navigate('/home');
+        }
+    }, [user, isAuthenticated, navigate])
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
