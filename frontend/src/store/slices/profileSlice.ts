@@ -1,18 +1,18 @@
 import {createSlice, type PayloadAction} from '@reduxjs/toolkit';
 
-type SettingsState = {
+type ProfileState = {
     loading: boolean;
     error: string | null;
     success: string | null;
 };
 
-const initialState: SettingsState = {
+const initialState: ProfileState = {
     loading: false,
     error: null,
     success: null,
 };
 
-const settingsSlice = createSlice({
+const profileSlice = createSlice({
     name: 'settings',
     initialState,
     reducers: {
@@ -50,7 +50,7 @@ export const {
     updateProfileSuccess,
     updateProfileFailure,
     clearSettingsMessages,
-} = settingsSlice.actions;
+} = profileSlice.actions;
 
-export default settingsSlice.reducer;
+export default profileSlice.reducer;
 

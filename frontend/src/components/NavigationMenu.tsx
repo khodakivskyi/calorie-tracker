@@ -21,7 +21,7 @@ const navItems: Array<{path: string; icon: IconKey; label: string}> = [
     {path: '/home', icon: 'home', label: 'Home'},
     {path: '/analytics', icon: 'analytics', label: 'Analytics'},
     {path: '/plan', icon: 'plan', label: 'Plan'},
-    {path: '/settings', icon: 'setting', label: 'Setting'},
+    {path: '/profile', icon: 'setting', label: 'Profile'},
 ];
 
 const getIcon = (icon: IconKey): IconComponent => {

@@ -3,9 +3,9 @@ import {
     updateProfileSuccess,
     updateProfileFailure,
     clearSettingsMessages
-} from '../slices/settingsSlice.ts';
+} from '../slices/profileSlice.ts';
 
-export type SettingsAction =
+export type ProfileAction =
     | ReturnType<typeof updateProfileRequest>
     | ReturnType<typeof updateProfileSuccess>
     | ReturnType<typeof updateProfileFailure>

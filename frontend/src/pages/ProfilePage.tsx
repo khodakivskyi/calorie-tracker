@@ -1,15 +1,15 @@
 import React, {useState, useEffect} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {useAppDispatch, useAppSelector} from '../store';
-import {updateProfileRequest, clearSettingsMessages} from '../store/slices/settingsSlice';
+import {updateProfileRequest, clearSettingsMessages} from '../store/slices/profileSlice.ts';
 import {graphqlRequest} from '../config/graphqlClient';
 import { logout } from '../store/slices/authSlice';
 
-export default function SettingsPage() {
+export default function ProfilePage() {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const {user} = useAppSelector(state => state.auth);
-    const {loading, error, success} = useAppSelector(state => state.settings);
+    const {loading, error, success} = useAppSelector(state => state.profile);
 
     const [name, setName] = useState(user?.name || '');
     const [newPassword, setNewPassword] = useState('');
