@@ -31,12 +31,16 @@ export const updateProfileEpic: Epic<RootEpicAction, RootEpicAction, RootState> 
                 return of(updateProfileFailure('User is not authenticated'));
             }
 
+            const variables: { userId: number; name?: string | null; password?: string | null } = {userId};
+
+            if (action.payload.name !== null) {
+                variables.name = action.payload.name;
+            }
+            if (action.payload.password !== null) {
+                variables.password = action.payload.password;
+            }
             return from(
-                graphqlRequest<UpdateUserResponse>(updateUserMutation, {
-                    userId,
-                    name: action.payload.name,
-                    password: action.payload.password,
-                })
+                graphqlRequest<UpdateUserResponse>(updateUserMutation, variables)
             ).pipe(
                 mergeMap(res => [
                     updateProfileSuccess(),
