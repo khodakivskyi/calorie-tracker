@@ -9,7 +9,7 @@ export default function RegisterPage() {
 
                     <div className="text-center mb-8">
                         <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                            Створити аккаунт
+                            Create Account
                         </h1>
                     </div>
 

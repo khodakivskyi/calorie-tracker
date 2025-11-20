@@ -3,7 +3,7 @@ import { from, of } from 'rxjs';
 import { mergeMap, map, catchError } from 'rxjs/operators';
 import { registerUserRequest,  registerUserSuccess, registerUserFailure } from '../slices/authSlice';
 import { graphqlRequest } from '../../config/graphqlClient';
-import type { AuthAction } from '../types/authTypes.ts';
+import type {RootEpicAction} from './rootEpic.ts'
 import type {RootState} from "../slices/rootReducer.ts";
 
 const registerUserMutation = `
@@ -17,7 +17,7 @@ const registerUserMutation = `
 type RegisterResponse = { createUser: { user: {id: number; email: string, name: string | null}; } }
 type RegisterUserRequestAction = ReturnType<typeof registerUserRequest>;
 
-export const registerUserEpic: Epic<AuthAction, AuthAction, RootState> = action$ =>
+export const registerUserEpic: Epic<RootEpicAction, RootEpicAction, RootState> = action$ =>
     action$.pipe(
         ofType(registerUserRequest.type),
         mergeMap((action: RegisterUserRequestAction) =>
