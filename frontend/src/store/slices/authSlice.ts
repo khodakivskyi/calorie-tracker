@@ -118,6 +118,16 @@ const authSlice = createSlice({
             state.loading = false;
             state.authLoading = false;
         },
+        setMockUser: (
+            state,
+            action: PayloadAction<{ accessToken: string; user: AuthUser }>
+        ) => {
+            state.isAuthenticated = true;
+            state.accessToken = action.payload.accessToken;
+            state.user = action.payload.user;
+            state.authLoading = false;
+            state.error = null;
+        },
     }
 });
 
@@ -133,6 +143,7 @@ export const {
     verifyEmailFailure,
     setAccessToken,
     logout,
+    setMockUser,
 } = authSlice.actions;
 
 export default authSlice.reducer;
