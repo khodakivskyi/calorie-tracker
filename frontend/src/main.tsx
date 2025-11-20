@@ -5,6 +5,22 @@ import './index.css'
 import App from './App.tsx'
 import {store} from './store'
 import {Provider} from 'react-redux'
+import {setMockUser} from './store/slices/authSlice.ts'
+
+// Заглушка для розробки - автоматично встановлюємо мок-користувача
+if (import.meta.env.DEV) {
+    const state = store.getState();
+    if (!state.auth.isAuthenticated && !state.auth.user) {
+        store.dispatch(setMockUser({
+            accessToken: 'mock-dev-token',
+            user: {
+                id: 1,
+                email: 'dev@example.com',
+                name: 'Dev User'
+            }
+        }));
+    }
+}
 
 createRoot(document.getElementById('root')!).render(
     <StrictMode>
