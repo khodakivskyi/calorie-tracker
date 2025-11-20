@@ -58,7 +58,7 @@ export default function NavigationMenu() {
                     })}
 
                     <Link
-                        to="/add"
+                        to="/add-meal"
                         className="flex items-center justify-center -mt-8">
                         <div className="w-16 h-16 bg-primary-500 rounded-full flex items-center justify-center shadow-lg hover:bg-primary-600 transition-colors">
                             <AddIcon className="w-8 h-8 text-white" />
