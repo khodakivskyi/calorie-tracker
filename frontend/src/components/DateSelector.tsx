@@ -26,7 +26,7 @@ export default function DateSelector() {
     };
 
     return (
-        <div className="flex flex-row gap-2 pt-6">
+        <div className="flex flex-row gap-2 pt-8">
             {days.map((dayInfo, index) => (
                 <button
                     key={index}
