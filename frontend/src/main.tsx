@@ -7,7 +7,6 @@ import {store} from './store'
 import {Provider} from 'react-redux'
 import {setMockUser} from './store/slices/authSlice.ts'
 
-// Заглушка для розробки - автоматично встановлюємо мок-користувача
 if (import.meta.env.DEV) {
     const state = store.getState();
     if (!state.auth.isAuthenticated && !state.auth.user) {

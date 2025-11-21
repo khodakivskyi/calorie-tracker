@@ -12,7 +12,7 @@ export default function Header(){
     }).format(date);
 
     return (
-        <div className="bg-white rounded-2xl p-4 mb-4">
+        <div className="bg-white rounded-2xl p-4">
             <h1 className="font-bold text-3xl leading-tight">Hello, {user!.name}</h1>
             <span className="font-normal text-lg text-gray-800">{formatted}</span>
         </div>
