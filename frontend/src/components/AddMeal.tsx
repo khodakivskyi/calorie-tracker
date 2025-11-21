@@ -37,9 +37,9 @@ export default function AddMeal() {
                 <div key={meal.id} className="bg-white overflow-hidden rounded-2xl p-4 mb-4 h-36">
                     <div className={`flex justify-between items-start ${meal.imagePosition === 'right' ? 'flex-row' : 'flex-row-reverse'}`}>
 
-                        <div className={`${meal.imagePosition === 'right' ? 'flex-1' : 'items-end'}`}>
+                        <div className={`flex flex-col ${meal.imagePosition === 'right' ? 'flex-1' : 'items-end'}`}>
                             <h3 className="font-bold text-lg">{meal.name}</h3>
-                            <button className="mt-2 bg-primary-500 text-white px-4 py-2 rounded-lg">
+                            <button className="mt-2 bg-primary-500 text-white px-4 py-2 rounded-lg w-fit">
                                 + Add
                             </button>
                         </div>
