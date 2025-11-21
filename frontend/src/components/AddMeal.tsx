@@ -28,13 +28,19 @@ export default function AddMeal() {
             name: 'Dinner',
             imagePosition: 'left' as const,
             imageUrl: Dinner
+        },
+        {
+            id: 'custom',
+            name: 'Custom',
+            imagePosition: 'right' as const,
+            imageUrl: Dinner
         }
     ];
 
     return (
         <>
         {mealTypes.map((meal) => (
-                <div key={meal.id} className="bg-white overflow-hidden rounded-2xl p-4 mb-4 h-36">
+                <div key={meal.id} className="bg-white overflow-hidden rounded-2xl p-4 mb-4 h-[8.5rem]">
                     <div className={`flex justify-between items-start ${meal.imagePosition === 'right' ? 'flex-row' : 'flex-row-reverse'}`}>
 
                         <div className={`flex flex-col ${meal.imagePosition === 'right' ? 'flex-1' : 'items-end'}`}>

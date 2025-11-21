@@ -20,7 +20,7 @@ type IconKey = keyof typeof iconMap;
 const navItems: Array<{path: string; icon: IconKey; label: string}> = [
     {path: '/home', icon: 'home', label: 'Home'},
     {path: '/analytics', icon: 'analytics', label: 'Analytics'},
-    {path: '/plan', icon: 'plan', label: 'Plan'},
+    {path: '/foods', icon: 'plan', label: 'Foods'},
     {path: '/profile', icon: 'setting', label: 'Profile'},
 ];
 
@@ -38,7 +38,7 @@ export default function NavigationMenu() {
     const rightItems = navItems.slice(2);
 
     return (
-        <nav className="fixed bottom-0 left-0 right-0 bg-primary-50 pb-safe">
+        <nav className="fixed bottom-0 left-0 right-0 pb-safe">
             <div className="mx-auto max-w-md bg-white rounded-t-3xl shadow-lg px-4 py-2">
                 <div className="flex items-center justify-around">
                     {leftItems.map((item) => {
