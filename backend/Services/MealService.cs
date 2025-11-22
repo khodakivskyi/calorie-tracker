@@ -39,6 +39,9 @@ namespace backend.Services
             if (string.IsNullOrWhiteSpace(name) && typeId == 5)
                 throw new ValidationException("Meal name cannot be empty");
 
+            if (!string.IsNullOrWhiteSpace(name) && typeId != 5)
+                throw new ValidationException("Name cannot be provided for system meal types (Breakfast, Lunch, Dinner, Snack)");
+
             var newMeal = new Meal
             {
                 OwnerId = userId,

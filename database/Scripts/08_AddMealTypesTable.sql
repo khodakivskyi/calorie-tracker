@@ -9,7 +9,7 @@ CREATE TABLE meal_types
 GO
 
 ALTER TABLE meals
-ADD meal_type_id INT REFERENCES meal_types(id)
+    ADD meal_type_id INT NOT NULL DEFAULT 5 REFERENCES meal_types(id)
 GO
 
 
