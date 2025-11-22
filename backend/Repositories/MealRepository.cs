@@ -18,7 +18,7 @@ namespace backend.Repositories
         public async Task<Meal?> GetMealByIdAsync(int id)
         {
             using var connection = new SqlConnection(_connectionString);
-            const string sql = @"SELECT id, owner_id AS OwnerId, name, created_at AS CreatedAt, updated_at AS UpdatedAt 
+            const string sql = @"SELECT id, owner_id AS OwnerId, name, meal_type_id AS MealTypeId, created_at AS CreatedAt, updated_at AS UpdatedAt 
                                  FROM meals WHERE id = @Id";
             return await connection.QueryFirstOrDefaultAsync<Meal>(sql, new { Id = id });
         }
@@ -26,7 +26,7 @@ namespace backend.Repositories
         public async Task<IEnumerable<Meal>> GetMealsByUserAsync(int userId)
         {
             using var connection = new SqlConnection(_connectionString);
-            const string sql = @"SELECT id, owner_id AS OwnerId, name, created_at AS CreatedAt, updated_at AS UpdatedAt
+            const string sql = @"SELECT id, owner_id AS OwnerId, name, meal_type_id AS MealTypeId, created_at AS CreatedAt, updated_at AS UpdatedAt
                                  FROM meals
                                  WHERE owner_id = @UserId
                                  ORDER BY created_at DESC";
@@ -36,10 +36,10 @@ namespace backend.Repositories
         public async Task<Meal?> CreateMealAsync(Meal meal)
         {
             using var connection = new SqlConnection(_connectionString);
-            const string sql = @"INSERT INTO meals (owner_id, name)
+            const string sql = @"INSERT INTO meals (owner_id, meal_type_id, name)
                                  OUTPUT INSERTED.id, INSERTED.owner_id AS OwnerId, INSERTED.name, 
-                                        INSERTED.created_at AS CreatedAt, INSERTED.updated_at AS UpdatedAt
-                                 VALUES (@OwnerId, @Name);";
+                                        INSERTED.created_at AS CreatedAt, INSERTED.updated_at AS UpdatedAt, INSERTED.meal_type_id AS MealTypeId
+                                 VALUES (@OwnerId, @MealTypeId, @Name);";
             return await connection.QueryFirstOrDefaultAsync<Meal>(sql, meal);
         }
 
@@ -49,7 +49,7 @@ namespace backend.Repositories
             const string sql = @"UPDATE meals
                                  SET name = @Name, updated_at = GETDATE()
                                  OUTPUT INSERTED.id, INSERTED.owner_id AS OwnerId, INSERTED.name, 
-                                        INSERTED.created_at AS CreatedAt, INSERTED.updated_at AS UpdatedAt
+                                        INSERTED.meal_type_id AS MealTypeId, INSERTED.created_at AS CreatedAt, INSERTED.updated_at AS UpdatedAt
                                  WHERE id = @Id;";
             return await connection.QueryFirstOrDefaultAsync<Meal>(sql, meal);
         }
@@ -115,7 +115,7 @@ namespace backend.Repositories
         {
             using var connection = new SqlConnection(_connectionString);
             const string sql = @"
-                SELECT id, owner_id AS OwnerId, name, created_at AS CreatedAt, updated_at AS UpdatedAt
+                SELECT id, owner_id AS OwnerId, name, meal_type_id AS MealTypeId, created_at AS CreatedAt, updated_at AS UpdatedAt
                 FROM meals
                 WHERE owner_id = @UserId
                   AND CAST(created_at AS date) BETWEEN @StartDate AND @EndDate
@@ -128,7 +128,7 @@ namespace backend.Repositories
         {
             using var connection = new SqlConnection(_connectionString);
             const string sql = @"
-                SELECT id, owner_id AS OwnerId, name, created_at AS CreatedAt, updated_at AS UpdatedAt
+                SELECT id, owner_id AS OwnerId, name, meal_type_id AS MealTypeId, created_at AS CreatedAt, updated_at AS UpdatedAt
                 FROM meals
                 WHERE owner_id = @UserId
                   AND CAST(created_at AS date) = @Date
@@ -141,7 +141,7 @@ namespace backend.Repositories
         {
             using var connection = new SqlConnection(_connectionString);
             const string sql = @"
-                SELECT id, owner_id AS OwnerId, name, created_at AS CreatedAt, updated_at AS UpdatedAt
+                SELECT id, owner_id AS OwnerId, name, meal_type_id AS MealTypeId, created_at AS CreatedAt, updated_at AS UpdatedAt
                 FROM meals
                 WHERE owner_id = @UserId
                   AND name LIKE '%' + @Name + '%'

@@ -665,7 +665,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"query\": \"mutation CreateMeal($userId: Int!, $name: String!) {\\n    createMeal(userId: $userId, name: $name) {\\n      id\\n      name\\n      createdAt\\n    }\\n  }\",\n  \"variables\": {\n    \"userId\": {{userId}},\n    \"name\": \"Test Meal\"\n  }\n}"
+              "raw": "{\n  \"query\": \"mutation CreateMeal($userId: Int!, $typeId: Int!, $name: String!) {\\n    createMeal(userId: $userId, typeId: $typeId, name: $name) {\\n      id\\n      name\\n      createdAt\\n    }\\n  }\",\n  \"variables\": {\n    \"userId\": {{userId}},\n    \"typeId\": 5,\n    \"name\": \"Test Meal\"\n  }\n}"
             },
             "url": {
               "raw": "{{graphqlEndpoint}}",

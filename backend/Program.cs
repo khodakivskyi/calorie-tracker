@@ -33,6 +33,7 @@ namespace backend
             builder.Services.AddScoped<IFoodRepository, FoodRepository>(provider => new FoodRepository(connectionString!));
             builder.Services.AddScoped<IDishRepository, DishRepository>(provider => new DishRepository(connectionString!));
             builder.Services.AddScoped<IMealRepository, MealRepository>(provider => new MealRepository(connectionString!));
+            builder.Services.AddScoped<IMealTypeRepository, MealTypeRepository>(provider => new MealTypeRepository(connectionString!));
             builder.Services.AddScoped<ICaloriesRepository, CaloriesRepository>(provider => new CaloriesRepository(connectionString!));
             builder.Services.AddScoped<INutrientsRepository, NutrientsRepository>(provider => new NutrientsRepository(connectionString!));
 
@@ -69,7 +70,7 @@ namespace backend
             builder.Services.AddScoped<UserType>();
             builder.Services.AddScoped<FoodType>();
             builder.Services.AddScoped<DishType>();
-            builder.Services.AddScoped<MealType>();
+            builder.Services.AddScoped<GraphQL.Types.MealType>();
             builder.Services.AddScoped<NutrientsType>();
             builder.Services.AddScoped<CaloriesType>();
             builder.Services.AddScoped<DishFoodType>();

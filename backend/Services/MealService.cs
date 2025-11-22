@@ -1,5 +1,6 @@
-﻿using backend.Models;
-using backend.Exceptions;
+﻿using backend.Exceptions;
+using backend.Models;
+using backend.Repositories;
 using backend.Repositories.Interfaces;
 
 namespace backend.Services
@@ -7,10 +8,12 @@ namespace backend.Services
     public class MealService
     {
         private readonly IMealRepository _mealRepository;
+        private readonly IMealTypeRepository _mealTypeRepository;
 
-        public MealService(IMealRepository mealRepository)
+        public MealService(IMealRepository mealRepository, IMealTypeRepository mealTypeRepository)
         {
             _mealRepository = mealRepository;
+            _mealTypeRepository = mealTypeRepository;
         }
 
         public async Task<Meal> GetMealByIdAsync(int id)
@@ -27,12 +30,24 @@ namespace backend.Services
             return await _mealRepository.GetMealsByUserAsync(userId);
         }
 
-        public async Task<Meal> CreateMealAsync(int userId, string name)
+        public async Task<Meal> CreateMealAsync(int userId, int typeId, string name)
         {
-            if (string.IsNullOrWhiteSpace(name))
+            var mealType = await _mealTypeRepository.GetMealTypeByIdAsync(typeId);
+            if (mealType == null)
+                throw new ValidationException("Invalid meal type");
+
+            if (string.IsNullOrWhiteSpace(name) && typeId == 5)
                 throw new ValidationException("Meal name cannot be empty");
 
-            var newMeal = new Meal(userId, name);
+            if (!string.IsNullOrWhiteSpace(name) && typeId != 5)
+                throw new ValidationException("Name cannot be provided for system meal types (Breakfast, Lunch, Dinner, Snack)");
+
+            var newMeal = new Meal
+            {
+                OwnerId = userId,
+                MealTypeId = typeId,
+                Name = typeId == 5 ? name : mealType.Name,
+            };
             var createdMeal = await _mealRepository.CreateMealAsync(newMeal);
             if (createdMeal == null)
                 throw new InvalidOperationException("Failed to create meal");
