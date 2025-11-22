@@ -4,7 +4,7 @@ GO
 CREATE TABLE meal_types
 (
     id            INT IDENTITY PRIMARY KEY,
-    name          NVARCHAR(50) NOT NULL,
+    name          NVARCHAR(50) NOT NULL
 )
 GO
 
