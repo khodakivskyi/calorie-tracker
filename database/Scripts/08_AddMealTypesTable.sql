@@ -8,17 +8,6 @@ CREATE TABLE meal_types
 )
 GO
 
-ALTER TABLE meals
-    ADD meal_type_id INT NOT NULL DEFAULT 5 REFERENCES meal_types(id)
-GO
-
-
-CREATE UNIQUE INDEX UX_Meals_SystemTypes
-    ON meals(owner_id, created_at, meal_type_id)
-    WHERE meal_type_id IN (1, 2, 3, 4);
-GO
-
-
 INSERT INTO meal_types (name) VALUES
 ('Breakfast'),
 ('Lunch'),
@@ -27,3 +16,11 @@ INSERT INTO meal_types (name) VALUES
 ('Custom')
 GO
 
+ALTER TABLE meals
+    ADD meal_type_id INT NOT NULL DEFAULT 5 REFERENCES meal_types(id)
+GO
+
+CREATE UNIQUE INDEX UX_Meals_SystemTypes
+    ON meals(owner_id, created_at, meal_type_id)
+    WHERE meal_type_id IN (1, 2, 3, 4);
+GO
