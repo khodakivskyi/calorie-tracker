@@ -36,10 +36,10 @@ namespace backend.Repositories
         public async Task<Meal?> CreateMealAsync(Meal meal)
         {
             using var connection = new SqlConnection(_connectionString);
-            const string sql = @"INSERT INTO meals (owner_id, name)
+            const string sql = @"INSERT INTO meals (owner_id, meal_type_id, name)
                                  OUTPUT INSERTED.id, INSERTED.owner_id AS OwnerId, INSERTED.name, 
-                                        INSERTED.created_at AS CreatedAt, INSERTED.updated_at AS UpdatedAt
-                                 VALUES (@OwnerId, @Name);";
+                                        INSERTED.created_at AS CreatedAt, INSERTED.updated_at AS UpdatedAt, INSERTED.meal_type_id AS MealTypeId
+                                 VALUES (@OwnerId, @MealTypeId, @Name);";
             return await connection.QueryFirstOrDefaultAsync<Meal>(sql, meal);
         }
 

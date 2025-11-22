@@ -13,12 +13,15 @@ namespace backend.GraphQL.Mutations
 
             Field<NonNullGraphType<MealType>>("createMeal")
                 .Argument<NonNullGraphType<IntGraphType>>("userId")
+                .Argument<NonNullGraphType<IntGraphType>>("typeId")
                 .Argument<NonNullGraphType<StringGraphType>>("name")
                 .ResolveAsync(async context =>
                 {
                     var userId = context.GetArgument<int>("userId");
+                    var typeId = context.GetArgument<int>("typeId");
                     var name = context.GetArgument<string>("name");
-                    return await mealService.CreateMealAsync(userId, name);
+
+                    return await mealService.CreateMealAsync(userId, typeId, name);
                 });
 
             Field<NonNullGraphType<MealType>>("updateMeal")
