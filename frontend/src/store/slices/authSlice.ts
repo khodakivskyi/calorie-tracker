@@ -1,10 +1,5 @@
 import {createSlice, type PayloadAction} from '@reduxjs/toolkit';
-
-type AuthUser = {
-    id: number;
-    email: string;
-    name: string | null;
-}
+import type {AuthUser} from "../types/authTypes.ts"
 
 type AuthState = {
     loading: boolean;

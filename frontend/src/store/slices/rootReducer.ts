@@ -1,10 +1,12 @@
 import { combineReducers } from '@reduxjs/toolkit';
 import authReducer, * as authActions from './authSlice';
 import profileReducer, * as profileActions from './profileSlice.ts';
+import mealReducer, * as mealActions from './mealSlice.ts';
 
 export const rootReducer = combineReducers({
     auth: authReducer,
     profile: profileReducer,
+    meal: mealReducer,
 });
 
 export type RootState = ReturnType<typeof rootReducer>;
@@ -24,4 +26,7 @@ export type RootAction =
     | ReturnType<typeof profileActions.updateProfileRequest>
     | ReturnType<typeof profileActions.updateProfileSuccess>
     | ReturnType<typeof profileActions.updateProfileFailure>
-    | ReturnType<typeof profileActions.clearSettingsMessages>;
+    | ReturnType<typeof profileActions.clearSettingsMessages>
+    | ReturnType<typeof mealActions.createMealRequest>
+    | ReturnType<typeof mealActions.createMealSuccess>
+    | ReturnType<typeof mealActions.createMealFailure>;
