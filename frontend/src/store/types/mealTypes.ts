@@ -1,9 +1,17 @@
+import type {Dish} from "./dishTypes.ts";
+
 export type Meal = {
     id: number;
     name: string;
     ownerId: number;
     createdAt: Date;
     updatedAt: Date;
+};
+
+export type MealDish = {
+    dishId: number;
+    quantity: number;
+    dish?: Dish;
 };
 
 import {
