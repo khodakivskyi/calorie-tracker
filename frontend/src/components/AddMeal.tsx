@@ -3,7 +3,24 @@ import Lunch from '../assets/images/Lunch.png';
 import Snack from '../assets/images/Snack.png';
 import Dinner from '../assets/images/Dinner.png';
 
+import AddMealModal from './AddMealModal';
+import {useState, useEffect} from "react";
+import type {Meal} from "../store/types/mealTypes.ts";
+
 export default function AddMeal() {
+    const [meals, setMeals] = useState<Meal[]>([]);
+    const [isModalOpen, setModalOpen] = useState(false);
+
+    const handleAddMeal = (meal: Meal) => {
+        setMeals((prev) => [...prev, meal]);
+        localStorage.setItem("meals", JSON.stringify([...meals, meal]));
+    };
+
+    useEffect(() => {
+        const savedMeals = localStorage.getItem("meals");
+        if (savedMeals) setMeals(JSON.parse(savedMeals));
+    }, [])
+
     const mealTypes = [
         {
             id: 'breakfast',
@@ -45,10 +62,18 @@ export default function AddMeal() {
 
                         <div className={`flex flex-col ${meal.imagePosition === 'right' ? 'flex-1' : 'items-end'}`}>
                             <h3 className="font-bold text-lg">{meal.name}</h3>
-                            <button className="mt-2 bg-primary-500 text-white px-4 py-2 rounded-lg w-fit">
+                            <button
+                                onClick={() => setModalOpen(true)}
+                                className="mt-2 bg-primary-500 text-white px-4 py-2 rounded-lg w-fit">
                                 + Add
                             </button>
                         </div>
+
+                        <AddMealModal
+                            isOpen={isModalOpen}
+                            onClose={() => setModalOpen(false)}
+                            onAddMeal={handleAddMeal}
+                        />
 
                         <div
                             className={`
