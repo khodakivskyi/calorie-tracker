@@ -20,7 +20,7 @@ type IconKey = keyof typeof iconMap;
 const navItems: Array<{path: string; icon: IconKey; label: string}> = [
     {path: '/home', icon: 'home', label: 'Home'},
     {path: '/analytics', icon: 'analytics', label: 'Analytics'},
-    {path: '/foods', icon: 'plan', label: 'Foods'},
+    {path: '/recipes', icon: 'plan', label: 'Recipes'},
     {path: '/profile', icon: 'setting', label: 'Profile'},
 ];
 
