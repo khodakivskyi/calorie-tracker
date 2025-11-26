@@ -19,7 +19,10 @@ const mealSlice = createSlice({
     name: 'meal',
     initialState,
     reducers: {
-        createMealRequest(state) {
+        createMealRequest(
+            state,
+            _action: PayloadAction<{ userId: number; typeId: number; name: string }>
+        ) {
             state.loading = true;
             state.error = null;
             state.success = null;

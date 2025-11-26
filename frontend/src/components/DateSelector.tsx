@@ -1,9 +1,9 @@
 import { useState } from 'react';
 
 export default function DateSelector() {
-    const [selectedDate, setSelectedDate] = useState<Date>(new Date());
     const today = new Date();
     today.setHours(0, 0, 0, 0);
+    const [selectedDate, setSelectedDate] = useState<Date>(today);
 
     const days = [];
     const baseDate = new Date();

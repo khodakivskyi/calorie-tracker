@@ -8,17 +8,40 @@ import {useState, useEffect} from "react";
 import type {Meal} from "../store/types/mealTypes.ts";
 
 export default function AddMeal() {
-    const [meals, setMeals] = useState<Meal[]>([]);
+    const [_meals, setMeals] = useState<Meal[]>([]);
     const [isModalOpen, setModalOpen] = useState(false);
+    const [selectedMeal, setSelectedMeal] = useState<{id: string, name: string} | null>(null);
 
     const handleAddMeal = (meal: Meal) => {
-        setMeals((prev) => [...prev, meal]);
-        localStorage.setItem("meals", JSON.stringify([...meals, meal]));
+        setMeals((prev) => {
+            const updated = [...prev, meal];
+            localStorage.setItem("meals", JSON.stringify(updated));
+            return updated;
+        });
+    };
+
+    const handleOpenModal = (meal: {id: string, name: string}) => {
+        setSelectedMeal(meal);
+        setModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setSelectedMeal(null);
+        setModalOpen(false);
     };
 
     useEffect(() => {
-        const savedMeals = localStorage.getItem("meals");
-        if (savedMeals) setMeals(JSON.parse(savedMeals));
+        try{
+            const savedMeals = localStorage.getItem("meals");
+            if (savedMeals) {
+                const parsed = JSON.parse(savedMeals);
+                if (Array.isArray(parsed)) setMeals(parsed);
+            }
+        } catch (error) {
+            console.error("Failed to load meals from localStorage:", error);
+            localStorage.removeItem("meals");
+        }
+
     }, [])
 
     const mealTypes = [
@@ -63,18 +86,11 @@ export default function AddMeal() {
                         <div className={`flex flex-col ${meal.imagePosition === 'right' ? 'flex-1' : 'items-end'}`}>
                             <h3 className="font-bold text-lg">{meal.name}</h3>
                             <button
-                                onClick={() => setModalOpen(true)}
+                                onClick={() => handleOpenModal(meal)}
                                 className="mt-2 bg-primary-500 text-white px-4 py-2 rounded-lg w-fit">
                                 + Add
                             </button>
                         </div>
-
-                        <AddMealModal
-                            isOpen={isModalOpen}
-                            onClose={() => setModalOpen(false)}
-                            onAddMeal={handleAddMeal}
-                            mealType={meal.name}
-                        />
 
                         <div
                             className={`
@@ -104,6 +120,13 @@ export default function AddMeal() {
                     </div>
                 </div>
             ))}
+
+        <AddMealModal
+            isOpen={isModalOpen}
+            onClose={handleCloseModal}
+            onAddMeal={handleAddMeal}
+            mealType={selectedMeal?.name || ''}
+        />
         </>
     )
 }

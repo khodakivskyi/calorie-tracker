@@ -8,7 +8,7 @@ interface CircularProgressProps {
 }
 
 function CircularProgress({ value, max, color, size = 60 }: CircularProgressProps) {
-    const percentage = Math.min((value / max) * 100, 100);
+    const percentage = max > 0 ? Math.min((value / max) * 100, 100) : 0;
     const radius = (size - 8) / 2;
     const circumference = 2 * Math.PI * radius;
     const offset = circumference - (percentage / 100) * circumference;
