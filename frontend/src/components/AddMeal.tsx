@@ -73,6 +73,7 @@ export default function AddMeal() {
                             isOpen={isModalOpen}
                             onClose={() => setModalOpen(false)}
                             onAddMeal={handleAddMeal}
+                            mealType={meal.name}
                         />
 
                         <div

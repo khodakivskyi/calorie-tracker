@@ -9,5 +9,4 @@ export type Food = {
     imageId?: number | null;
     createdAt: Date;
     updatedAt: Date;
-    externalId?: string | null;
 };

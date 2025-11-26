@@ -12,6 +12,7 @@ export type Dish = {
     foods?: DishFood[];
 };
 
+//probably need improve
 export type DishFood = {
     foodId: number;
     quantity: number;

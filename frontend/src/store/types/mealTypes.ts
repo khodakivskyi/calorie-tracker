@@ -1,4 +1,9 @@
 import type {Dish} from "./dishTypes.ts";
+import {
+    createMealRequest,
+    createMealSuccess,
+    createMealFailure
+} from '../slices/mealSlice.ts';
 
 export type Meal = {
     id: number;
@@ -8,17 +13,12 @@ export type Meal = {
     updatedAt: Date;
 };
 
+//probably need improve
 export type MealDish = {
     dishId: number;
     quantity: number;
     dish?: Dish;
 };
-
-import {
-    createMealRequest,
-    createMealSuccess,
-    createMealFailure
-} from '../slices/mealSlice.ts';
 
 export type MealAction =
     | ReturnType<typeof createMealRequest>
