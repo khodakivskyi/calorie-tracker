@@ -17,6 +17,7 @@ export default function SearchBar({ placeholder = "Search...", onSearch, onAddCl
     };
 
     return (
+        <>
         <div className="flex items-center gap-3 mb-4">
             <div className="flex-1 relative">
                 <input
@@ -34,6 +35,7 @@ export default function SearchBar({ placeholder = "Search...", onSearch, onAddCl
                 <AddIcon className="w-6 h-6" />
             </button>
         </div>
+        </>
     );
 }
 

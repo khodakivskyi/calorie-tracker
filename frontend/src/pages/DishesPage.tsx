@@ -2,6 +2,11 @@ import { useState } from 'react';
 import PageHeader from "../components/PageHeader.tsx";
 import SearchBar from "../components/SearchBar.tsx";
 import RecipeItemCard from "../components/RecipeItemCard.tsx";
+import CreateDishModal from "../components/CreateDishModal.tsx";
+import SelectIngredientModal from "../components/SelectIngredientModal.tsx";
+import CreateIngredientModal from "../components/CreateIngredientModal.tsx";
+import type {DishFood, Dish as DishType} from "../store/types/dishTypes.ts";
+import type {Food} from "../store/types/foodTypes.ts";
 
 interface Dish {
     id: number;
@@ -23,8 +28,18 @@ const mockDishes: Dish[] = [
     { id: 10, name: 'Vegetable Stir Fry', calories: 220 },
 ];
 
+const readyFoods: Food[] = [
+    { id: 101, name: "Chicken Breast", ownerId: null, calories: 165, protein: 31, fat: 3.6, carbohydrates: 0, createdAt: new Date(), updatedAt: new Date() },
+    { id: 102, name: "Brown Rice", ownerId: null, calories: 112, protein: 2.6, fat: 0.9, carbohydrates: 23, createdAt: new Date(), updatedAt: new Date() },
+    { id: 103, name: "Broccoli", ownerId: null, calories: 34, protein: 2.8, fat: 0.4, carbohydrates: 7, createdAt: new Date(), updatedAt: new Date() },
+];
+
 export default function DishesPage() {
     const [dishes, setDishes] = useState<Dish[]>(mockDishes);
+    const [isCreateDishOpen, setIsCreateDishOpen] = useState(false);
+    const [isSelectIngredientOpen, setIsSelectIngredientOpen] = useState(false);
+    const [isCreateIngredientOpen, setIsCreateIngredientOpen] = useState(false);
+    const [newDishIngredients, setNewDishIngredients] = useState<DishFood[]>([]);
 
     const handleSearch = (query: string) => {
         if (query.trim() === '') {
@@ -38,11 +53,42 @@ export default function DishesPage() {
     };
 
     const handleAddClick = () => {
-        console.log('Add new dish');///do
+        setIsCreateDishOpen(true);
     };
 
     const handleItemClick = (dish: Dish) => {
         console.log('View dish:', dish);///do
+    };
+
+    const handleSelectIngredient = (food: Food, quantity = 1) => {
+        setNewDishIngredients(prev => [...prev, { foodId: food.id, quantity, food }]);
+        setIsSelectIngredientOpen(false);
+    };
+
+    const handleCreateIngredient = (food: Food) => {
+        setNewDishIngredients(prev => [...prev, { foodId: food.id, quantity: 1, food }]);
+        setIsCreateIngredientOpen(false);
+    };
+
+    const resetModals = () => {
+        setIsCreateDishOpen(false);
+        setIsSelectIngredientOpen(false);
+        setIsCreateIngredientOpen(false);
+        setNewDishIngredients([]);
+    };
+
+    const handleCreateDish = (dish: DishType) => {
+        const calories = dish.foods?.reduce((sum, item) => {
+            const kcal = item.food?.calories ?? 0;
+            return sum + kcal * item.quantity;
+        }, 0) ?? 0;
+
+        setDishes(prev => [...prev, {
+            id: dish.id,
+            name: dish.name,
+            calories: Math.round(calories)
+        }]);
+        resetModals();
     };
 
     return (
@@ -74,6 +120,34 @@ export default function DishesPage() {
                     )}
                 </div>
             </div>
+
+            <CreateDishModal
+                isOpen={isCreateDishOpen}
+                onClose={resetModals}
+                onCreateDish={handleCreateDish}
+                onAddIngredient={() => setIsSelectIngredientOpen(true)}
+                ingredients={newDishIngredients}
+                onRemoveIngredient={(index) =>
+                    setNewDishIngredients(prev => prev.filter((_, idx) => idx !== index))
+                }
+            />
+
+            <SelectIngredientModal
+                isOpen={isSelectIngredientOpen}
+                onClose={() => setIsSelectIngredientOpen(false)}
+                onSelectIngredient={handleSelectIngredient}
+                onCreateIngredient={() => {
+                    setIsSelectIngredientOpen(false);
+                    setIsCreateIngredientOpen(true);
+                }}
+                readyFoods={readyFoods}
+            />
+
+            <CreateIngredientModal
+                isOpen={isCreateIngredientOpen}
+                onClose={() => setIsCreateIngredientOpen(false)}
+                onCreateIngredient={handleCreateIngredient}
+            />
         </div>
     );
 }

@@ -2,31 +2,18 @@ import { useState } from 'react';
 import PageHeader from "../components/PageHeader.tsx";
 import SearchBar from "../components/SearchBar.tsx";
 import RecipeItemCard from "../components/RecipeItemCard.tsx";
+import CreateIngredientModal from "../components/CreateIngredientModal.tsx";
+import type { Food } from "../store/types/foodTypes.ts";
 
-interface Food {
-    id: number;
-    name: string;
-    calories: number;
-}
-
-// Mock data for foods
 const mockFoods: Food[] = [
-    { id: 1, name: 'Chicken Breast', calories: 165 },
-    { id: 2, name: 'Brown Rice', calories: 112 },
-    { id: 3, name: 'Broccoli', calories: 34 },
-    { id: 4, name: 'Salmon', calories: 206 },
-    { id: 5, name: 'Sweet Potato', calories: 86 },
-    { id: 6, name: 'Avocado', calories: 160 },
-    { id: 7, name: 'Eggs', calories: 155 },
-    { id: 8, name: 'Oatmeal', calories: 68 },
-    { id: 9, name: 'Banana', calories: 105 },
-    { id: 10, name: 'Greek Yogurt', calories: 100 },
-    { id: 11, name: 'Almonds', calories: 164 },
-    { id: 12, name: 'Spinach', calories: 23 },
+    { id: 1, name: 'Chicken Breast', calories: 165, ownerId: null, createdAt: new Date(), updatedAt: new Date() },
+    { id: 2, name: 'Brown Rice', calories: 112, ownerId: null, createdAt: new Date(), updatedAt: new Date() },
+    { id: 3, name: 'Broccoli', calories: 34, ownerId: null, createdAt: new Date(), updatedAt: new Date() },
 ];
 
 export default function FoodsPage() {
     const [foods, setFoods] = useState<Food[]>(mockFoods);
+    const [isCreateIngredientOpen, setIsCreateIngredientOpen] = useState(false);
 
     const handleSearch = (query: string) => {
         if (query.trim() === '') {
@@ -40,11 +27,16 @@ export default function FoodsPage() {
     };
 
     const handleAddClick = () => {
-        console.log('Add new food');///do
+        setIsCreateIngredientOpen(true);
     };
 
     const handleItemClick = (food: Food) => {
-        console.log('View food:', food);///do
+        console.log('View food:', food);
+    };
+
+    const handleCreateIngredient = (food: Food) => {
+        setFoods(prev => [...prev, food]);
+        setIsCreateIngredientOpen(false);
     };
 
     return (
@@ -76,7 +68,12 @@ export default function FoodsPage() {
                     )}
                 </div>
             </div>
+
+            <CreateIngredientModal
+                isOpen={isCreateIngredientOpen}
+                onClose={() => setIsCreateIngredientOpen(false)}
+                onCreateIngredient={handleCreateIngredient}
+            />
         </div>
     );
 }
-
