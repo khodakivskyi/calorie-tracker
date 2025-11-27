@@ -10,8 +10,6 @@ namespace backend.Repositories.Interfaces
 
         // Only for global foods
         Task<IEnumerable<Food>> GetGlobalFoodsAsync();
-        Task<Food?> GetFoodByExternalIdAsync(string externalId);
-
         // Only for private foods
         Task<IEnumerable<Food>> GetPrivateFoodsByUserAsync(int userId);
         Task<Food?> CreateFoodAsync(Food food);

@@ -41,17 +41,20 @@ namespace backend.Services
             return await _foodRepository.GetGlobalFoodsAsync();
         }
 
-        public async Task<Food?> GetFoodByExternalIdAsync(string externalId)
-        {
-            return await _foodRepository.GetFoodByExternalIdAsync(externalId);
-        }
-
-        public async Task<Food> CreateFoodAsync(int? userId, string name, int? imageId, string? externalId = null, decimal? calories = null, decimal? protein = null, decimal? fat = null, decimal? carbohydrates = null)
+        public async Task<Food> CreateFoodAsync(
+            int? userId,
+            string name,
+            int? imageId,
+            bool? isExternal = null,
+            decimal? calories = null,
+            decimal? protein = null,
+            decimal? fat = null,
+            decimal? carbohydrates = null)
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new ValidationException("Food name cannot be empty");
 
-            var food = new Food(userId, name, imageId, externalId);
+            var food = new Food(userId, name, imageId, isExternal ?? false);
             var createdFood = await _foodRepository.CreateFoodAsync(food);
 
             if (createdFood == null)
@@ -88,11 +91,20 @@ namespace backend.Services
             return createdFood;
         }
 
-        public async Task<Food> UpdateFoodAsync(int foodId, int userId, string? name = null, int? imageId = null, string? externalId = null, decimal? calories = null, decimal? protein = null, decimal? fat = null, decimal? carbohydrates = null)
+        public async Task<Food> UpdateFoodAsync(
+            int foodId,
+            int userId,
+            string? name = null,
+            int? imageId = null,
+            bool? isExternal = null,
+            decimal? calories = null,
+            decimal? protein = null,
+            decimal? fat = null,
+            decimal? carbohydrates = null)
         {
             var existingFood = await this.GetFoodByIdAsync(foodId, userId);
 
-            if (existingFood.OwnerId == null)
+            if (existingFood.OwnerId == null && existingFood.IsExternal)
                 throw new ValidationException("You cannot update global foods");
 
             if (existingFood.OwnerId != userId)
@@ -104,8 +116,8 @@ namespace backend.Services
             if (imageId.HasValue && imageId != existingFood.ImageId)
                 existingFood.ImageId = imageId;
 
-            if (!string.IsNullOrWhiteSpace(externalId) && externalId != existingFood.ExternalId)
-                existingFood.ExternalId = externalId;
+            if (isExternal.HasValue && isExternal.Value != existingFood.IsExternal)
+                existingFood.IsExternal = isExternal.Value;
 
             var updatedFood = await _foodRepository.UpdateFoodAsync(existingFood);
             if (updatedFood == null)

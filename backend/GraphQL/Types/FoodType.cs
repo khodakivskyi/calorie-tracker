@@ -14,7 +14,7 @@ namespace backend.GraphQL.Types
             Field(x => x.ImageId, nullable: true);
             Field(x => x.CreatedAt);
             Field(x => x.UpdatedAt);
-            Field(x => x.ExternalId, nullable: true);
+            Field(x => x.IsExternal, nullable: true);
 
             Field<DecimalGraphType, decimal>("calories")
                 .ResolveAsync(async context =>

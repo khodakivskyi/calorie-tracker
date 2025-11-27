@@ -16,7 +16,6 @@ namespace backend.GraphQL.Mutations
                 .Argument<IntGraphType>("userId")
                 .Argument<NonNullGraphType<StringGraphType>>("name")
                 .Argument<IntGraphType>("imageId")
-                .Argument<StringGraphType>("externalId")
                 .Argument<DecimalGraphType>("calories")
                 .Argument<DecimalGraphType>("protein")
                 .Argument<DecimalGraphType>("fat")
@@ -26,13 +25,12 @@ namespace backend.GraphQL.Mutations
                     var userId = context.GetArgument<int?>("userId");
                     var name = context.GetArgument<string>("name");
                     var imageId = context.GetArgument<int?>("imageId");
-                    var externalId = context.GetArgument<string?>("externalId");
                     var calories = context.GetArgument<decimal?>("calories");
                     var protein = context.GetArgument<decimal?>("protein");
                     var fat = context.GetArgument<decimal?>("fat");
                     var carbohydrates = context.GetArgument<decimal?>("carbohydrates");
 
-                    return await foodService.CreateFoodAsync(userId, name, imageId, externalId, calories, protein, fat, carbohydrates);
+                    return await foodService.CreateFoodAsync(userId, name, imageId, false, calories, protein, fat, carbohydrates);
                 });
 
             Field<FoodType>("updateFood")
@@ -40,7 +38,6 @@ namespace backend.GraphQL.Mutations
                 .Argument<NonNullGraphType<IntGraphType>>("userId")
                 .Argument<StringGraphType>("name")
                 .Argument<IntGraphType>("imageId")
-                .Argument<StringGraphType>("externalId")
                 .Argument<DecimalGraphType>("calories")
                 .Argument<DecimalGraphType>("protein")
                 .Argument<DecimalGraphType>("fat")
@@ -51,13 +48,12 @@ namespace backend.GraphQL.Mutations
                     var userId = context.GetArgument<int>("userId");
                     var name = context.GetArgument<string?>("name");
                     var imageId = context.GetArgument<int?>("imageId");
-                    var externalId = context.GetArgument<string?>("externalId");
                     var calories = context.GetArgument<decimal?>("calories");
                     var protein = context.GetArgument<decimal?>("protein");
                     var fat = context.GetArgument<decimal?>("fat");
                     var carbohydrates = context.GetArgument<decimal?>("carbohydrates");
 
-                    return await foodService.UpdateFoodAsync(foodId, userId, name, imageId, externalId, calories, protein, fat, carbohydrates);
+                    return await foodService.UpdateFoodAsync(foodId, userId, name, imageId, false, calories, protein, fat, carbohydrates);
                 });
 
             Field<BooleanGraphType>("deleteFood")
