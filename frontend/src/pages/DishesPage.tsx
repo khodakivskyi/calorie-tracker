@@ -29,9 +29,9 @@ const mockDishes: Dish[] = [
 ];
 
 const readyFoods: Food[] = [
-    { id: 101, name: "Chicken Breast", ownerId: null, calories: 165, protein: 31, fat: 3.6, carbohydrates: 0, createdAt: new Date(), updatedAt: new Date() },
-    { id: 102, name: "Brown Rice", ownerId: null, calories: 112, protein: 2.6, fat: 0.9, carbohydrates: 23, createdAt: new Date(), updatedAt: new Date() },
-    { id: 103, name: "Broccoli", ownerId: null, calories: 34, protein: 2.8, fat: 0.4, carbohydrates: 7, createdAt: new Date(), updatedAt: new Date() },
+    { id: 101, name: "Chicken Breast", userId: null, calories: 165, protein: 31, fat: 3.6, carbohydrates: 0, createdAt: new Date(), updatedAt: new Date() },
+    { id: 102, name: "Brown Rice", userId: null, calories: 112, protein: 2.6, fat: 0.9, carbohydrates: 23, createdAt: new Date(), updatedAt: new Date() },
+    { id: 103, name: "Broccoli", userId: null, calories: 34, protein: 2.8, fat: 0.4, carbohydrates: 7, createdAt: new Date(), updatedAt: new Date() },
 ];
 
 export default function DishesPage() {

@@ -2,11 +2,15 @@ import { combineReducers } from '@reduxjs/toolkit';
 import authReducer, * as authActions from './authSlice';
 import profileReducer, * as profileActions from './profileSlice.ts';
 import mealReducer, * as mealActions from './mealSlice.ts';
+import foodReducer, * as foodActions from './foodsSlice.ts';
+import dishReducer, * as dishActions from './dishesSlice.ts';
 
 export const rootReducer = combineReducers({
     auth: authReducer,
     profile: profileReducer,
     meal: mealReducer,
+    food: foodReducer,
+    dish: dishReducer
 });
 
 export type RootState = ReturnType<typeof rootReducer>;
@@ -29,4 +33,10 @@ export type RootAction =
     | ReturnType<typeof profileActions.clearSettingsMessages>
     | ReturnType<typeof mealActions.createMealRequest>
     | ReturnType<typeof mealActions.createMealSuccess>
-    | ReturnType<typeof mealActions.createMealFailure>;
+    | ReturnType<typeof mealActions.createMealFailure>
+    | ReturnType<typeof foodActions.createFoodRequest>
+    | ReturnType<typeof foodActions.createFoodSuccess>
+    | ReturnType<typeof foodActions.createFoodFailure>
+    | ReturnType<typeof dishActions.createDishRequest>
+    | ReturnType<typeof dishActions.createDishSuccess>
+    | ReturnType<typeof dishActions.createDishFailure>;

@@ -1,4 +1,5 @@
 import type {Food} from "./foodTypes.ts";
+import {createDishFailure, createDishRequest, createDishSuccess} from "../slices/dishesSlice.ts";
 
 export type Dish = {
     id: number;
@@ -8,7 +9,6 @@ export type Dish = {
     imageId?: number | null;
     createdAt: Date;
     updatedAt: Date;
-    externalId?: string | null;
     foods?: DishFood[];
 };
 
@@ -18,3 +18,8 @@ export type DishFood = {
     quantity: number;
     food?: Food;
 };
+
+export type DishAction =
+    | ReturnType<typeof createDishRequest>
+    | ReturnType<typeof createDishSuccess>
+    | ReturnType<typeof createDishFailure>;

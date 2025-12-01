@@ -1,7 +1,7 @@
 interface RecipeItemCardProps {
     id: number;
     name: string;
-    calories?: number;
+    calories: number | null;
     onClick?: () => void;
 }
 

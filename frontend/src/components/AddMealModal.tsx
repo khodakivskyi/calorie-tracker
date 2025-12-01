@@ -16,15 +16,15 @@ interface AddMealModalProps {
 
 // Mock data
 const mockReadyDishes: Dish[] = [
-    { id: 1, name: "Цезар салат", ownerId: null, weight: 250, createdAt: new Date(), updatedAt: new Date(), externalId: "FATSECRET_001" },
-    { id: 2, name: "Грецький салат", ownerId: null, weight: 200, createdAt: new Date(), updatedAt: new Date(), externalId: "FATSECRET_002" },
-    { id: 3, name: "Паста карбонара", ownerId: null, weight: 350, createdAt: new Date(), updatedAt: new Date(), externalId: "FATSECRET_003" },
+    { id: 1, name: "Цезар салат", ownerId: null, weight: 250, createdAt: new Date(), updatedAt: new Date()},
+    { id: 2, name: "Грецький салат", ownerId: null, weight: 200, createdAt: new Date(), updatedAt: new Date()},
+    { id: 3, name: "Паста карбонара", ownerId: null, weight: 350, createdAt: new Date(), updatedAt: new Date()},
 ];
 
 const mockReadyFoods: Food[] = [
-    { id: 1, name: "Куряча грудка", ownerId: null, calories: 165, protein: 31, fat: 3.6, carbohydrates: 0, createdAt: new Date(), updatedAt: new Date() },
-    { id: 2, name: "Рис", ownerId: null, calories: 130, protein: 2.7, fat: 0.3, carbohydrates: 28, createdAt: new Date(), updatedAt: new Date() },
-    { id: 3, name: "Броколі", ownerId: null, calories: 34, protein: 2.8, fat: 0.4, carbohydrates: 7, createdAt: new Date(), updatedAt: new Date() },
+    { id: 1, name: "Куряча грудка", userId: null, calories: 165, protein: 31, fat: 3.6, carbohydrates: 0, createdAt: new Date(), updatedAt: new Date() },
+    { id: 2, name: "Рис", userId: null, calories: 130, protein: 2.7, fat: 0.3, carbohydrates: 28, createdAt: new Date(), updatedAt: new Date() },
+    { id: 3, name: "Броколі", userId: null, calories: 34, protein: 2.8, fat: 0.4, carbohydrates: 7, createdAt: new Date(), updatedAt: new Date() },
 ];
 
 export default function AddMealModal({isOpen, onClose, onAddMeal, mealType}: AddMealModalProps) {
