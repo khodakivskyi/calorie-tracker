@@ -6,9 +6,9 @@ import CreateIngredientModal from "../components/CreateIngredientModal.tsx";
 import type { Food } from "../store/types/foodTypes.ts";
 
 const mockFoods: Food[] = [
-    { id: 1, name: 'Chicken Breast', calories: 165, ownerId: null, createdAt: new Date(), updatedAt: new Date() },
-    { id: 2, name: 'Brown Rice', calories: 112, ownerId: null, createdAt: new Date(), updatedAt: new Date() },
-    { id: 3, name: 'Broccoli', calories: 34, ownerId: null, createdAt: new Date(), updatedAt: new Date() },
+    { id: 1, name: 'Chicken Breast', calories: 165, userId: null, createdAt: new Date(), updatedAt: new Date() },
+    { id: 2, name: 'Brown Rice', calories: 112, userId: null, createdAt: new Date(), updatedAt: new Date() },
+    { id: 3, name: 'Broccoli', calories: 34, userId: null, createdAt: new Date(), updatedAt: new Date() },
 ];
 
 export default function FoodsPage() {
@@ -57,7 +57,7 @@ export default function FoodsPage() {
                                 key={food.id}
                                 id={food.id}
                                 name={food.name}
-                                calories={food.calories}
+                                calories={food.calories ?? null}
                                 onClick={() => handleItemClick(food)}
                             />
                         ))

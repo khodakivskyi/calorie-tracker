@@ -8,13 +8,19 @@ import {verifyEmailEpic} from "./verifyEmailEpic.ts";
 import {authenticateUserEpic} from "./authenticateUserEpic.ts";
 import {updateProfileEpic} from "./updateProfileEpic.ts";
 import {addMealEpic} from "./addMealEpic.ts";
+import type {FoodAction} from "../types/foodTypes.ts";
+import {createFoodEpic} from "./addFoodEpic.ts";
+import {createDishEpic} from "./addDishEpic.ts";
+import type {DishAction} from "../types/dishTypes.ts";
 
-export type RootEpicAction = AuthAction | ProfileAction | MealAction;
+export type RootEpicAction = AuthAction | ProfileAction | MealAction | FoodAction | DishAction;
 
 export const rootEpic = combineEpics<RootEpicAction, RootEpicAction, RootState>(
     registerUserEpic,
     verifyEmailEpic,
     authenticateUserEpic,
     updateProfileEpic,
-    addMealEpic
+    addMealEpic,
+    createFoodEpic,
+    createDishEpic
 );

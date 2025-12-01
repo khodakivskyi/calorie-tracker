@@ -25,7 +25,7 @@ export default function CreateIngredientModal({
         const createdFood: Food = {
             id: Date.now(),
             name: ingredient.name,
-            ownerId: 1,
+            userId: 1,
             calories: ingredient.calories,
             protein: ingredient.protein,
             fat: ingredient.fat,
