@@ -21,7 +21,7 @@
             Name = name;
             Weight = weight;
             ImageId = imgId;
-            IsExternal = isExternal ?? false; 
+            IsExternal = isExternal ?? false;
         }
     }
 }
