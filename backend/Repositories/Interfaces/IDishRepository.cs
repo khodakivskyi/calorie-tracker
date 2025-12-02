@@ -10,7 +10,6 @@ namespace backend.Repositories.Interfaces
 
         // Only for global dishes
         Task<IEnumerable<Dish>> GetGlobalDishesAsync();
-        Task<Dish?> GetDishByExternalIdAsync(string externalId);
 
         // Only for private dishes
         Task<IEnumerable<Dish>> GetPrivateDishesByUserAsync(int userId);
