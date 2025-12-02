@@ -20,7 +20,7 @@ namespace backend.GraphQL.Mutations
                     var userId = context.GetArgument<int?>("userId");
                     var name = context.GetArgument<string>("name");
                     var weight = context.GetArgument<decimal>("weight");
-                    return await dishService.CreateDishAsync(userId, name, weight, null, false);
+                    return await dishService.CreateDishAsync(userId, name, weight, null);
                 });
 
             Field<NonNullGraphType<DishType>>("updateDish")
@@ -34,7 +34,7 @@ namespace backend.GraphQL.Mutations
                     var userId = context.GetArgument<int>("userId");
                     var name = context.GetArgument<string>("name");
                     var weight = context.GetArgument<decimal?>("weight");
-                    return await dishService.UpdateDishAsync(userId, dishId, name, weight, null, false);
+                    return await dishService.UpdateDishAsync(userId, dishId, name, weight, null);
                 });
 
             Field<BooleanGraphType>("deleteDish")
