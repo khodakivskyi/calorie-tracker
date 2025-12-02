@@ -15,14 +15,12 @@ namespace backend.GraphQL.Mutations
                 .Argument<IntGraphType>("userId")
                 .Argument<NonNullGraphType<DecimalGraphType>>("weight")
                 .Argument<NonNullGraphType<StringGraphType>>("name")
-                .Argument<StringGraphType>("externalId")
                 .ResolveAsync(async context =>
                 {
                     var userId = context.GetArgument<int?>("userId");
                     var name = context.GetArgument<string>("name");
                     var weight = context.GetArgument<decimal>("weight");
-                    var externalId = context.GetArgument<string>("externalId");
-                    return await dishService.CreateDishAsync(userId, name, weight, null, externalId);
+                    return await dishService.CreateDishAsync(userId, name, weight, null, false);
                 });
 
             Field<NonNullGraphType<DishType>>("updateDish")
@@ -30,15 +28,13 @@ namespace backend.GraphQL.Mutations
                 .Argument<NonNullGraphType<IntGraphType>>("userId")
                 .Argument<DecimalGraphType>("weight")
                 .Argument<StringGraphType>("name")
-                .Argument<StringGraphType>("externalId")
                 .ResolveAsync(async context =>
                 {
                     var dishId = context.GetArgument<int>("dishId");
                     var userId = context.GetArgument<int>("userId");
                     var name = context.GetArgument<string>("name");
                     var weight = context.GetArgument<decimal?>("weight");
-                    var externalId = context.GetArgument<string>("externalId");
-                    return await dishService.UpdateDishAsync(userId, dishId, name, weight, null, externalId);
+                    return await dishService.UpdateDishAsync(userId, dishId, name, weight, null, false);
                 });
 
             Field<BooleanGraphType>("deleteDish")

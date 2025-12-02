@@ -9,19 +9,19 @@
         public int? ImageId { get; set; }
         public DateTime CreatedAt { get; init; }
         public DateTime UpdatedAt { get; set; }
-        public string? ExternalId { get; set; }
+        public bool IsExternal { get; set; }
 
         public Image? Image { get; set; }
 
         public Dish() { }
 
-        public Dish(int? ownerId, string name, decimal weight, int? imgId, string? externalId = null)
+        public Dish(int? ownerId, string name, decimal weight, int? imgId, bool? isExternal = null)
         {
             OwnerId = ownerId;
             Name = name;
             Weight = weight;
             ImageId = imgId;
-            ExternalId = externalId;
+            IsExternal = isExternal ?? false; 
         }
     }
 }

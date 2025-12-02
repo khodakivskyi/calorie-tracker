@@ -37,13 +37,7 @@ namespace backend.Services
             return await _dishRepository.GetGlobalDishesAsync();
         }
 
-        public async Task<Dish?> GetDishByExternalIdAsync(string externalId)
-        {
-            return await _dishRepository.GetDishByExternalIdAsync(externalId);
-        }
-
-
-        public async Task<Dish> CreateDishAsync(int? userId, string name, decimal weight, int? imageId = null, string? externalId = null)
+        public async Task<Dish> CreateDishAsync(int? userId, string name, decimal weight, int? imageId = null, bool? isExternal = null)
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new ValidationException("Dish name cannot be empty");
@@ -51,7 +45,7 @@ namespace backend.Services
             if (weight <= 0)
                 throw new ValidationException("Dish weight must be greater than 0");
 
-            var dish = new Dish(userId, name, weight, imageId, externalId);
+            var dish = new Dish(userId, name, weight, imageId, isExternal);
             var createdDish = await _dishRepository.CreateDishAsync(dish);
 
             if (createdDish == null)
@@ -60,11 +54,11 @@ namespace backend.Services
             return createdDish;
         }
 
-        public async Task<Dish> UpdateDishAsync(int userId, int dishId, string? name = null, decimal? weight = null, int? imageId = null, string? externalId = null)
+        public async Task<Dish> UpdateDishAsync(int userId, int dishId, string? name = null, decimal? weight = null, int? imageId = null, bool? isExternal = null)
         {
             var existingDish = await this.GetDishByIdAsync(dishId, userId);
 
-            if (existingDish.OwnerId == null)
+            if (existingDish.OwnerId == null && existingDish.IsExternal)
                 throw new ValidationException("You cannot update global dishes");
 
             if (existingDish.OwnerId != userId)
@@ -79,8 +73,8 @@ namespace backend.Services
             if (imageId.HasValue && imageId != existingDish.ImageId)
                 existingDish.ImageId = imageId;
 
-            if (!string.IsNullOrWhiteSpace(externalId) && externalId != existingDish.ExternalId)
-                existingDish.ExternalId = externalId;
+            if (isExternal.HasValue && isExternal.Value != existingDish.IsExternal)
+                existingDish.IsExternal = isExternal.Value;
 
             var updatedDish = await _dishRepository.UpdateDishAsync(existingDish);
             if (updatedDish == null)

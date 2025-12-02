@@ -18,7 +18,7 @@ namespace backend.Repositories
         {
             using var connection = new SqlConnection(_connectionString);
             const string sql = @"SELECT id, owner_id AS OwnerId, name, weight, image_id AS ImageId, 
-                                        created_at AS CreatedAt, updated_at AS UpdatedAt, external_id AS ExternalId 
+                                        created_at AS CreatedAt, updated_at AS UpdatedAt, is_external AS IsExternal 
                                  FROM dishes 
                                  WHERE id = @Id AND (owner_id = @UserId OR owner_id IS NULL)";
             return await connection.QueryFirstOrDefaultAsync<Dish>(sql, new { Id = dishId, UserId = userId });
@@ -28,7 +28,7 @@ namespace backend.Repositories
         {
             using var connection = new SqlConnection(_connectionString);
             const string sql = @"SELECT id, owner_id AS OwnerId, name, weight, image_id AS ImageId, 
-                                        created_at AS CreatedAt, updated_at AS UpdatedAt, external_id AS ExternalId 
+                                        created_at AS CreatedAt, updated_at AS UpdatedAt, is_external AS IsExternal 
                                  FROM dishes 
                                  WHERE owner_id = @UserId OR owner_id IS NULL
                                  ORDER BY 
@@ -42,21 +42,11 @@ namespace backend.Repositories
         {
             using var connection = new SqlConnection(_connectionString);
             const string sql = @"SELECT id, owner_id AS OwnerId, name, weight, image_id AS ImageId, 
-                                        created_at AS CreatedAt, updated_at AS UpdatedAt, external_id AS ExternalId 
+                                        created_at AS CreatedAt, updated_at AS UpdatedAt, is_external AS IsExternal 
                                  FROM dishes 
                                  WHERE owner_id IS NULL
                                  ORDER BY created_at DESC";
             return await connection.QueryAsync<Dish>(sql);
-        }
-
-        public async Task<Dish?> GetDishByExternalIdAsync(string externalId)
-        {
-            using var connection = new SqlConnection(_connectionString);
-            const string sql = @"SELECT id, owner_id AS OwnerId, name, weight, image_id AS ImageId, 
-                                        created_at AS CreatedAt, updated_at AS UpdatedAt, external_id AS ExternalId 
-                                 FROM dishes 
-                                 WHERE external_id = @ExternalId";
-            return await connection.QuerySingleOrDefaultAsync<Dish>(sql, new { ExternalId = externalId });
         }
 
         // Only for private dishes
@@ -64,7 +54,7 @@ namespace backend.Repositories
         {
             using var connection = new SqlConnection(_connectionString);
             const string sql = @"SELECT id, owner_id AS OwnerId, name, weight, image_id AS ImageId, 
-                                        created_at AS CreatedAt, updated_at AS UpdatedAt, external_id AS ExternalId 
+                                        created_at AS CreatedAt, updated_at AS UpdatedAt, is_external AS IsExternal 
                                  FROM dishes 
                                  WHERE owner_id = @UserId
                                  ORDER BY created_at DESC";
@@ -73,11 +63,11 @@ namespace backend.Repositories
         public async Task<Dish?> CreateDishAsync(Dish dish)
         {
             using var connection = new SqlConnection(_connectionString);
-            const string sql = @"INSERT INTO dishes (owner_id, name, weight, image_id, external_id)
+            const string sql = @"INSERT INTO dishes (owner_id, name, weight, image_id, is_external)
                                 OUTPUT INSERTED.id, INSERTED.owner_id AS OwnerId, INSERTED.name, INSERTED.weight, 
                                        INSERTED.image_id AS ImageId, INSERTED.created_at AS CreatedAt, 
-                                       INSERTED.updated_at AS UpdatedAt, INSERTED.external_id AS ExternalId
-                                VALUES (@OwnerId, @Name, @Weight, @ImageId, @ExternalId);";
+                                       INSERTED.updated_at AS UpdatedAt, INSERTED.is_external AS IsExternal
+                                VALUES (@OwnerId, @Name, @Weight, @ImageId, @IsExternal);";
             return await connection.QueryFirstOrDefaultAsync<Dish>(sql, dish);
         }
         public async Task<Dish?> UpdateDishAsync(Dish dish)
@@ -85,10 +75,10 @@ namespace backend.Repositories
             using var connection = new SqlConnection(_connectionString);
             const string sql = @"UPDATE dishes 
                                 SET name = @Name, weight = @Weight, image_id = @ImageId, 
-                                    external_id = @ExternalId, updated_at = GETDATE()
+                                    is_external = @IsExternal, updated_at = GETDATE()
                                 OUTPUT INSERTED.id, INSERTED.owner_id AS OwnerId, INSERTED.name, INSERTED.weight, 
                                        INSERTED.image_id AS ImageId, INSERTED.created_at AS CreatedAt, 
-                                       INSERTED.updated_at AS UpdatedAt, INSERTED.external_id AS ExternalId
+                                       INSERTED.updated_at AS UpdatedAt, INSERTED.is_external AS IsExternal
                                 WHERE id = @Id AND owner_id = @OwnerId;";
             return await connection.QueryFirstOrDefaultAsync<Dish>(sql, dish);
         }
@@ -141,7 +131,7 @@ namespace backend.Repositories
         public async Task<IEnumerable<(Food food, decimal quantity)>> GetAllFoodsByDishAsync(int dishId)
         {
             using var connection = new SqlConnection(_connectionString);
-            const string sql = @"SELECT f.id, f.owner_id, f.name, f.image_id, f.created_at, f.updated_at, f.external_id, df.quantity
+            const string sql = @"SELECT f.id, f.owner_id, f.name, f.image_id, f.created_at, f.updated_at, f.is_external, df.quantity
                                 FROM dishes_foods df
                                 INNER JOIN foods f ON df.food_id = f.id
                                 WHERE df.dish_id = @DishId;";
@@ -153,7 +143,7 @@ namespace backend.Repositories
                     ownerId: r.owner_id,
                     name: r.name,
                     imageId: r.image_id,
-                    externalId: r.external_id
+                    isExternal: r.is_external
                 )
                 {
                     Id = r.id,
