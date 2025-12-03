@@ -1,10 +1,14 @@
 import { combineReducers } from '@reduxjs/toolkit';
 import authReducer, * as authActions from './authSlice';
 import profileReducer, * as profileActions from './profileSlice.ts';
+import caloriesChartReducer, * as caloriesChartActions from './caloriesChartSlice';
+import activityHeatmapReducer, * as activityHeatmapActions from './activityHeatmapSlice';
 
 export const rootReducer = combineReducers({
     auth: authReducer,
     profile: profileReducer,
+    caloriesChart: caloriesChartReducer,
+    activityHeatmap: activityHeatmapReducer,
 });
 
 export type RootState = ReturnType<typeof rootReducer>;
@@ -24,4 +28,11 @@ export type RootAction =
     | ReturnType<typeof profileActions.updateProfileRequest>
     | ReturnType<typeof profileActions.updateProfileSuccess>
     | ReturnType<typeof profileActions.updateProfileFailure>
-    | ReturnType<typeof profileActions.clearSettingsMessages>;
+    | ReturnType<typeof profileActions.clearSettingsMessages>
+
+    | ReturnType<typeof caloriesChartActions.fetchChartDataRequest>
+    | ReturnType<typeof caloriesChartActions.fetchChartDataSuccess>
+    | ReturnType<typeof caloriesChartActions.fetchChartDataFailure>
+    | ReturnType<typeof activityHeatmapActions.fetchHeatmapRequest>
+    | ReturnType<typeof activityHeatmapActions.fetchHeatmapSuccess>
+    | ReturnType<typeof activityHeatmapActions.fetchHeatmapFailure>;

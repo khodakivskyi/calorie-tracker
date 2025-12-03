@@ -1,16 +1,16 @@
-import { useState, useEffect } from "react";
-
-interface DayLog {
-    date: string;
-    calories: number;
-}
+import React, { useState, useEffect } from 'react';
+import { useAppDispatch, useAppSelector } from "../store";
+import { fetchHeatmapRequest } from "../store/slices/activityHeatmapSlice";
 
 interface ActivityHeatmapProps {
-    logs: DayLog[];
     dailyGoal: number;
 }
 
-export default function ActivityHeatmap({ logs, dailyGoal }: ActivityHeatmapProps) {
+export default function ActivityHeatmap({ dailyGoal }: ActivityHeatmapProps) {
+    const dispatch = useAppDispatch();
+
+    const { logs, isLoading } = useAppSelector(state => state.activityHeatmap);
+
     const [calendarDays, setCalendarDays] = useState<{ date: string | null; calories: number | null }[]>([]);
 
     const currentDate = new Date();
@@ -21,6 +21,10 @@ export default function ActivityHeatmap({ logs, dailyGoal }: ActivityHeatmapProp
     const monthName = currentDate.toLocaleString('en-US', { month: 'long' });
 
     const isGoalSet = dailyGoal > 0;
+
+    useEffect(() => {
+        dispatch(fetchHeatmapRequest());
+    }, [dispatch]);
 
     useEffect(() => {
         const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
@@ -64,7 +68,7 @@ export default function ActivityHeatmap({ logs, dailyGoal }: ActivityHeatmapProp
     };
 
     return (
-        <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm relative overflow-hidden z-0 isolate">
+        <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm relative overflow-hidden z-0 isolate min-h-[300px]">
             <div className="flex justify-between items-center mb-4">
                 <h3 className="text-gray-700 font-semibold capitalize">
                     Activity: {monthName} {currentYear}
@@ -75,6 +79,12 @@ export default function ActivityHeatmap({ logs, dailyGoal }: ActivityHeatmapProp
             </div>
 
             <div className="relative">
+                {isLoading && calendarDays.length === 0 && (
+                    <div className="absolute inset-0 z-20 flex items-center justify-center bg-white/80">
+                        <span className="text-sm text-gray-500">Loading activity...</span>
+                    </div>
+                )}
+
                 {!isGoalSet && (
                     <div className="absolute inset-0 z-[1] flex items-center justify-center bg-white/60 backdrop-blur-[2px] rounded-lg">
                         <div className="bg-white px-4 py-2 rounded-full shadow-sm border border-gray-200 text-sm font-medium text-gray-600 text-center">

@@ -2,6 +2,7 @@ import { Routes, Route } from 'react-router-dom'
 import RegisterPage from "./pages/RegisterPage.tsx"
 import VerifyEmailPage from "./pages/VerifyEmailPage.tsx"
 import LoginPage from "./pages/LoginPage.tsx"
+import AnalyticsPage from "./pages/AnalyticsPage.tsx"
 import MainPage from "./pages/MainPage.tsx"
 import ProfilePage from "./pages/ProfilePage.tsx"
 import BaseLayout from "./components/BaseLayout.tsx";
@@ -15,6 +16,7 @@ function App() {
             <Route element={<BaseLayout/>}>
                 <Route path="/home" element={<MainPage />} />
                 <Route path="/profile" element={<ProfilePage />} />
+                <Route path="/analytics" element={<AnalyticsPage />} /> {}
             </Route>
         </Routes>
     )
