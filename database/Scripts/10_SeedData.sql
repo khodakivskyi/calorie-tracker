@@ -1,11 +1,14 @@
 USE calorie_tracker
 GO
 
-INSERT INTO users (name, email, password_hash, salt)
+SET QUOTED_IDENTIFIER ON;
+GO
+
+INSERT INTO users (name, email, password_hash, salt, email_confirmed, refresh_token, refresh_token_expires)
 VALUES
-    ('Іван Петренко', 'ivan@example.com', 'a1b2c3d4e5f6', 'salt123'),
-    ('Марія Коваленко', 'maria@example.com', 'f6e5d4c3b2a1', 'salt456'),
-    ('Олексій Сидоренко', 'oleksiy@example.com', '1a2b3c4d5e6f', 'salt789');
+    ('Іван Петренко', 'ivan@example.com', 'a1b2c3d4e5f6', 'salt123', 1, NULL, NULL),
+    ('Марія Коваленко', 'maria@example.com', 'f6e5d4c3b2a1', 'salt456', 1, 'refresh_token_maria_123', DATEADD(DAY, 7, GETUTCDATE())),
+    ('Олексій Сидоренко', 'oleksiy@example.com', '1a2b3c4d5e6f', 'salt789', 0, NULL, NULL);
 GO
 
 INSERT INTO calorie_limits (user_id, limit_value, created_at)
@@ -88,12 +91,12 @@ VALUES
     (4, 10, 50.00);
 GO
 
-INSERT INTO meals (owner_id, name, created_at, updated_at)
+INSERT INTO meals (owner_id, name, created_at, updated_at, meal_type_id)
 VALUES
-    (1, 'Сніданок', '2024-01-15 08:00:00', '2024-01-15 08:00:00'),
-    (1, 'Обід', '2024-01-15 13:00:00', '2024-01-15 13:00:00'),
-    (2, 'Вечеря', '2024-01-16 19:00:00', '2024-01-16 19:00:00'),
-    (3, 'Сніданок', '2024-01-17 09:30:00', '2024-01-17 09:30:00');
+    (1, 'Сніданок', '2024-01-15 08:00:00', '2024-01-15 08:00:00', 1),
+    (1, 'Обід', '2024-01-15 13:00:00', '2024-01-15 13:00:00', 2),
+    (2, 'Вечеря', '2024-01-16 19:00:00', '2024-01-16 19:00:00', 3),
+    (3, 'Сніданок', '2024-01-17 09:30:00', '2024-01-17 09:30:00', 1);
 GO
 
 INSERT INTO meals_dishes (meal_id, dish_id, quantity)
@@ -104,3 +107,11 @@ VALUES
     (3, 3, 1.00),
     (4, 4, 1.00);
 GO
+
+INSERT INTO verification_tokens (user_id, token, expires_at, created_at)
+VALUES
+    (1, 'email_verification_token_ivan_123', DATEADD(HOUR, 24, GETUTCDATE()), GETUTCDATE()),
+    (3, 'email_verification_token_oleksiy_456', DATEADD(HOUR, 24, GETUTCDATE()), GETUTCDATE()),
+    (2, 'password_reset_token_maria_789', DATEADD(HOUR, 1, GETUTCDATE()), GETUTCDATE());
+GO
+

@@ -1,6 +1,9 @@
 USE calorie_tracker
 GO
 
+SET QUOTED_IDENTIFIER ON;
+GO
+
 CREATE TABLE meal_types
 (
     id            INT IDENTITY PRIMARY KEY,

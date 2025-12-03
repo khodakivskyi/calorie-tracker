@@ -153,7 +153,7 @@ namespace backend.Repositories
                     ownerId: r.owner_id,
                     name: r.name,
                     imageId: r.image_id,
-                    externalId: r.external_id
+                    isExternal: r.isExternal
                 )
                 {
                     Id = r.id,
