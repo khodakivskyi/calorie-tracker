@@ -1,6 +1,9 @@
 USE calorie_tracker
 GO
 
+SET QUOTED_IDENTIFIER ON;
+GO
+
 IF NOT EXISTS (
     SELECT 1
     FROM sys.tables

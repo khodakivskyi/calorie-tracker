@@ -1,6 +1,9 @@
 USE calorie_tracker
 GO
 
+SET QUOTED_IDENTIFIER ON;
+GO
+
 IF COL_LENGTH('users', 'email_confirmed') IS NULL
 BEGIN
     ALTER TABLE users 
