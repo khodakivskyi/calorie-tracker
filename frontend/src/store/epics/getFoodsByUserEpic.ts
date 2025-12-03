@@ -15,7 +15,6 @@ const getFoodsByUserQuery = `
     getFoodsByUser(userId: $userId) {
       id
       name
-      userId
       calories
       protein
       fat
