@@ -5,6 +5,10 @@
         public int Id { get; init; }
         public int? OwnerId { get; set; }
         public string Name { get; set; } = string.Empty;
+        public decimal? Calories { get; set; }
+        public decimal? Proteins { get; set; }
+        public decimal? Carbs { get; set; }
+        public decimal? Fats { get; set; }
         public int? ImageId { get; set; }
         public DateTime CreatedAt { get; init; }
         public DateTime UpdatedAt { get; set; }

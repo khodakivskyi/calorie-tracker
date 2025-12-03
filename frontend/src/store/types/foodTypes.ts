@@ -4,10 +4,10 @@ export type Food = {
     id: number;
     name: string;
     userId: number | null;
-    calories?: number | null;
-    protein?: number | null;
-    fat?: number | null;
-    carbohydrates?: number | null;
+    calories: number | null;//TODO: not null
+    proteins?: number | null;
+    fats?: number | null;
+    carbs?: number | null;
     imageId?: number | null;
     createdAt: Date;
     updatedAt: Date;

@@ -28,13 +28,17 @@ namespace backend.Repositories
         public async Task<IEnumerable<Food>> GetFoodsByUserAsync(int userId)
         {
             using var connection = new SqlConnection(_connectionString);
-            const string sql = @"SELECT id, owner_id AS OwnerId, name, image_id AS ImageId, 
-                                        created_at AS CreatedAt, updated_at AS UpdatedAt, is_external AS IsExternal
-                                 FROM foods 
-                                 WHERE owner_id = @UserId OR owner_id IS NULL
+            const string sql = @"SELECT f.id, f.owner_id AS OwnerId, f.name, f.image_id AS ImageId, 
+                                        f.created_at AS CreatedAt, f.updated_at AS UpdatedAt, f.is_external AS IsExternal,
+                                        c.calories AS Calories,
+                                        n.protein AS Proteins, n.fat AS Fats, n.carbohydrates AS Cabs
+                                 FROM foods f
+                                 LEFT JOIN calories c ON c.food_id = f.id
+                                 LEFT JOIN nutrients n ON n.food_id = f.id
+                                 WHERE f.owner_id = @UserId OR f.owner_id IS NULL
                                  ORDER BY 
-                                    CASE WHEN owner_id = @UserId THEN 0 ELSE 1 END,
-                                    created_at DESC";
+                                    CASE WHEN f.owner_id = @UserId THEN 0 ELSE 1 END,
+                                    f.created_at DESC";
             return await connection.QueryAsync<Food>(sql, new { UserId = userId });
         }
 
