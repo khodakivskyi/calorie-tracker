@@ -101,7 +101,8 @@ jobs:
         docker cp database/Scripts/07_RemoveVerificationTokenColumns.sql ${{ job.services.mssql.id }}:/tmp/
         docker cp database/Scripts/08_AddMealTypesTable.sql ${{ job.services.mssql.id }}:/tmp/
         docker cp database/Scripts/09_RemoveFoodExternalId_AddIsExternal.sql ${{ job.services.mssql.id }}:/tmp/
-        docker cp database/Scripts/10_SeedData.sql ${{ job.services.mssql.id }}:/tmp/
+        docker cp database/Scripts/10_RemoveDishExternalId_AddIsExternal.sql ${{ job.services.mssql.id }}:/tmp/
+        docker cp database/Scripts/11_SeedData.sql ${{ job.services.mssql.id }}:/tmp/
         docker exec ${{ job.services.mssql.id }} /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P TestPassword123! -C -d calorie_tracker -i /tmp/01_CreateTables.sql
         docker exec ${{ job.services.mssql.id }} /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P TestPassword123! -C -d calorie_tracker -i /tmp/04_AddEmailVerification.sql
         docker exec ${{ job.services.mssql.id }} /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P TestPassword123! -C -d calorie_tracker -i /tmp/05_CreateVerificationTokensTable.sql
@@ -109,7 +110,8 @@ jobs:
         docker exec ${{ job.services.mssql.id }} /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P TestPassword123! -C -d calorie_tracker -i /tmp/07_RemoveVerificationTokenColumns.sql
         docker exec ${{ job.services.mssql.id }} /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P TestPassword123! -C -d calorie_tracker -i /tmp/08_AddMealTypesTable.sql    
         docker exec ${{ job.services.mssql.id }} /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P TestPassword123! -C -d calorie_tracker -i /tmp/09_RemoveFoodExternalId_AddIsExternal.sql
-        docker exec ${{ job.services.mssql.id }} /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P TestPassword123! -C -d calorie_tracker -i /tmp/10_SeedData.sql
+        docker exec ${{ job.services.mssql.id }} /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P TestPassword123! -C -d calorie_tracker -i /tmp/10_RemoveDishExternalId_AddIsExternal.sql
+        docker exec ${{ job.services.mssql.id }} /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P TestPassword123! -C -d calorie_tracker -i /tmp/11_SeedData.sql
     - name: Create Test Configuration
       run: |
         echo '{
