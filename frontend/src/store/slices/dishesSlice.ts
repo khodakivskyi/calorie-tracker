@@ -38,6 +38,22 @@ const dishesSlice = createSlice({
             state.error = action.payload;
             state.success = null;
         },
+        getDishesByUserRequest(state, _action: PayloadAction<{ userId: number }>) {
+            state.loading = true;
+            state.error = null;
+            state.success = null;
+        },
+
+        getDishesByUserSuccess(state, action: PayloadAction<Dish[]>) {
+            state.loading = false;
+            state.error = null;
+            state.dishes = action.payload;
+        },
+
+        getDishesByUserFailure(state, action: PayloadAction<string>) {
+            state.loading = false;
+            state.error = action.payload;
+        }
     },
 });
 
@@ -45,6 +61,9 @@ export const {
     createDishRequest,
     createDishSuccess,
     createDishFailure,
+    getDishesByUserRequest,
+    getDishesByUserSuccess,
+    getDishesByUserFailure
 } = dishesSlice.actions;
 
 export default dishesSlice.reducer;

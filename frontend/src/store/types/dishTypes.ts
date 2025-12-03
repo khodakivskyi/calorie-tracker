@@ -1,5 +1,5 @@
 import type {Food} from "./foodTypes.ts";
-import {createDishFailure, createDishRequest, createDishSuccess} from "../slices/dishesSlice.ts";
+import {createDishFailure, createDishRequest, createDishSuccess, getDishesByUserRequest, getDishesByUserSuccess, getDishesByUserFailure} from "../slices/dishesSlice.ts";
 
 export type Dish = {
     id: number;
@@ -22,4 +22,7 @@ export type DishFood = {
 export type DishAction =
     | ReturnType<typeof createDishRequest>
     | ReturnType<typeof createDishSuccess>
-    | ReturnType<typeof createDishFailure>;
+    | ReturnType<typeof createDishFailure>
+    | ReturnType<typeof getDishesByUserRequest>
+    | ReturnType<typeof getDishesByUserSuccess>
+    | ReturnType<typeof getDishesByUserFailure>;

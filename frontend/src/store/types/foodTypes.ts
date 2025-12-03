@@ -1,4 +1,4 @@
-import {createFoodFailure, createFoodRequest, createFoodSuccess} from "../slices/foodsSlice.ts";
+import {createFoodFailure, createFoodRequest, createFoodSuccess, getFoodsByUserRequest, getFoodsByUserSuccess, getFoodsByUserFailure} from "../slices/foodsSlice.ts";
 
 export type Food = {
     id: number;
@@ -16,4 +16,7 @@ export type Food = {
 export type FoodAction =
     | ReturnType<typeof createFoodRequest>
     | ReturnType<typeof createFoodSuccess>
-    | ReturnType<typeof createFoodFailure>;
+    | ReturnType<typeof createFoodFailure>
+    | ReturnType<typeof getFoodsByUserRequest>
+    | ReturnType<typeof getFoodsByUserSuccess>
+    | ReturnType<typeof getFoodsByUserFailure>;

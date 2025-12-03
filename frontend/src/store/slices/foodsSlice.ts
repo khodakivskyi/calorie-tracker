@@ -37,6 +37,22 @@ const foodSlice = createSlice({
             state.loading = false;
             state.error = action.payload;
             state.success = null;
+        },
+        getFoodsByUserRequest(state, _action: PayloadAction<{ userId: number }>) {
+            state.loading = true;
+            state.error = null;
+            state.success = null;
+        },
+
+        getFoodsByUserSuccess(state, action: PayloadAction<Food[]>) {
+            state.loading = false;
+            state.error = null;
+            state.foods = action.payload;
+        },
+
+        getFoodsByUserFailure(state, action: PayloadAction<string>) {
+            state.loading = false;
+            state.error = action.payload;
         }
     }
 });
@@ -44,8 +60,10 @@ const foodSlice = createSlice({
 export const {
     createFoodRequest,
     createFoodSuccess,
-    createFoodFailure
-
+    createFoodFailure,
+    getFoodsByUserRequest,
+    getFoodsByUserSuccess,
+    getFoodsByUserFailure
 } = foodSlice.actions;
 
 export default foodSlice.reducer;

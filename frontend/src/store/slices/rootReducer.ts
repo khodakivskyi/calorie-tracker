@@ -37,6 +37,12 @@ export type RootAction =
     | ReturnType<typeof foodActions.createFoodRequest>
     | ReturnType<typeof foodActions.createFoodSuccess>
     | ReturnType<typeof foodActions.createFoodFailure>
+    | ReturnType<typeof foodActions.getFoodsByUserRequest>
+    | ReturnType<typeof foodActions.getFoodsByUserSuccess>
+    | ReturnType<typeof foodActions.getFoodsByUserFailure>
     | ReturnType<typeof dishActions.createDishRequest>
     | ReturnType<typeof dishActions.createDishSuccess>
-    | ReturnType<typeof dishActions.createDishFailure>;
+    | ReturnType<typeof dishActions.createDishFailure>
+    | ReturnType<typeof dishActions.getDishesByUserRequest>
+    | ReturnType<typeof dishActions.getDishesByUserSuccess>
+    | ReturnType<typeof dishActions.getDishesByUserFailure>;
