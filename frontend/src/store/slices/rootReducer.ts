@@ -45,4 +45,10 @@ export type RootAction =
     | ReturnType<typeof dishActions.createDishFailure>
     | ReturnType<typeof dishActions.getDishesByUserRequest>
     | ReturnType<typeof dishActions.getDishesByUserSuccess>
-    | ReturnType<typeof dishActions.getDishesByUserFailure>;
+    | ReturnType<typeof dishActions.getDishesByUserFailure>
+    | ReturnType<typeof foodActions.updateFoodRequest>
+    | ReturnType<typeof foodActions.updateFoodSuccess>
+    | ReturnType<typeof foodActions.updateFoodFailure>
+    | ReturnType<typeof dishActions.updateDishRequest>
+    | ReturnType<typeof dishActions.updateDishSuccess>
+    | ReturnType<typeof dishActions.updateDishFailure>;

@@ -1,29 +1,33 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import PageHeader from "../components/PageHeader.tsx";
 import SearchBar from "../components/SearchBar.tsx";
 import RecipeItemCard from "../components/RecipeItemCard.tsx";
 import CreateIngredientModal from "../components/CreateIngredientModal.tsx";
 import type { Food } from "../store/types/foodTypes.ts";
-
-const mockFoods: Food[] = [
-    { id: 1, name: 'Chicken Breast', calories: 165, userId: null, createdAt: new Date(), updatedAt: new Date() },
-    { id: 2, name: 'Brown Rice', calories: 112, userId: null, createdAt: new Date(), updatedAt: new Date() },
-    { id: 3, name: 'Broccoli', calories: 34, userId: null, createdAt: new Date(), updatedAt: new Date() },
-];
+import { useAppDispatch, useAppSelector } from '../store';
+import { createFoodRequest, getFoodsByUserRequest } from '../store/slices/foodsSlice.ts';
 
 export default function FoodsPage() {
-    const [foods, setFoods] = useState<Food[]>(mockFoods);
+    const dispatch = useAppDispatch();
+
+    const { user } = useAppSelector(state => state.auth);
+    const { foods, loading, error } = useAppSelector(state => state.food);
+
     const [isCreateIngredientOpen, setIsCreateIngredientOpen] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
+
+    useEffect(() => {
+        if (user) {
+            dispatch(getFoodsByUserRequest({ userId: user.id }));
+        }
+    }, [dispatch, user]);
+
+    const filteredFoods = searchQuery.trim()
+        ? foods.filter(food => food.name.toLowerCase().includes(searchQuery.toLowerCase()))
+        : foods;
 
     const handleSearch = (query: string) => {
-        if (query.trim() === '') {
-            setFoods(mockFoods);
-        } else {
-            const filtered = mockFoods.filter(food =>
-                food.name.toLowerCase().includes(query.toLowerCase())
-            );
-            setFoods(filtered);
-        }
+        setSearchQuery(query);
     };
 
     const handleAddClick = () => {
@@ -34,8 +38,10 @@ export default function FoodsPage() {
         console.log('View food:', food);
     };
 
-    const handleCreateIngredient = (food: Food) => {
-        setFoods(prev => [...prev, food]);
+    const handleCreateIngredient = (food: Omit<Food, 'id' | 'createdAt' | 'updatedAt'>) => {
+        if (user) {
+            dispatch(createFoodRequest({ ...food, userId: 1 }));
+        }
         setIsCreateIngredientOpen(false);
     };
 
@@ -50,9 +56,12 @@ export default function FoodsPage() {
                     onAddClick={handleAddClick}
                 />
 
+                {loading && <p className="text-center py-4">Loading...</p>}
+                {error && <p className="text-red-500 text-center py-4">{error}</p>}
+
                 <div className="pb-24">
-                    {foods.length > 0 ? (
-                        foods.map((food) => (
+                    {filteredFoods.length > 0 ? (
+                        filteredFoods.map((food) => (
                             <RecipeItemCard
                                 key={food.id}
                                 id={food.id}

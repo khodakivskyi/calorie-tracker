@@ -53,7 +53,35 @@ const dishesSlice = createSlice({
         getDishesByUserFailure(state, action: PayloadAction<string>) {
             state.loading = false;
             state.error = action.payload;
-        }
+        },
+        updateDishRequest(
+            state,
+            _action: PayloadAction<{
+                dishId: number;
+                userId: number;
+                weight?: number;
+                name?: string;
+                externalId?: string;
+            }>
+        ) {
+            state.loading = true;
+            state.error = null;
+            state.success = null;
+        },
+        updateDishSuccess(state, action: PayloadAction<Dish>) {
+            state.loading = false;
+            state.error = null;
+            state.success = 'Dish updated successfully';
+            const index = state.dishes.findIndex(d => d.id === action.payload.id);
+            if (index !== -1) {
+                state.dishes[index] = action.payload;
+            }
+        },
+        updateDishFailure(state, action: PayloadAction<string>) {
+            state.loading = false;
+            state.error = action.payload;
+            state.success = null;
+        },
     },
 });
 
@@ -63,7 +91,10 @@ export const {
     createDishFailure,
     getDishesByUserRequest,
     getDishesByUserSuccess,
-    getDishesByUserFailure
+    getDishesByUserFailure,
+    updateDishRequest,
+    updateDishSuccess,
+    updateDishFailure
 } = dishesSlice.actions;
 
 export default dishesSlice.reducer;

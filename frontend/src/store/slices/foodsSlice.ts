@@ -21,8 +21,17 @@ const foodSlice = createSlice({
     reducers: {
         createFoodRequest(
             state,
-            _action: PayloadAction<{ userId: number; typeId: number; name: string }>//
-        ) {
+            _action: PayloadAction<{
+                userId: number;
+                name: string;
+                imageId?: number | null;
+                calories?: number | null;
+                protein?: number | null;
+                fat?: number | null;
+                carbohydrates?: number | null;
+            }>
+        )
+        {
             state.loading = true;
             state.error = null;
             state.success = null;
@@ -53,7 +62,39 @@ const foodSlice = createSlice({
         getFoodsByUserFailure(state, action: PayloadAction<string>) {
             state.loading = false;
             state.error = action.payload;
-        }
+        },
+        updateFoodRequest(
+            state,
+            _action: PayloadAction<{
+                foodId: number;
+                userId: number;
+                name?: string;
+                imageId?: number;
+                externalId?: string;
+                calories?: number;
+                protein?: number;
+                fat?: number;
+                carbohydrates?: number;
+            }>
+        ) {
+            state.loading = true;
+            state.error = null;
+            state.success = null;
+        },
+        updateFoodSuccess: (state, action: PayloadAction<Food>) => {
+            state.loading = false;
+            state.error = null;
+            state.success = 'Food updated successfully';
+            const index = state.foods.findIndex(f => f.id === action.payload.id);
+            if (index !== -1) {
+                state.foods[index] = action.payload;
+            }
+        },
+        updateFoodFailure: (state, action: PayloadAction<string>) => {
+            state.loading = false;
+            state.error = action.payload;
+            state.success = null;
+        },
     }
 });
 
@@ -63,7 +104,10 @@ export const {
     createFoodFailure,
     getFoodsByUserRequest,
     getFoodsByUserSuccess,
-    getFoodsByUserFailure
+    getFoodsByUserFailure,
+    updateFoodRequest,
+    updateFoodSuccess,
+    updateFoodFailure
 } = foodSlice.actions;
 
 export default foodSlice.reducer;
