@@ -33,7 +33,6 @@ const createFoodMutation = `
     userId
     name
     imageId
-    isExternal
     calories
     protein
     fat
