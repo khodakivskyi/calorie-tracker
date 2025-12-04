@@ -11,12 +11,12 @@ interface RecipeItemCardProps {
 }
 
 export default function RecipeItemCard({
-    name,
-    calories,
-    onClick,
-    onEdit,
-    onDelete,
-    }: RecipeItemCardProps) {
+                                           name,
+                                           calories,
+                                           onClick,
+                                           onEdit,
+                                           onDelete,
+                                       }: RecipeItemCardProps) {
     return (
         <div
             onClick={onClick}
@@ -34,7 +34,7 @@ export default function RecipeItemCard({
                             e.stopPropagation();
                             onEdit?.();
                         }}
-                        className="p-2 rounded-lg border border-gray-300"
+                        className="p-2 rounded-lg border border-gray-300 hover:bg-gray-100"
                     >
                         <EditIcon className="w-6 h-6"/>
                     </button>
@@ -44,9 +44,9 @@ export default function RecipeItemCard({
                             e.stopPropagation();
                             onDelete?.();
                         }}
-                        className="p-2 rounded-lg border border-gray-300"
+                        className="p-2 rounded-lg border border-gray-300 hover:bg-red-50"
                     >
-                        <DeleteIcon className="w-6 h-6"/>
+                        <DeleteIcon className="w-6 h-6 text-red-500"/>
                     </button>
                 </div>
             </div>

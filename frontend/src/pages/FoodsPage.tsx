@@ -8,7 +8,8 @@ import { useAppDispatch, useAppSelector } from '../store';
 import {
     createFoodRequest,
     updateFoodRequest,
-    getFoodsByUserRequest
+    getFoodsByUserRequest,
+    deleteFoodRequest
 } from '../store/slices/foodsSlice.ts';
 
 export default function FoodsPage() {
@@ -73,6 +74,15 @@ export default function FoodsPage() {
         setIsCreateIngredientOpen(true);
     };
 
+    const handleDeleteFood = (id: number) => {
+        if (!user) return;
+        dispatch(deleteFoodRequest({
+            foodId: id,
+            userId: user.id,
+        }));
+    };
+
+
     return (
         <div className="min-h-screen bg-green-100">
             <PageHeader title="Foods" />
@@ -96,6 +106,7 @@ export default function FoodsPage() {
                                 name={food.name}
                                 calories={food.calories ?? 0}
                                 onEdit={() => handleEditClick(food)}
+                                onDelete={() => handleDeleteFood(food.id)}
                             />
                         ))
                     ) : (
