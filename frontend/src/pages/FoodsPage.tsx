@@ -5,7 +5,10 @@ import RecipeItemCard from "../components/RecipeItemCard.tsx";
 import CreateIngredientModal from "../components/CreateIngredientModal.tsx";
 import type { Food } from "../store/types/foodTypes.ts";
 import { useAppDispatch, useAppSelector } from '../store';
-import { createFoodRequest, getFoodsByUserRequest } from '../store/slices/foodsSlice.ts';
+import {
+    createFoodRequest,
+    getFoodsByUserRequest
+} from '../store/slices/foodsSlice.ts';
 
 export default function FoodsPage() {
     const dispatch = useAppDispatch();
@@ -26,24 +29,19 @@ export default function FoodsPage() {
         ? foods.filter(food => food.name.toLowerCase().includes(searchQuery.toLowerCase()))
         : foods;
 
-    const handleSearch = (query: string) => {
-        setSearchQuery(query);
-    };
-
     const handleAddClick = () => {
         setIsCreateIngredientOpen(true);
     };
 
-    const handleItemClick = (food: Food) => {
-        console.log('View food:', food);
-    };
+    const handleCreateFood = (food: Omit<Food, 'id' | 'createdAt' | 'updatedAt'>) => {
+        if (!user) return;
 
-    const handleCreateIngredient = (food: Omit<Food, 'id' | 'createdAt' | 'updatedAt'>) => {
-        if (user) {
-            dispatch(createFoodRequest({ ...food, userId: 1 }));
-        }
+        dispatch(createFoodRequest({
+            ...food,
+            userId: user.id
+        }));
+
         setIsCreateIngredientOpen(false);
-        //maybe reset models?)
     };
 
     return (
@@ -53,7 +51,7 @@ export default function FoodsPage() {
             <div className="px-4">
                 <SearchBar
                     placeholder="Search foods..."
-                    onSearch={handleSearch}
+                    onSearch={setSearchQuery}
                     onAddClick={handleAddClick}
                 />
 
@@ -68,7 +66,8 @@ export default function FoodsPage() {
                                 id={food.id}
                                 name={food.name}
                                 calories={food.calories ?? null}
-                                onClick={() => handleItemClick(food)}
+                                onClick={() => console.log("Clicked:", food)}
+                                // ❌ прибрали редагування/видалення
                             />
                         ))
                     ) : (
@@ -82,7 +81,7 @@ export default function FoodsPage() {
             <CreateIngredientModal
                 isOpen={isCreateIngredientOpen}
                 onClose={() => setIsCreateIngredientOpen(false)}
-                onCreateIngredient={handleCreateIngredient}
+                onCreateIngredient={handleCreateFood}
             />
         </div>
     );

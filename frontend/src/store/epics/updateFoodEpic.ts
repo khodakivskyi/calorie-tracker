@@ -34,7 +34,7 @@ const updateFoodMutation = `
       carbohydrates: $carbohydrates
     ) {
       id
-      userId
+      ownerId
       name
       imageId
       calories

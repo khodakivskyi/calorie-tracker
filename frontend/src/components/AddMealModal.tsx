@@ -22,9 +22,9 @@ const mockReadyDishes: Dish[] = [
 ];
 
 const mockReadyFoods: Food[] = [
-    { id: 1, name: "Куряча грудка", userId: null, calories: 165, protein: 31, fat: 3.6, carbohydrates: 0, createdAt: new Date(), updatedAt: new Date() },
-    { id: 2, name: "Рис", userId: null, calories: 130, protein: 2.7, fat: 0.3, carbohydrates: 28, createdAt: new Date(), updatedAt: new Date() },
-    { id: 3, name: "Броколі", userId: null, calories: 34, protein: 2.8, fat: 0.4, carbohydrates: 7, createdAt: new Date(), updatedAt: new Date() },
+    { id: 1, name: "Куряча грудка", userId: null, calories: 165, proteins: 31, fats: 3.6, carbs: 0, createdAt: new Date(), updatedAt: new Date() },
+    { id: 2, name: "Рис", userId: null, calories: 130, proteins: 2.7, fats: 0.3, carbs: 28, createdAt: new Date(), updatedAt: new Date() },
+    { id: 3, name: "Броколі", userId: null, calories: 34, proteins: 2.8, fats: 0.4, carbs: 7, createdAt: new Date(), updatedAt: new Date() },
 ];
 
 export default function AddMealModal({isOpen, onClose, onAddMeal, mealType}: AddMealModalProps) {

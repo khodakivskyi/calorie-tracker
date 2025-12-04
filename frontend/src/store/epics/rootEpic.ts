@@ -16,6 +16,8 @@ import type {DishAction} from "../types/dishTypes.ts";
 import {getDishesByUserEpic} from "./getDishesByUserEpic.ts";
 import {updateFoodEpic} from "./updateFoodEpic.ts";
 import {updateDishEpic} from "./updateDishEpic.ts";
+import {deleteFoodEpic} from "./deleteFoodEpic.ts";
+import {deleteDishEpic} from "./deleteDishEpic.ts";
 
 export type RootEpicAction = AuthAction | ProfileAction | MealAction | FoodAction | DishAction;
 
@@ -30,5 +32,7 @@ export const rootEpic = combineEpics<RootEpicAction, RootEpicAction, RootState>(
     getFoodsByUserEpic,
     getDishesByUserEpic,
     updateFoodEpic,
-    updateDishEpic
+    updateDishEpic,
+    deleteFoodEpic,
+    deleteDishEpic
 );

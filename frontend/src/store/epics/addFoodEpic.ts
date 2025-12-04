@@ -30,13 +30,13 @@ const createFoodMutation = `
     carbohydrates: $carbohydrates
   ) {
     id
-    userId
+    ownerId
     name
     imageId
     calories
-    protein
-    fat
-    carbohydrates
+    proteins
+    fats
+    carbs
     createdAt
     updatedAt
   }

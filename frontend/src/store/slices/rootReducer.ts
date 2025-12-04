@@ -51,4 +51,10 @@ export type RootAction =
     | ReturnType<typeof foodActions.updateFoodFailure>
     | ReturnType<typeof dishActions.updateDishRequest>
     | ReturnType<typeof dishActions.updateDishSuccess>
-    | ReturnType<typeof dishActions.updateDishFailure>;
+    | ReturnType<typeof dishActions.updateDishFailure>
+    | ReturnType<typeof foodActions.deleteFoodRequest>
+    | ReturnType<typeof foodActions.deleteFoodSuccess>
+    | ReturnType<typeof foodActions.deleteFoodFailure>
+    | ReturnType<typeof dishActions.deleteDishRequest>
+    | ReturnType<typeof dishActions.deleteDishSuccess>
+    | ReturnType<typeof dishActions.deleteDishFailure>;

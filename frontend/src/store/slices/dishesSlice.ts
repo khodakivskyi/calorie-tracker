@@ -61,7 +61,6 @@ const dishesSlice = createSlice({
                 userId: number;
                 weight?: number;
                 name?: string;
-                externalId?: string;
             }>
         ) {
             state.loading = true;
@@ -82,6 +81,29 @@ const dishesSlice = createSlice({
             state.error = action.payload;
             state.success = null;
         },
+        deleteDishRequest(
+            state,
+            _action: PayloadAction<{ dishId: number; userId: number }>
+        ) {
+            state.loading = true;
+            state.error = null;
+            state.success = null;
+        },
+        deleteDishSuccess(
+            state,
+            action: PayloadAction<{ dishId: number }>
+        ) {
+            state.loading = false;
+            state.error = null;
+            state.success = "Dish deleted successfully";
+            state.dishes = state.dishes.filter(d => d.id !== action.payload.dishId);
+        },
+        deleteDishFailure(state, action: PayloadAction<string>) {
+            state.loading = false;
+            state.error = action.payload;
+            state.success = null;
+        },
+
     },
 });
 
@@ -94,7 +116,10 @@ export const {
     getDishesByUserFailure,
     updateDishRequest,
     updateDishSuccess,
-    updateDishFailure
+    updateDishFailure,
+    deleteDishRequest,
+    deleteDishSuccess,
+    deleteDishFailure
 } = dishesSlice.actions;
 
 export default dishesSlice.reducer;

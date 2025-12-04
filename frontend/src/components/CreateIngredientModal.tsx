@@ -27,9 +27,9 @@ export default function CreateIngredientModal({
             name: ingredient.name,
             userId: 1,
             calories: ingredient.calories,
-            protein: ingredient.protein,
-            fat: ingredient.fat,
-            carbohydrates: ingredient.carbohydrates,
+            proteins: ingredient.protein,
+            fats: ingredient.fat,
+            carbs: ingredient.carbohydrates,
             createdAt: new Date(),
             updatedAt: new Date(),
         };

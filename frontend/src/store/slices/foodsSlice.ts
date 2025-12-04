@@ -70,7 +70,6 @@ const foodSlice = createSlice({
                 userId: number;
                 name?: string;
                 imageId?: number;
-                externalId?: string;
                 calories?: number;
                 proteins?: number;
                 fats?: number;
@@ -95,6 +94,29 @@ const foodSlice = createSlice({
             state.error = action.payload;
             state.success = null;
         },
+        deleteFoodRequest(
+            state,
+            _action: PayloadAction<{ foodId: number; userId: number }>
+        ) {
+            state.loading = true;
+            state.error = null;
+            state.success = null;
+        },
+        deleteFoodSuccess(
+            state,
+            action: PayloadAction<{ foodId: number }>
+        ) {
+            state.loading = false;
+            state.error = null;
+            state.success = "Food deleted successfully";
+            state.foods = state.foods.filter(f => f.id !== action.payload.foodId);
+        },
+        deleteFoodFailure(state, action: PayloadAction<string>) {
+            state.loading = false;
+            state.error = action.payload;
+            state.success = null;
+        },
+
     }
 });
 
@@ -107,7 +129,10 @@ export const {
     getFoodsByUserFailure,
     updateFoodRequest,
     updateFoodSuccess,
-    updateFoodFailure
+    updateFoodFailure,
+    deleteFoodRequest,
+    deleteFoodSuccess,
+    deleteFoodFailure
 } = foodSlice.actions;
 
 export default foodSlice.reducer;
