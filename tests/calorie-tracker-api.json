@@ -162,7 +162,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"query\": \"query GetGlobalFoods {\\n    getGlobalFoods {\\n      id\\n      name\\n    }\\n  }\",\n  \"variables\": {}\n}"
+              "raw": "{\n  \"query\": \"query GetGlobalFoods {\\n    getGlobalFoods {\\n      id\\n      name\\n      ownerId\\n      imageId\\n      calories\\n      protein\\n      fat\\n      carbohydrate\\n      createdAt\\n      updatedAt\\n    }\\n  }\",\n  \"variables\": {}\n}"
             },
             "url": {
               "raw": "{{graphqlEndpoint}}",
@@ -197,7 +197,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"query\": \"query GetFoodsByUser($userId: Int!) {\\n    getFoodsByUser(userId: $userId) {\\n      id\\n      name\\n      imageId\\n      calories\\n      protein\\n      carbohydrate\\n      fat\\n    }\\n  }\",\n  \"variables\": {\n    \"userId\": {{userId}}\n  }\n}"
+              "raw": "{\n  \"query\": \"query GetFoodsByUser($userId: Int!) {\\n    getFoodsByUser(userId: $userId) {\\n      id\\n      name\\n      ownerId\\n      imageId\\n      calories\\n      protein\\n      carbohydrate\\n      fat\\n      createdAt\\n      updatedAt\\n    }\\n  }\",\n  \"variables\": {\n    \"userId\": {{userId}}\n  }\n}"
             },
             "url": {
               "raw": "{{graphqlEndpoint}}",
@@ -248,7 +248,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"query\": \"mutation CreateFood($userId: Int, $name: String!, $calories: Decimal, $protein: Decimal, $fat: Decimal, $carbohydrate: Decimal) {\\n    createFood(userId: $userId, name: $name, calories: $calories, protein: $protein, fat: $fat, carbohydrate: $carbohydrate) {\\n      id\\n      name\\n      imageId\\n      calories\\n      protein\\n      carbohydrate\\n      fat\\n    }\\n  }\",\n  \"variables\": {\n    \"userId\": {{userId}},\n    \"name\": \"Test Food\",\n    \"calories\": 100,\n    \"protein\": 10,\n    \"fat\": 5,\n    \"carbohydrate\": 15\n  }\n}"
+              "raw": "{\n  \"query\": \"mutation CreateFood($userId: Int, $name: String!, $calories: Decimal, $protein: Decimal, $fat: Decimal, $carbohydrate: Decimal) {\\n    createFood(userId: $userId, name: $name, calories: $calories, protein: $protein, fat: $fat, carbohydrate: $carbohydrate) {\\n      id\\n      name\\n      ownerId\\n      imageId\\n      calories\\n      protein\\n      carbohydrate\\n      fat\\n      createdAt\\n      updatedAt\\n    }\\n  }\",\n  \"variables\": {\n    \"userId\": {{userId}},\n    \"name\": \"Test Food\",\n    \"calories\": 100,\n    \"protein\": 10,\n    \"fat\": 5,\n    \"carbohydrate\": 15\n  }\n}"
             },
             "url": {
               "raw": "{{graphqlEndpoint}}",
@@ -288,7 +288,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"query\": \"mutation UpdateFood($foodId: Int!, $userId: Int!, $name: String, $calories: Decimal, $protein: Decimal, $fat: Decimal, $carbohydrate: Decimal) {\\n    updateFood(foodId: $foodId, userId: $userId, name: $name, calories: $calories, protein: $protein, fat: $fat, carbohydrate: $carbohydrate) {\\n      id\\n      name\\n    }\\n  }\",\n  \"variables\": {\n    \"foodId\": {{foodId}},\n    \"userId\": {{userId}},\n    \"name\": \"Updated Test Food\",\n    \"calories\": 150,\n    \"protein\": 15,\n    \"fat\": 8,\n    \"carbohydrate\": 20\n  }\n}"
+              "raw": "{\n  \"query\": \"mutation UpdateFood($foodId: Int!, $userId: Int!, $name: String, $calories: Decimal, $protein: Decimal, $fat: Decimal, $carbohydrate: Decimal) {\\n    updateFood(foodId: $foodId, userId: $userId, name: $name, calories: $calories, protein: $protein, fat: $fat, carbohydrate: $carbohydrate) {\\n      id\\n      name\\n      ownerId\\n      imageId\\n      calories\\n      protein\\n      fat\\n      carbohydrate\\n      createdAt\\n      updatedAt\\n    }\\n  }\",\n  \"variables\": {\n    \"foodId\": {{foodId}},\n    \"userId\": {{userId}},\n    \"name\": \"Updated Test Food\",\n    \"calories\": 150,\n    \"protein\": 15,\n    \"fat\": 8,\n    \"carbohydrate\": 20\n  }\n}"
             },
             "url": {
               "raw": "{{graphqlEndpoint}}",
@@ -328,7 +328,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"query\": \"query GetGlobalDishes {\\n    getGlobalDishes {\\n      id\\n      name\\n      weight\\n    }\\n  }\",\n  \"variables\": {}\n}"
+              "raw": "{\n  \"query\": \"query GetGlobalDishes {\\n    getGlobalDishes {\\n      id\\n      name\\n      ownerId\\n      weight\\n      calories\\n      protein\\n      fat\\n      carbohydrate\\n      imageId\\n      createdAt\\n      updatedAt\\n    }\\n  }\",\n  \"variables\": {}\n}"
             },
             "url": {
               "raw": "{{graphqlEndpoint}}",
@@ -363,7 +363,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"query\": \"query GetDishesByUser($userId: Int!) {\\n    getDishesByUser(userId: $userId) {\\n      id\\n      name\\n      weight\\n      imageId\\n    }\\n  }\",\n  \"variables\": {\n    \"userId\": {{userId}}\n  }\n}"
+              "raw": "{\n  \"query\": \"query GetDishesByUser($userId: Int!) {\\n    getDishesByUser(userId: $userId) {\\n      id\\n      name\\n      ownerId\\n      weight\\n      calories\\n      protein\\n      fat\\n      carbohydrate\\n      imageId\\n      createdAt\\n      updatedAt\\n    }\\n  }\",\n  \"variables\": {\n    \"userId\": {{userId}}\n  }\n}"
             },
             "url": {
               "raw": "{{graphqlEndpoint}}",
@@ -402,7 +402,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"query\": \"mutation CreateDish($userId: Int, $name: String!, $weight: Decimal!) {\\n    createDish(userId: $userId, name: $name, weight: $weight) {\\n      id\\n      name\\n      weight\\n    }\\n  }\",\n  \"variables\": {\n    \"userId\": {{userId}},\n    \"name\": \"Test Dish\",\n    \"weight\": 200\n  }\n}"
+              "raw": "{\n  \"query\": \"mutation CreateDish($userId: Int, $name: String!, $weight: Decimal!) {\\n    createDish(userId: $userId, name: $name, weight: $weight) {\\n      id\\n      name\\n      ownerId\\n      weight\\n      calories\\n      protein\\n      fat\\n      carbohydrate\\n      imageId\\n      createdAt\\n      updatedAt\\n    }\\n  }\",\n  \"variables\": {\n    \"userId\": {{userId}},\n    \"name\": \"Test Dish\",\n    \"weight\": 200\n  }\n}"
             },
             "url": {
               "raw": "{{graphqlEndpoint}}",
@@ -443,7 +443,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"query\": \"mutation UpdateDish($dishId: Int!, $userId: Int!, $name: String, $weight: Decimal) {\\n    updateDish(dishId: $dishId, userId: $userId, name: $name, weight: $weight) {\\n      id\\n      name\\n      weight\\n    }\\n  }\",\n  \"variables\": {\n    \"dishId\": {{dishId}},\n    \"userId\": {{userId}},\n    \"name\": \"Updated Test Dish\",\n    \"weight\": 250\n  }\n}"
+              "raw": "{\n  \"query\": \"mutation UpdateDish($dishId: Int!, $userId: Int!, $name: String, $weight: Decimal) {\\n    updateDish(dishId: $dishId, userId: $userId, name: $name, weight: $weight) {\\n      id\\n      name\\n      ownerId\\n      weight\\n      calories\\n      protein\\n      fat\\n      carbohydrate\\n      imageId\\n      createdAt\\n      updatedAt\\n    }\\n  }\",\n  \"variables\": {\n    \"dishId\": {{dishId}},\n    \"userId\": {{userId}},\n    \"name\": \"Updated Test Dish\",\n    \"weight\": 250\n  }\n}"
             },
             "url": {
               "raw": "{{graphqlEndpoint}}",
