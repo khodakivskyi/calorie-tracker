@@ -64,6 +64,10 @@ namespace backend.Services
             {
                 await _caloriesService.CreateCaloriesAsync(createdFood.Id, calories.Value);
             }
+            else
+            {
+                //Todo: calculate calories from nutrients
+            }
 
             if (protein.HasValue && fat.HasValue && carbohydrates.HasValue)
             {

@@ -1,74 +1,45 @@
 import { type Epic, ofType } from "redux-observable";
 import { from, of } from "rxjs";
 import { mergeMap, map, catchError } from "rxjs/operators";
-
 import {
     getDishesByUserRequest,
     getDishesByUserSuccess,
     getDishesByUserFailure
 } from "../slices/dishesSlice";
-
 import { graphqlRequest } from "../../config/graphqlClient";
 import type { RootEpicAction } from "./rootEpic";
 import type { RootState } from "../slices/rootReducer";
-import type { Dish } from "../types/dishTypes";
 
 const getDishesByUserQuery = `
   query GetDishesByUser($userId: Int!) {
     getDishesByUser(userId: $userId) {
       id
       name
-      ownerId
-      weight
+      calories
+      proteins
+      fats
+      carbs
       imageId
       createdAt
       updatedAt
-      foods {
-        foodId
-        quantity
-        food {
-          id
-          name
-          userId
-          calories
-          protein
-          fat
-          carbohydrates
-          imageId
-          createdAt
-          updatedAt
-        }
-      }
     }
   }
 `;
 
-type GetDishesResponse = {
-    getDishesByUser: Array<{
+type GetDishesByUserResponse = {
+    getDishesByUser: {
         id: number;
         name: string;
-        ownerId: number | null;
+        userId: number | null;
         weight: number;
+        calories: number | null;
+        proteins: number | null;
+        fats: number | null;
+        carbs: number | null;
         imageId: number | null;
         createdAt: string;
         updatedAt: string;
-        foods?: Array<{
-            foodId: number;
-            quantity: number;
-            food?: {
-                id: number;
-                name: string;
-                userId: number | null;
-                calories: number | null;
-                protein: number | null;
-                fat: number | null;
-                carbohydrates: number | null;
-                imageId: number | null;
-                createdAt: string;
-                updatedAt: string;
-            };
-        }>;
-    }>;
+    }[];
 };
 
 export const getDishesByUserEpic: Epic<RootEpicAction, RootEpicAction, RootState> = (action$) =>
@@ -77,7 +48,7 @@ export const getDishesByUserEpic: Epic<RootEpicAction, RootEpicAction, RootState
 
         mergeMap((action: ReturnType<typeof getDishesByUserRequest>) =>
             from(
-                graphqlRequest<GetDishesResponse>(getDishesByUserQuery, {
+                graphqlRequest<GetDishesByUserResponse>(getDishesByUserQuery, {
                     userId: action.payload.userId
                 })
             ).pipe(
@@ -87,19 +58,7 @@ export const getDishesByUserEpic: Epic<RootEpicAction, RootEpicAction, RootState
                             ...dish,
                             createdAt: new Date(dish.createdAt),
                             updatedAt: new Date(dish.updatedAt),
-
-                            foods:
-                                dish.foods?.map((df) => ({
-                                    ...df,
-                                    food: df.food
-                                        ? {
-                                            ...df.food,
-                                            createdAt: new Date(df.food.createdAt),
-                                            updatedAt: new Date(df.food.updatedAt)
-                                        }
-                                        : undefined
-                                })) ?? []
-                        })) as Dish[]
+                        }))
                     )
                 ),
 

@@ -4,12 +4,15 @@ import {createDishFailure, createDishRequest, createDishSuccess, getDishesByUser
 export type Dish = {
     id: number;
     name: string;
-    ownerId: number | null;
+    userId: number | null;
     weight: number;
+    calories: number | null;//TODO: not null
+    proteins?: number | null;
+    fats?: number | null;
+    carbs?: number | null;
     imageId?: number | null;
     createdAt: Date;
     updatedAt: Date;
-    foods?: DishFood[];
 };
 
 //probably need improve
