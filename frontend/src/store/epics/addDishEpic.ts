@@ -25,6 +25,10 @@ const createDishMutation = `
       name
       ownerId
       weight
+      calories
+      protein
+      fat
+      carbohydrate
       imageId
       createdAt
       updatedAt
@@ -38,6 +42,10 @@ type CreateDishResponse = {
         name: string;
         ownerId: number | null;
         weight: number;
+        calories: number | null;
+        protein: number | null;
+        fat: number | null;
+        carbohydrate: number | null;
         imageId: number | null;
         createdAt: string;
         updatedAt: string;

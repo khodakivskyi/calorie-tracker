@@ -15,6 +15,8 @@ const getDishesByUserQuery = `
     getDishesByUser(userId: $userId) {
       id
       name
+      ownerId
+      weight
       calories
       protein
       fat

@@ -45,6 +45,10 @@ type UpdateDishResponse = {
         ownerId: number | null;
         weight: number;
         imageId: number | null;
+        calories: number | null;
+        protein: number | null;
+        fat: number | null;
+        carbohydrate: number | null;
         createdAt: string;
         updatedAt: string;
     };
