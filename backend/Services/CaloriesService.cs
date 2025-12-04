@@ -93,7 +93,7 @@ namespace backend.Services
 
         public decimal CalculateCaloriesFromNutrients(Nutrients nutrients)
         {
-            return (nutrients.Protein * 4) + (nutrients.Fat * 9) + (nutrients.Carbohydrates * 4);
+            return (nutrients.Protein * 4) + (nutrients.Fat * 9) + (nutrients.Carbohydrate * 4);
         }
 
         public async Task<decimal> GetOrCalculateCaloriesForMealAsync(int mealId)

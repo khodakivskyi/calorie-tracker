@@ -18,7 +18,7 @@ const getDishesByUserQuery = `
       calories
       proteins
       fats
-      carbs
+      carbohydrate
       imageId
       createdAt
       updatedAt
@@ -35,7 +35,7 @@ type GetDishesByUserResponse = {
         calories: number | null;
         proteins: number | null;
         fats: number | null;
-        carbs: number | null;
+        carbohydrate: number | null;
         imageId: number | null;
         createdAt: string;
         updatedAt: string;

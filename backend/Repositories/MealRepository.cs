@@ -159,7 +159,7 @@ namespace backend.Repositories
                     (
                         CASE 
                             WHEN c.calories IS NOT NULL THEN c.calories
-                            ELSE (n.protein * 4 + n.fat * 9 + n.carbohydrates * 4)
+                            ELSE (n.protein * 4 + n.fat * 9 + n.carbohydrate * 4)
                         END
                     ) * (df.quantity / 100.0) * (md.quantity / 100.0)
                 ), 0) AS TotalCalories
@@ -189,7 +189,7 @@ namespace backend.Repositories
                         (
                             CASE 
                                 WHEN c.calories IS NOT NULL THEN c.calories
-                                ELSE (n.protein * 4 + n.fat * 9 + n.carbohydrates * 4)
+                                ELSE (n.protein * 4 + n.fat * 9 + n.carbohydrate * 4)
                             END
                         ) * (df.quantity / 100.0) * (md.quantity / 100.0)
                     ), 0) AS TotalCalories
@@ -225,7 +225,7 @@ namespace backend.Repositories
                         (
                             CASE 
                                 WHEN c.calories IS NOT NULL THEN c.calories
-                                ELSE (n.protein * 4 + n.fat * 9 + n.carbohydrates * 4)
+                                ELSE (n.protein * 4 + n.fat * 9 + n.carbohydrate * 4)
                             END
                         ) * (df.quantity / 100.0) * (md.quantity / 100.0)
                     ), 0) AS TotalCalories

@@ -55,7 +55,7 @@ VALUES
     (10, 59.00);
 GO
 
-INSERT INTO nutrients (food_id, protein, fat, carbohydrates)
+INSERT INTO nutrients (food_id, protein, fat, carbohydrate)
 VALUES
     (1, 0.30, 0.20, 13.80),
     (2, 1.10, 0.30, 22.80),

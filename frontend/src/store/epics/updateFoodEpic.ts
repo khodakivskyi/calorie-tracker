@@ -19,7 +19,7 @@ const updateFoodMutation = `
     $calories: Decimal
     $protein: Decimal
     $fat: Decimal
-    $carbohydrates: Decimal
+    $carbohydrate: Decimal
   ) {
     updateFood(
       foodId: $foodId
@@ -29,7 +29,7 @@ const updateFoodMutation = `
       calories: $calories
       protein: $protein
       fat: $fat
-      carbohydrates: $carbohydrates
+      carbohydrate: $carbohydrate
     ) {
       id
       ownerId
@@ -38,7 +38,7 @@ const updateFoodMutation = `
       calories
       proteins
       fats
-      carbs
+      carbohydrate
       createdAt
       updatedAt
     }
@@ -54,7 +54,7 @@ type UpdateFoodResponse = {
         calories: number | null;
         proteins: number | null;
         fats: number | null;
-        carbs: number | null;
+        carbohydrate: number | null;
         createdAt: string;
         updatedAt: string;
     };

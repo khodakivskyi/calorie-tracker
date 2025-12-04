@@ -49,7 +49,7 @@ namespace backend.Services
             decimal? calories = null,
             decimal? protein = null,
             decimal? fat = null,
-            decimal? carbohydrates = null)
+            decimal? carbohydrate = null)
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new ValidationException("Food name cannot be empty");
@@ -69,22 +69,22 @@ namespace backend.Services
                 //Todo: calculate calories from nutrients
             }
 
-            if (protein.HasValue && fat.HasValue && carbohydrates.HasValue)
+            if (protein.HasValue && fat.HasValue && carbohydrate.HasValue)
             {
                 var proteinValue = protein.Value;
                 var fatValue = fat.Value;
-                var carbohydratesValue = carbohydrates.Value;
+                var carbohydrateValue = carbohydrate.Value;
 
                 await _nutrientsService.CreateNutrientsAsync(
                     createdFood.Id,
                     proteinValue,
                     fatValue,
-                    carbohydratesValue
+                    carbohydrateValue
                 );
 
                 if (!calories.HasValue || calories.Value == 0)
                 {
-                    var calculatedCalories = (proteinValue * 4) + (fatValue * 9) + (carbohydratesValue * 4);
+                    var calculatedCalories = (proteinValue * 4) + (fatValue * 9) + (carbohydrateValue * 4);
                     if (calculatedCalories > 0)
                     {
                         await _caloriesService.CreateCaloriesAsync(createdFood.Id, calculatedCalories);
@@ -104,7 +104,7 @@ namespace backend.Services
             decimal? calories = null,
             decimal? protein = null,
             decimal? fat = null,
-            decimal? carbohydrates = null)
+            decimal? carbohydrate = null)
         {
             var existingFood = await this.GetFoodByIdAsync(foodId, userId);
 
@@ -140,28 +140,28 @@ namespace backend.Services
                 }
             }
 
-            if (protein.HasValue && fat.HasValue && carbohydrates.HasValue)
+            if (protein.HasValue && fat.HasValue && carbohydrate.HasValue)
             {
                 var proteinValue = protein.Value;
                 var fatValue = fat.Value;
-                var carbohydratesValue = carbohydrates.Value;
+                var carbohydrateValue = carbohydrate.Value;
 
                 try
                 {
                     var existingNutrients = await _nutrientsService.GetNutrientsByFoodAsync(foodId);
                     if (existingNutrients != null)
                     {
-                        await _nutrientsService.UpdateNutrientsAsync(foodId, proteinValue, fatValue, carbohydratesValue);
+                        await _nutrientsService.UpdateNutrientsAsync(foodId, proteinValue, fatValue, carbohydrateValue);
                     }
                 }
                 catch (NotFoundException)
                 {
-                    await _nutrientsService.CreateNutrientsAsync(foodId, proteinValue, fatValue, carbohydratesValue);
+                    await _nutrientsService.CreateNutrientsAsync(foodId, proteinValue, fatValue, carbohydrateValue);
                 }
 
                 if (!calories.HasValue)
                 {
-                    var calculatedCalories = (proteinValue * 4) + (fatValue * 9) + (carbohydratesValue * 4);
+                    var calculatedCalories = (proteinValue * 4) + (fatValue * 9) + (carbohydrateValue * 4);
                     try
                     {
                         await _caloriesService.UpdateCaloriesAsync(foodId, calculatedCalories);

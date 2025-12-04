@@ -18,7 +18,7 @@ export type Food = {
     calories: number | null;//TODO: not null
     proteins?: number | null;
     fats?: number | null;
-    carbs?: number | null;
+    carbohydrate?: number | null;
     imageId?: number | null;
     createdAt: Date;
     updatedAt: Date;

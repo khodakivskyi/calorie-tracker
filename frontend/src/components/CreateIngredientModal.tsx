@@ -19,19 +19,19 @@ export default function CreateIngredientModal({
         calories: "",
         protein: "",
         fat: "",
-        carbohydrates: ""
+        carbohydrate: ""
     });
 
     useEffect(() => {
         if (!isOpen) {
-            setIngredient({ name: "", calories: "", protein: "", fat: "", carbohydrates: "" });
+            setIngredient({ name: "", calories: "", protein: "", fat: "", carbohydrate: "" });
         } else if (foodToEdit) {
             setIngredient({
                 name: foodToEdit.name ?? "",
                 calories: foodToEdit.calories?.toString() ?? "",
                 protein: foodToEdit.proteins?.toString() ?? "",
                 fat: foodToEdit.fats?.toString() ?? "",
-                carbohydrates: foodToEdit.carbs?.toString() ?? "",
+                carbohydrate: foodToEdit.carbohydrate?.toString() ?? "",
             });
         }
     }, [isOpen, foodToEdit]);
@@ -46,18 +46,18 @@ export default function CreateIngredientModal({
             calories: ingredient.calories === "" ? 0 : parseFloat(ingredient.calories),
             proteins: ingredient.protein === "" ? 0 : parseFloat(ingredient.protein),
             fats: ingredient.fat === "" ? 0 : parseFloat(ingredient.fat),
-            carbs: ingredient.carbohydrates === "" ? 0 : parseFloat(ingredient.carbohydrates),
+            carbohydrate: ingredient.carbohydrate === "" ? 0 : parseFloat(ingredient.carbohydrate),
             createdAt: foodToEdit?.createdAt ?? new Date(),
             updatedAt: new Date(),
         };
 
         onCreateIngredient(createdFood);
 
-        setIngredient({ name: "", calories: "", protein: "", fat: "", carbohydrates: "" });
+        setIngredient({ name: "", calories: "", protein: "", fat: "", carbohydrate: "" });
     };
 
     const handleClose = () => {
-        setIngredient({ name: "", calories: "", protein: "", fat: "", carbohydrates: "" });
+        setIngredient({ name: "", calories: "", protein: "", fat: "", carbohydrate: "" });
         onClose();
     };
 
@@ -115,11 +115,11 @@ export default function CreateIngredientModal({
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium mb-1">Carbs (g)</label>
+                            <label className="block text-sm font-medium mb-1">Carbohydrates (g)</label>
                             <input
                                 type="number"
-                                value={ingredient.carbohydrates}
-                                onChange={(e) => setIngredient({...ingredient, carbohydrates: e.target.value})}
+                                value={ingredient.carbohydrate}
+                                onChange={(e) => setIngredient({...ingredient, carbohydrate: e.target.value})}
                                 className="w-full border rounded px-3 py-2"
                                 placeholder="C"
                             />

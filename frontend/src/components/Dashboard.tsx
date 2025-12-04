@@ -109,7 +109,7 @@ export default function Dashboard() {
                     progressMax={1200}
                 />
                 <NutrientCard
-                    label="Carbs"
+                    label="Carbohydrates"
                     value={128}
                     color="#f97316"
                     progressValue={128}

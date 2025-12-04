@@ -16,7 +16,7 @@ namespace backend.GraphQL.Types
             Field(x => x.UpdatedAt);
             Field(x => x.Calories);
             Field(x => x.Proteins);
-            Field(x => x.Carbs);
+            Field(x => x.Carbohydrate);
             Field(x => x.Fats);
             Field(x => x.IsExternal, nullable: true);
 

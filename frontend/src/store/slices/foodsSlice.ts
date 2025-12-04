@@ -28,7 +28,7 @@ const foodSlice = createSlice({
                 calories?: number | null;
                 proteins?: number | null;
                 fats?: number | null;
-                carbs?: number | null;
+                carbohydrate?: number | null;
             }>
         )
         {
@@ -75,7 +75,7 @@ const foodSlice = createSlice({
                 calories?: number;
                 proteins?: number;
                 fats?: number;
-                carbs?: number;
+                carbohydrate?: number;
             }>
         ) {
             state.loading = true;

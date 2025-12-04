@@ -38,7 +38,7 @@ namespace backend.Services
                 if (nutrients != null)
                 {
                     dish.Proteins = nutrients.Protein;
-                    dish.Carbs = nutrients.Carbohydrates;
+                    dish.Carbohydrate = nutrients.Carbohydrate;
                     dish.Fats = nutrients.Fat;
                 }
                 return dish;

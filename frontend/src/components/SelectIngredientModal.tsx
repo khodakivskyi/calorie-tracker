@@ -32,7 +32,7 @@ export default function SelectIngredientModal({
                             >
                                 <div className="font-medium">{food.name}</div>
                                 <div className="text-sm text-gray-600">
-                                    {food.calories} kcal | P: {food.proteins}g, F: {food.fats}g, C: {food.carbs}g
+                                    {food.calories} kcal | P: {food.proteins}g, F: {food.fats}g, C: {food.carbohydrate}g
                                 </div>
                             </button>
                         ))}

@@ -48,7 +48,7 @@ export default function FoodsPage() {
                 calories: food.calories ?? undefined,
                 proteins: food.proteins ?? undefined,
                 fats: food.fats ?? undefined,
-                carbs: food.carbs ?? undefined,
+                carbohydrate: food.carbohydrate ?? undefined,
                 imageId: food.imageId ?? undefined,
             }));
         } else {
@@ -58,7 +58,7 @@ export default function FoodsPage() {
                 calories: food.calories ?? undefined,
                 proteins: food.proteins ?? undefined,
                 fats: food.fats ?? undefined,
-                carbs: food.carbs ?? undefined,
+                carbohydrate: food.carbohydrate ?? undefined,
                 imageId: food.imageId ?? undefined,
             }));
 
