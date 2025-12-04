@@ -1,5 +1,5 @@
-﻿using backend.Models;
-using backend.Exceptions;
+﻿using backend.Exceptions;
+using backend.Models;
 using backend.Repositories.Interfaces;
 
 namespace backend.Services
@@ -7,10 +7,14 @@ namespace backend.Services
     public class DishService
     {
         private readonly IDishRepository _dishRepository;
+        private readonly CaloriesService _caloriesService;
+        private readonly NutrientsService _nutrientsService;
 
-        public DishService(IDishRepository dishRepository)
+        public DishService(IDishRepository dishRepository, CaloriesService caloriesService, NutrientsService nutrientsService)
         {
             _dishRepository = dishRepository;
+            _caloriesService = caloriesService;
+            _nutrientsService = nutrientsService;
         }
 
         public async Task<Dish> GetDishByIdAsync(int dishId, int userId)
@@ -24,7 +28,23 @@ namespace backend.Services
 
         public async Task<IEnumerable<Dish>> GetDishesByUserAsync(int userId)
         {
-            return await _dishRepository.GetDishesByUserAsync(userId);
+            var dishes = await _dishRepository.GetDishesByUserAsync(userId);
+
+            var tasks = dishes.Select(async dish =>
+            {
+                var calories = await _caloriesService.GetOrCalculateCaloriesForDishAsync(dish.Id);
+                var nutrients = await _nutrientsService.GetNutrientsByDishAsync(dish.Id);
+                dish.Calories = calories;
+                if (nutrients != null)
+                {
+                    dish.Proteins = nutrients.Protein;
+                    dish.Carbs = nutrients.Carbohydrates;
+                    dish.Fats = nutrients.Fat;
+                }
+                return dish;
+            });
+
+            return await Task.WhenAll(tasks);
         }
 
         public async Task<IEnumerable<Dish>> GetPrivateDishesByUserAsync(int userId)

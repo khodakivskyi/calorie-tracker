@@ -43,6 +43,7 @@ export default function FoodsPage() {
             dispatch(createFoodRequest({ ...food, userId: 1 }));
         }
         setIsCreateIngredientOpen(false);
+        //maybe reset models?)
     };
 
     return (

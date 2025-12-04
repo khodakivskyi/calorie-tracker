@@ -5,7 +5,7 @@
         public int Id { get; init; }
         public int? OwnerId { get; set; }
         public string Name { get; set; } = string.Empty;
-        public decimal? Calories { get; set; }
+        public decimal? Calories { get; set; }//Todo: make non-nullable
         public decimal? Proteins { get; set; }
         public decimal? Carbs { get; set; }
         public decimal? Fats { get; set; }

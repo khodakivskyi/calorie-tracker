@@ -1,32 +1,14 @@
-import { useState } from 'react';
+import {useEffect, useState} from 'react';
 import PageHeader from "../components/PageHeader.tsx";
 import SearchBar from "../components/SearchBar.tsx";
 import RecipeItemCard from "../components/RecipeItemCard.tsx";
 import CreateDishModal from "../components/CreateDishModal.tsx";
 import SelectIngredientModal from "../components/SelectIngredientModal.tsx";
 import CreateIngredientModal from "../components/CreateIngredientModal.tsx";
-import type {DishFood, Dish as DishType} from "../store/types/dishTypes.ts";
+import type {DishFood, Dish} from "../store/types/dishTypes.ts";
 import type {Food} from "../store/types/foodTypes.ts";
-
-interface Dish {
-    id: number;
-    name: string;
-    calories: number;
-}
-
-// Mock data for dishes
-const mockDishes: Dish[] = [
-    { id: 1, name: 'Chicken Breast with Rice', calories: 450 },
-    { id: 2, name: 'Broccoli Salad', calories: 120 },
-    { id: 3, name: 'Salmon with Potatoes', calories: 520 },
-    { id: 4, name: 'Avocado Toast', calories: 280 },
-    { id: 5, name: 'Caesar Salad', calories: 320 },
-    { id: 6, name: 'Greek Salad', calories: 250 },
-    { id: 7, name: 'Pasta Carbonara', calories: 680 },
-    { id: 8, name: 'Grilled Vegetables', calories: 180 },
-    { id: 9, name: 'Beef Steak', calories: 550 },
-    { id: 10, name: 'Vegetable Stir Fry', calories: 220 },
-];
+import {useAppDispatch, useAppSelector} from "../store";
+import {createDishRequest, getDishesByUserRequest} from "../store/slices/dishesSlice.ts";
 
 const readyFoods: Food[] = [
     { id: 101, name: "Chicken Breast", userId: null, calories: 165, protein: 31, fat: 3.6, carbohydrates: 0, createdAt: new Date(), updatedAt: new Date() },
@@ -35,21 +17,25 @@ const readyFoods: Food[] = [
 ];
 
 export default function DishesPage() {
-    const [dishes, setDishes] = useState<Dish[]>(mockDishes);
+    const dispatch = useAppDispatch();
+
+    const { user } = useAppSelector(state => state.auth);
+    const { dishes, loading, error } = useAppSelector(state => state.dish);
+
+    const [isCreateIngredientOpen, setIsCreateIngredientOpen] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
     const [isCreateDishOpen, setIsCreateDishOpen] = useState(false);
     const [isSelectIngredientOpen, setIsSelectIngredientOpen] = useState(false);
-    const [isCreateIngredientOpen, setIsCreateIngredientOpen] = useState(false);
     const [newDishIngredients, setNewDishIngredients] = useState<DishFood[]>([]);
 
-    const handleSearch = (query: string) => {
-        if (query.trim() === '') {
-            setDishes(mockDishes);
-        } else {
-            const filtered = mockDishes.filter(dish =>
-                dish.name.toLowerCase().includes(query.toLowerCase())
-            );
-            setDishes(filtered);
+    useEffect(() => {
+        if (user) {
+            dispatch(getDishesByUserRequest({ userId: user.id }));
         }
+    },[dispatch, user]);
+
+    const handleSearch = (query: string) => {
+        setSearchQuery(query);
     };
 
     const handleAddClick = () => {
@@ -70,6 +56,10 @@ export default function DishesPage() {
         setIsCreateIngredientOpen(false);
     };
 
+    const filteredDishes = searchQuery.trim()
+        ? dishes.filter(dish => dish.name.toLowerCase().includes(searchQuery.toLowerCase()))
+        : dishes;
+
     const resetModals = () => {
         setIsCreateDishOpen(false);
         setIsSelectIngredientOpen(false);
@@ -77,17 +67,10 @@ export default function DishesPage() {
         setNewDishIngredients([]);
     };
 
-    const handleCreateDish = (dish: DishType) => {
-        const calories = dish.foods?.reduce((sum, item) => {
-            const kcal = item.food?.calories ?? 0;
-            return sum + kcal * item.quantity;
-        }, 0) ?? 0;
-
-        setDishes(prev => [...prev, {
-            id: dish.id,
-            name: dish.name,
-            calories: Math.round(calories)
-        }]);
+    const handleCreateDish = (dish: Dish) => {
+        if(user){
+            dispatch(createDishRequest({...dish, userId: 1}))
+        }
         resetModals();
     };
 
@@ -103,8 +86,8 @@ export default function DishesPage() {
                 />
 
                 <div className="pb-24">
-                    {dishes.length > 0 ? (
-                        dishes.map((dish) => (
+                    {filteredDishes.length > 0 ? (
+                        filteredDishes.map((dish) => (
                             <RecipeItemCard
                                 key={dish.id}
                                 id={dish.id}
