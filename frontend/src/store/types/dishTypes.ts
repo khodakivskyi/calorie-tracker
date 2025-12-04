@@ -18,8 +18,8 @@ export type Dish = {
     ownerId: number | null;
     weight: number;
     calories: number | null;//TODO: not null
-    proteins?: number | null;
-    fats?: number | null;
+    protein?: number | null;
+    fat?: number | null;
     carbohydrate?: number | null;
     imageId?: number | null;
     createdAt: Date;

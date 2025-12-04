@@ -16,8 +16,8 @@ const getDishesByUserQuery = `
       id
       name
       calories
-      proteins
-      fats
+      protein
+      fat
       carbohydrate
       imageId
       createdAt
@@ -33,8 +33,8 @@ type GetDishesByUserResponse = {
         ownerId: number | null;
         weight: number;
         calories: number | null;
-        proteins: number | null;
-        fats: number | null;
+        protein: number | null;
+        fat: number | null;
         carbohydrate: number | null;
         imageId: number | null;
         createdAt: string;

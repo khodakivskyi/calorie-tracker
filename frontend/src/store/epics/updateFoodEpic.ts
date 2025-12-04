@@ -36,8 +36,8 @@ const updateFoodMutation = `
       name
       imageId
       calories
-      proteins
-      fats
+      protein
+      fat
       carbohydrate
       createdAt
       updatedAt
@@ -52,8 +52,8 @@ type UpdateFoodResponse = {
         name: string;
         imageId: number | null;
         calories: number | null;
-        proteins: number | null;
-        fats: number | null;
+        protein: number | null;
+        fat: number | null;
         carbohydrate: number | null;
         createdAt: string;
         updatedAt: string;

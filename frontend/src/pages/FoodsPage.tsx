@@ -46,8 +46,8 @@ export default function FoodsPage() {
                 userId: user.id,
                 name: food.name,
                 calories: food.calories ?? undefined,
-                proteins: food.proteins ?? undefined,
-                fats: food.fats ?? undefined,
+                protein: food.protein ?? undefined,
+                fat: food.fat ?? undefined,
                 carbohydrate: food.carbohydrate ?? undefined,
                 imageId: food.imageId ?? undefined,
             }));
@@ -56,8 +56,8 @@ export default function FoodsPage() {
                 name: food.name,
                 userId: user.id,
                 calories: food.calories ?? undefined,
-                proteins: food.proteins ?? undefined,
-                fats: food.fats ?? undefined,
+                protein: food.protein ?? undefined,
+                fat: food.fat ?? undefined,
                 carbohydrate: food.carbohydrate ?? undefined,
                 imageId: food.imageId ?? undefined,
             }));

@@ -29,8 +29,8 @@ export default function CreateIngredientModal({
             setIngredient({
                 name: foodToEdit.name ?? "",
                 calories: foodToEdit.calories?.toString() ?? "",
-                protein: foodToEdit.proteins?.toString() ?? "",
-                fat: foodToEdit.fats?.toString() ?? "",
+                protein: foodToEdit.protein?.toString() ?? "",
+                fat: foodToEdit.fat?.toString() ?? "",
                 carbohydrate: foodToEdit.carbohydrate?.toString() ?? "",
             });
         }
@@ -44,8 +44,8 @@ export default function CreateIngredientModal({
             name: ingredient.name,
             ownerId: 1,
             calories: ingredient.calories === "" ? 0 : parseFloat(ingredient.calories),
-            proteins: ingredient.protein === "" ? 0 : parseFloat(ingredient.protein),
-            fats: ingredient.fat === "" ? 0 : parseFloat(ingredient.fat),
+            protein: ingredient.protein === "" ? 0 : parseFloat(ingredient.protein),
+            fat: ingredient.fat === "" ? 0 : parseFloat(ingredient.fat),
             carbohydrate: ingredient.carbohydrate === "" ? 0 : parseFloat(ingredient.carbohydrate),
             createdAt: foodToEdit?.createdAt ?? new Date(),
             updatedAt: new Date(),

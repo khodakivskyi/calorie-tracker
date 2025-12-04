@@ -16,9 +16,9 @@ namespace backend.GraphQL.Types
             Field(x => x.CreatedAt);
             Field(x => x.UpdatedAt);
             Field(x => x.Calories);
-            Field(x => x.Proteins);
+            Field(x => x.Protein);
             Field(x => x.Carbohydrate);
-            Field(x => x.Fats);
+            Field(x => x.Fat);
             Field(x => x.IsExternal, nullable: true);
 
             /*Field<StringGraphType, string?>("image")

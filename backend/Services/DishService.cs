@@ -37,9 +37,9 @@ namespace backend.Services
                 dish.Calories = calories;
                 if (nutrients != null)
                 {
-                    dish.Proteins = nutrients.Protein;
+                    dish.Protein = nutrients.Protein;
                     dish.Carbohydrate = nutrients.Carbohydrate;
-                    dish.Fats = nutrients.Fat;
+                    dish.Fat = nutrients.Fat;
                 }
                 return dish;
             });
