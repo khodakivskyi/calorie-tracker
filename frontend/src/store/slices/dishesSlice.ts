@@ -53,6 +53,7 @@ const dishesSlice = createSlice({
         getDishesByUserFailure(state, action: PayloadAction<string>) {
             state.loading = false;
             state.error = action.payload;
+            state.success = null;
         },
         updateDishRequest(
             state,
