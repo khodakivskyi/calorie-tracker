@@ -62,6 +62,8 @@ const foodSlice = createSlice({
         getFoodsByUserFailure(state, action: PayloadAction<string>) {
             state.loading = false;
             state.error = action.payload;
+            state.success = null;
+
         },
         updateFoodRequest(
             state,
