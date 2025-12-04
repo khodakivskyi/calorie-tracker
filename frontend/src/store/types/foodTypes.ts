@@ -14,7 +14,7 @@ import {createFoodFailure,
 export type Food = {
     id: number;
     name: string;
-    userId: number | null;
+    ownerId: number | null;
     calories: number | null;//TODO: not null
     proteins?: number | null;
     fats?: number | null;

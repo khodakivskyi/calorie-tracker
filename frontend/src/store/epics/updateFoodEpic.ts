@@ -48,7 +48,7 @@ const updateFoodMutation = `
 type UpdateFoodResponse = {
     updateFood: {
         id: number;
-        userId: number;
+        ownerId: number | null;
         name: string;
         imageId: number | null;
         calories: number | null;

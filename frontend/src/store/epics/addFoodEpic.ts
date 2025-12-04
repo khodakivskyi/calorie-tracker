@@ -34,8 +34,8 @@ const createFoodMutation = `
     name
     imageId
     calories
-    proteins
-    fats
+    protein
+    fat
     carbohydrate
     createdAt
     updatedAt
@@ -46,7 +46,7 @@ const createFoodMutation = `
 type CreateFoodResponse = {
     createFood: {
         id: number;
-        userId: number | null;
+        ownerId: number | null;
         name: string;
         imageId: number | null;
         calories: number | null;

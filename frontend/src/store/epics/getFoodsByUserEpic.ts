@@ -31,7 +31,7 @@ type GetFoodsByUserResponse = {
     getFoodsByUser: {
         id: number;
         name: string;
-        userId: number | null;
+        ownerId: number | null;
         calories: number | null;
         proteins: number | null;
         fats: number | null;

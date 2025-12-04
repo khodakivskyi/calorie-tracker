@@ -11,9 +11,9 @@ import {useAppDispatch, useAppSelector} from "../store";
 import {createDishRequest, getDishesByUserRequest} from "../store/slices/dishesSlice.ts";
 
 const readyFoods: Food[] = [
-    { id: 101, name: "Chicken Breast", userId: null, calories: 165, proteins: 31, fats: 3.6, carbohydrate: 0, createdAt: new Date(), updatedAt: new Date() },
-    { id: 102, name: "Brown Rice", userId: null, calories: 112, proteins: 2.6, fats: 0.9, carbohydrate: 23, createdAt: new Date(), updatedAt: new Date() },
-    { id: 103, name: "Broccoli", userId: null, calories: 34, proteins: 2.8, fats: 0.4, carbohydrate: 7, createdAt: new Date(), updatedAt: new Date() },
+    { id: 101, name: "Chicken Breast", ownerId: null, calories: 165, proteins: 31, fats: 3.6, carbohydrate: 0, createdAt: new Date(), updatedAt: new Date() },
+    { id: 102, name: "Brown Rice", ownerId: null, calories: 112, proteins: 2.6, fats: 0.9, carbohydrate: 23, createdAt: new Date(), updatedAt: new Date() },
+    { id: 103, name: "Broccoli", ownerId: null, calories: 34, proteins: 2.8, fats: 0.4, carbohydrate: 7, createdAt: new Date(), updatedAt: new Date() },
 ];
 
 export default function DishesPage() {
@@ -69,7 +69,7 @@ export default function DishesPage() {
 
     const handleCreateDish = (dish: Dish) => {
         if (user) {
-            dispatch(createDishRequest({ ...dish, userId: user.id }));
+            dispatch(createDishRequest({ ...dish, ownerId: user.id }));
         }
         resetModals();
     };

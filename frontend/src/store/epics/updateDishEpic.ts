@@ -28,6 +28,10 @@ const updateDishMutation = `
       ownerId
       weight
       imageId
+      calories
+      protein
+      fat
+      carbohydrate
       createdAt
       updatedAt
     }

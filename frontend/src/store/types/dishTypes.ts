@@ -15,7 +15,7 @@ import {createDishFailure,
 export type Dish = {
     id: number;
     name: string;
-    userId: number | null;
+    ownerId: number | null;
     weight: number;
     calories: number | null;//TODO: not null
     proteins?: number | null;

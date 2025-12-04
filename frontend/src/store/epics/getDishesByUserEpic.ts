@@ -30,7 +30,7 @@ type GetDishesByUserResponse = {
     getDishesByUser: {
         id: number;
         name: string;
-        userId: number | null;
+        ownerId: number | null;
         weight: number;
         calories: number | null;
         proteins: number | null;

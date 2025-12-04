@@ -42,7 +42,7 @@ export default function CreateIngredientModal({
         const createdFood: Food = {
             id: foodToEdit?.id ?? Date.now(),
             name: ingredient.name,
-            userId: 1,
+            ownerId: 1,
             calories: ingredient.calories === "" ? 0 : parseFloat(ingredient.calories),
             proteins: ingredient.protein === "" ? 0 : parseFloat(ingredient.protein),
             fats: ingredient.fat === "" ? 0 : parseFloat(ingredient.fat),
