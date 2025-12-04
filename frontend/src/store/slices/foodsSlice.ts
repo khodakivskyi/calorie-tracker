@@ -26,9 +26,9 @@ const foodSlice = createSlice({
                 name: string;
                 imageId?: number | null;
                 calories?: number | null;
-                protein?: number | null;
-                fat?: number | null;
-                carbohydrates?: number | null;
+                proteins?: number | null;
+                fats?: number | null;
+                carbs?: number | null;
             }>
         )
         {
@@ -72,9 +72,9 @@ const foodSlice = createSlice({
                 imageId?: number;
                 externalId?: string;
                 calories?: number;
-                protein?: number;
-                fat?: number;
-                carbohydrates?: number;
+                proteins?: number;
+                fats?: number;
+                carbs?: number;
             }>
         ) {
             state.loading = true;

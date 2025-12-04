@@ -16,9 +16,9 @@ const getFoodsByUserQuery = `
       id
       name
       calories
-      protein
-      fat
-      carbohydrates
+      proteins
+      fats
+      carbs
       imageId
       createdAt
       updatedAt
@@ -32,9 +32,9 @@ type GetFoodsByUserResponse = {
         name: string;
         userId: number | null;
         calories: number | null;
-        protein: number | null;
-        fat: number | null;
-        carbohydrates: number | null;
+        proteins: number | null;
+        fats: number | null;
+        carbs: number | null;
         imageId: number | null;
         createdAt: string;
         updatedAt: string;

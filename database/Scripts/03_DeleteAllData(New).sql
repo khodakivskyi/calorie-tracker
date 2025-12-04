@@ -32,6 +32,10 @@ DELETE FROM foods
 PRINT 'Deleted data from foods table'
 GO
 
+DELETE FROM verification_tokens
+PRINT 'Deleted data from verification_tokens table'
+GO
+
 DELETE FROM images
 PRINT 'Deleted data from images table'
 GO
@@ -44,14 +48,18 @@ DELETE FROM users
 PRINT 'Deleted data from users table'
 GO
 
+DELETE FROM meal_types
+PRINT 'Deleted data from meal_types table'
+GO
+
 DBCC CHECKIDENT ('users', RESEED, 0)
 DBCC CHECKIDENT ('calorie_limits', RESEED, 0)
 DBCC CHECKIDENT ('images', RESEED, 0)
 DBCC CHECKIDENT ('dishes', RESEED, 0)
 DBCC CHECKIDENT ('foods', RESEED, 0)
-DBCC CHECKIDENT ('calories', RESEED, 0)
 DBCC CHECKIDENT ('meals', RESEED, 0)
-DBCC CHECKIDENT ('nutrients', RESEED, 0)
+DBCC CHECKIDENT ('verification_tokens', RESEED, 0)
+DBCC CHECKIDENT ('meal_types', RESEED, 0)
 GO
 
 PRINT 'All data successfully deleted!'

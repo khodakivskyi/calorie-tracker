@@ -40,14 +40,6 @@ namespace backend.GraphQL.Queries
                 {
                     return await foodService.GetGlobalFoodsAsync();
                 });
-
-            Field<FoodType>("getFoodByExternalId")
-                .Argument<NonNullGraphType<StringGraphType>>("externalId")
-                .ResolveAsync(async context =>
-                {
-                    var externalId = context.GetArgument<string>("externalId");
-                    return await foodService.GetFoodByExternalIdAsync(externalId);
-                });
         }
     }
 }

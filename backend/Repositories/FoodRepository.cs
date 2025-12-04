@@ -19,7 +19,7 @@ namespace backend.Repositories
         {
             using var connection = new SqlConnection(_connectionString);
             const string sql = @"SELECT id, owner_id AS OwnerId, name, image_id AS ImageId, 
-                                        created_at AS CreatedAt, updated_at AS UpdatedAt, external_id AS ExternalId
+                                        created_at AS CreatedAt, updated_at AS UpdatedAt, is_external AS IsExternal
                                  FROM foods 
                                  WHERE id = @Id AND (owner_id = @UserId OR owner_id IS NULL)";
             return await connection.QuerySingleOrDefaultAsync<Food>(sql, new { Id = foodId, UserId = userId });
@@ -28,13 +28,17 @@ namespace backend.Repositories
         public async Task<IEnumerable<Food>> GetFoodsByUserAsync(int userId)
         {
             using var connection = new SqlConnection(_connectionString);
-            const string sql = @"SELECT id, owner_id AS OwnerId, name, image_id AS ImageId, 
-                                        created_at AS CreatedAt, updated_at AS UpdatedAt, external_id AS ExternalId
-                                 FROM foods 
-                                 WHERE owner_id = @UserId OR owner_id IS NULL
+            const string sql = @"SELECT f.id, f.owner_id AS OwnerId, f.name, f.image_id AS ImageId, 
+                                        f.created_at AS CreatedAt, f.updated_at AS UpdatedAt, f.is_external AS IsExternal,
+                                        c.calories AS Calories,
+                                        n.protein AS Proteins, n.fat AS Fats, n.carbohydrates AS Cabs
+                                 FROM foods f
+                                 LEFT JOIN calories c ON c.food_id = f.id
+                                 LEFT JOIN nutrients n ON n.food_id = f.id
+                                 WHERE f.owner_id = @UserId OR f.owner_id IS NULL
                                  ORDER BY 
-                                    CASE WHEN owner_id = @UserId THEN 0 ELSE 1 END,
-                                    created_at DESC";
+                                    CASE WHEN f.owner_id = @UserId THEN 0 ELSE 1 END,
+                                    f.created_at DESC";
             return await connection.QueryAsync<Food>(sql, new { UserId = userId });
         }
 
@@ -43,21 +47,11 @@ namespace backend.Repositories
         {
             using var connection = new SqlConnection(_connectionString);
             const string sql = @"SELECT id, owner_id AS OwnerId, name, image_id AS ImageId, 
-                                        created_at AS CreatedAt, updated_at AS UpdatedAt, external_id AS ExternalId
+                                        created_at AS CreatedAt, updated_at AS UpdatedAt, is_external AS IsExternal
                                  FROM foods 
                                  WHERE owner_id IS NULL
                                  ORDER BY created_at DESC";
             return await connection.QueryAsync<Food>(sql);
-        }
-
-        public async Task<Food?> GetFoodByExternalIdAsync(string externalId)
-        {
-            using var connection = new SqlConnection(_connectionString);
-            const string sql = @"SELECT id, owner_id AS OwnerId, name, image_id AS ImageId, 
-                                        created_at AS CreatedAt, updated_at AS UpdatedAt, external_id AS ExternalId
-                                 FROM foods 
-                                 WHERE external_id = @ExternalId";
-            return await connection.QuerySingleOrDefaultAsync<Food>(sql, new { ExternalId = externalId });
         }
 
         // Only for private foods
@@ -65,7 +59,7 @@ namespace backend.Repositories
         {
             using var connection = new SqlConnection(_connectionString);
             const string sql = @"SELECT id, owner_id AS OwnerId, name, image_id AS ImageId, 
-                                        created_at AS CreatedAt, updated_at AS UpdatedAt, external_id AS ExternalId
+                                        created_at AS CreatedAt, updated_at AS UpdatedAt, is_external AS IsExternal
                                  FROM foods 
                                  WHERE owner_id = @UserId
                                  ORDER BY created_at DESC";
@@ -76,11 +70,11 @@ namespace backend.Repositories
         {
             using var connection = new SqlConnection(_connectionString);
             const string sql = @"
-                INSERT INTO foods (owner_id, name, image_id, external_id)
+                INSERT INTO foods (owner_id, name, image_id, is_external)
                 OUTPUT INSERTED.id, INSERTED.owner_id AS OwnerId, INSERTED.name, 
                        INSERTED.image_id AS ImageId, INSERTED.created_at AS CreatedAt,
-                       INSERTED.updated_at AS UpdatedAt, INSERTED.external_id AS ExternalId
-                VALUES (@OwnerId, @Name, @ImageId, @ExternalId);";
+                       INSERTED.updated_at AS UpdatedAt, INSERTED.is_external AS IsExternal
+                VALUES (@OwnerId, @Name, @ImageId, @IsExternal);";
 
             return await connection.QuerySingleOrDefaultAsync<Food>(sql, food);
         }
@@ -92,11 +86,11 @@ namespace backend.Repositories
                 UPDATE foods
                 SET name = @Name,
                     image_id = @ImageId,
-                    external_id = @ExternalId,
+                    is_external = @IsExternal,
                     updated_at = GETDATE()
                 OUTPUT INSERTED.id, INSERTED.owner_id AS OwnerId, INSERTED.name, 
                        INSERTED.image_id AS ImageId, INSERTED.created_at AS CreatedAt,
-                       INSERTED.updated_at AS UpdatedAt, INSERTED.external_id AS ExternalId
+                       INSERTED.updated_at AS UpdatedAt, INSERTED.is_external AS IsExternal
                 WHERE id = @Id AND owner_id = @OwnerId;";
 
             return await connection.QueryFirstOrDefaultAsync<Food>(sql, food);

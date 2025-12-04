@@ -1,6 +1,9 @@
 USE calorie_tracker
 GO
 
+SET QUOTED_IDENTIFIER ON;
+GO
+
 -- CREATE TABLES
 CREATE TABLE users
 (
