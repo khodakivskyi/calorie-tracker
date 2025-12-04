@@ -16,7 +16,6 @@ const updateFoodMutation = `
     $userId: Int!
     $name: String
     $imageId: Int
-    $externalId: String
     $calories: Decimal
     $protein: Decimal
     $fat: Decimal
@@ -27,7 +26,6 @@ const updateFoodMutation = `
       userId: $userId
       name: $name
       imageId: $imageId
-      externalId: $externalId
       calories: $calories
       protein: $protein
       fat: $fat
@@ -38,9 +36,9 @@ const updateFoodMutation = `
       name
       imageId
       calories
-      protein
-      fat
-      carbohydrates
+      proteins
+      fats
+      carbs
       createdAt
       updatedAt
     }

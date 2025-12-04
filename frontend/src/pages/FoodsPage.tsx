@@ -7,6 +7,7 @@ import type { Food } from "../store/types/foodTypes.ts";
 import { useAppDispatch, useAppSelector } from '../store';
 import {
     createFoodRequest,
+    updateFoodRequest,
     getFoodsByUserRequest
 } from '../store/slices/foodsSlice.ts';
 
@@ -17,8 +18,10 @@ export default function FoodsPage() {
     const { foods, loading, error } = useAppSelector(state => state.food);
 
     const [isCreateIngredientOpen, setIsCreateIngredientOpen] = useState(false);
+    const [foodToEdit, setFoodToEdit] = useState<Food | undefined>(undefined);
     const [searchQuery, setSearchQuery] = useState('');
 
+    // Завантаження фудів користувача
     useEffect(() => {
         if (user) {
             dispatch(getFoodsByUserRequest({ userId: user.id }));
@@ -30,18 +33,48 @@ export default function FoodsPage() {
         : foods;
 
     const handleAddClick = () => {
+        setFoodToEdit(undefined); // створюємо новий фуд
         setIsCreateIngredientOpen(true);
     };
 
-    const handleCreateFood = (food: Omit<Food, 'id' | 'createdAt' | 'updatedAt'>) => {
+    // Викликається при створенні або редагуванні фуда
+    const handleSaveFood = (food: Food) => {
         if (!user) return;
 
-        dispatch(createFoodRequest({
-            ...food,
-            userId: user.id
-        }));
+        if (foodToEdit) {
+            // Редагування → формуємо payload для updateFoodRequest
+            dispatch(updateFoodRequest({
+                foodId: food.id,
+                userId: user.id,
+                name: food.name,
+                calories: food.calories ?? undefined,
+                proteins: food.proteins ?? undefined,
+                fats: food.fats ?? undefined,
+                carbs: food.carbs ?? undefined,
+                imageId: food.imageId ?? undefined,
+            }));
+        } else {
+            // Створення
+            dispatch(createFoodRequest({
+                name: food.name,
+                userId: user.id,
+                calories: food.calories ?? undefined,
+                protein: food.proteins ?? undefined,
+                fat: food.fats ?? undefined,
+                carbohydrates: food.carbs ?? undefined,
+                imageId: food.imageId ?? undefined,
+            }));
+
+        }
 
         setIsCreateIngredientOpen(false);
+        setFoodToEdit(undefined);
+    };
+
+
+    const handleEditClick = (food: Food) => {
+        setFoodToEdit(food);
+        setIsCreateIngredientOpen(true);
     };
 
     return (
@@ -65,9 +98,8 @@ export default function FoodsPage() {
                                 key={food.id}
                                 id={food.id}
                                 name={food.name}
-                                calories={food.calories ?? null}
-                                onClick={() => console.log("Clicked:", food)}
-                                // ❌ прибрали редагування/видалення
+                                calories={food.calories ?? 0}
+                                onClick={() => handleEditClick(food)}
                             />
                         ))
                     ) : (
@@ -80,8 +112,12 @@ export default function FoodsPage() {
 
             <CreateIngredientModal
                 isOpen={isCreateIngredientOpen}
-                onClose={() => setIsCreateIngredientOpen(false)}
-                onCreateIngredient={handleCreateFood}
+                onClose={() => {
+                    setIsCreateIngredientOpen(false);
+                    setFoodToEdit(undefined);
+                }}
+                onCreateIngredient={handleSaveFood}
+                foodToEdit={foodToEdit}
             />
         </div>
     );

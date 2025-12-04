@@ -26,9 +26,9 @@ const foodSlice = createSlice({
                 name: string;
                 imageId?: number | null;
                 calories?: number | null;
-                proteins?: number | null;
-                fats?: number | null;
-                carbs?: number | null;
+                protein?: number | null;
+                fat?: number | null;
+                carbohydrates?: number | null;
             }>
         )
         {

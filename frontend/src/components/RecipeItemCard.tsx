@@ -14,7 +14,6 @@ export default function RecipeItemCard({
     name,
     calories,
     onClick,
-    onEdit,
     onDelete,
     }: RecipeItemCardProps) {
     return (
@@ -32,7 +31,7 @@ export default function RecipeItemCard({
                     <button
                         onClick={(e) => {
                             e.stopPropagation();
-                            onEdit?.();
+                            onClick?.();
                         }}
                         className="p-2 rounded-lg border border-gray-300"
                     >

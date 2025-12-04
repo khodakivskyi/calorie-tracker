@@ -31,7 +31,7 @@ namespace backend.Repositories
             const string sql = @"SELECT f.id, f.owner_id AS OwnerId, f.name, f.image_id AS ImageId, 
                                         f.created_at AS CreatedAt, f.updated_at AS UpdatedAt, f.is_external AS IsExternal,
                                         c.calories AS Calories,
-                                        n.protein AS Proteins, n.fat AS Fats, n.carbohydrates AS Cabs
+                                        n.protein AS Proteins, n.fat AS Fats, n.carbohydrates AS Carbs
                                  FROM foods f
                                  LEFT JOIN calories c ON c.food_id = f.id
                                  LEFT JOIN nutrients n ON n.food_id = f.id
