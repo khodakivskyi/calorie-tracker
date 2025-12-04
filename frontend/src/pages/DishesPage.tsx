@@ -32,7 +32,7 @@ export default function DishesPage() {
         if (user) {
             dispatch(getDishesByUserRequest({ userId: user.id }));
         }
-    },[dispatch, user]);
+    }, [dispatch, user]);
 
     const handleSearch = (query: string) => {
         setSearchQuery(query);
@@ -43,7 +43,7 @@ export default function DishesPage() {
     };
 
     const handleItemClick = (dish: Dish) => {
-        console.log('View dish:', dish);///do
+        console.log('View dish:', dish);
     };
 
     const handleSelectIngredient = (food: Food, quantity = 1) => {
@@ -68,8 +68,8 @@ export default function DishesPage() {
     };
 
     const handleCreateDish = (dish: Dish) => {
-        if(user){
-            dispatch(createDishRequest({...dish, userId: 1}))
+        if (user) {
+            dispatch(createDishRequest({ ...dish, userId: user.id }));
         }
         resetModals();
     };
@@ -85,6 +85,9 @@ export default function DishesPage() {
                     onAddClick={handleAddClick}
                 />
 
+                {loading && <p className="text-center py-4">Loading...</p>}
+                {error && <p className="text-red-500 text-center py-4">{error}</p>}
+
                 <div className="pb-24">
                     {filteredDishes.length > 0 ? (
                         filteredDishes.map((dish) => (
@@ -97,9 +100,11 @@ export default function DishesPage() {
                             />
                         ))
                     ) : (
-                        <div className="bg-white rounded-2xl p-8 text-center">
-                            <p className="text-gray-500">No dishes found</p>
-                        </div>
+                        !loading && (
+                            <div className="bg-white rounded-2xl p-8 text-center">
+                                <p className="text-gray-500">No dishes found</p>
+                            </div>
+                        )
                     )}
                 </div>
             </div>
@@ -134,4 +139,5 @@ export default function DishesPage() {
         </div>
     );
 }
+
 
