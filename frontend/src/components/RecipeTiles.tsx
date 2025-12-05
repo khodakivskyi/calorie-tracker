@@ -63,7 +63,7 @@ export default function RecipeTiles() {
                                 className={`
                                     ${tile.imagePosition === 'right' ? 'bottom-10 left-10' : 'top-10 right-12'}
                                     relative  
-                                    w-[340px] h-[340px]
+                                    w-[230px] h-[230px]
                                     object-cover
                                 `}
                             />

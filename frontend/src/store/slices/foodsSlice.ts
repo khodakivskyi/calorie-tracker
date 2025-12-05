@@ -40,7 +40,7 @@ const foodSlice = createSlice({
             state.loading = false;
             state.error = null;
             state.success = 'Food added successfully';
-            state.foods.push(action.payload);
+            state.foods = [action.payload, ...state.foods];
         },
         createFoodFailure: (state, action: PayloadAction<string>) => {
             state.loading = false;
