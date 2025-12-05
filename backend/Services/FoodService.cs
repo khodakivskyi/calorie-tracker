@@ -91,7 +91,6 @@ namespace backend.Services
                     }
                 }
             }
-           
             return await GetFoodByIdAsync(createdFood.Id, createdFood.OwnerId ?? 0);
         }
 
