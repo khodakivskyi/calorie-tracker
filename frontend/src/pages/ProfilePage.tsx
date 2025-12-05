@@ -4,6 +4,7 @@ import {useAppDispatch, useAppSelector} from '../store';
 import {updateProfileRequest, clearSettingsMessages} from '../store/slices/profileSlice.ts';
 import {graphqlRequest} from '../config/graphqlClient';
 import {logout} from '../store/slices/authSlice';
+import CalorieGoalModal from '../components/CalorieGoalModal';
 
 export default function ProfilePage() {
     const dispatch = useAppDispatch();
@@ -14,6 +15,8 @@ export default function ProfilePage() {
     const [name, setName] = useState(user?.name || '');
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+
+    const [isCalorieModalOpen, setIsCalorieModalOpen] = useState(false);
 
     useEffect(() => {
         if (user?.name) {
@@ -76,6 +79,7 @@ export default function ProfilePage() {
         );
     }
 
+
     return (
         <div className="min-h-screen pb-24">
             <div className="bg-white rounded-2xl shadow-lg p-6">
@@ -93,7 +97,23 @@ export default function ProfilePage() {
                         <p className="text-red-700">{error}</p>
                     </div>
                 )}
+                {/* Кнопка для відкриття модалки */}
+                <div className="mb-6">
+                    <button
+                        onClick={() => setIsCalorieModalOpen(true)}
+                        className="w-full py-3 px-6 rounded-lg font-semibold text-white bg-green-500 hover:bg-green-600 transition-all duration-200"
+                    >
+                        Set Daily Calorie Goal
+                    </button>
+                </div>
 
+                {/* Модалка */}
+                <CalorieGoalModal
+                    isOpen={isCalorieModalOpen}
+                    onClose={() => setIsCalorieModalOpen(false)}
+                    currentLimit={2500}
+                    onSave={() => {}}
+                />
                 {/* Profile Section */}
                 <div className="mb-8">
                     <h2 className="text-lg font-semibold text-gray-800 mb-4">Profile Information</h2>
