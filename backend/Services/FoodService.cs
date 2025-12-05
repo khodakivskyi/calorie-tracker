@@ -91,8 +91,8 @@ namespace backend.Services
                     }
                 }
             }
-
-            return createdFood;
+           
+            return await GetFoodByIdAsync(createdFood.Id, createdFood.OwnerId ?? 0);
         }
 
         public async Task<Food> UpdateFoodAsync(
@@ -173,7 +173,7 @@ namespace backend.Services
                 }
             }
 
-            return updatedFood;
+            return await GetFoodByIdAsync(updatedFood.Id, updatedFood.OwnerId ?? 0);
         }
 
         public async Task<bool> DeleteFoodAsync(int foodId, int userId)

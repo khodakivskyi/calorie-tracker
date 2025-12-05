@@ -18,10 +18,14 @@ namespace backend.Repositories
         public async Task<Food?> GetFoodByIdAsync(int foodId, int userId)
         {
             using var connection = new SqlConnection(_connectionString);
-            const string sql = @"SELECT id, owner_id AS OwnerId, name, image_id AS ImageId, 
-                                        created_at AS CreatedAt, updated_at AS UpdatedAt, is_external AS IsExternal
-                                 FROM foods 
-                                 WHERE id = @Id AND (owner_id = @UserId OR owner_id IS NULL)";
+            const string sql = @"SELECT f.id, f.owner_id AS OwnerId, f.name, f.image_id AS ImageId, 
+                                    f.created_at AS CreatedAt, f.updated_at AS UpdatedAt, f.is_external AS IsExternal,
+                                    c.calories AS Calories,
+                                    n.protein AS Protein, n.fat AS Fat, n.carbohydrate AS Carbohydrate
+                                FROM foods f
+                                LEFT JOIN calories c ON c.food_id = f.id
+                                LEFT JOIN nutrients n ON n.food_id = f.id
+                                WHERE f.id = @Id AND (f.owner_id = @UserId OR f.owner_id IS NULL)";
             return await connection.QuerySingleOrDefaultAsync<Food>(sql, new { Id = foodId, UserId = userId });
         }
 
