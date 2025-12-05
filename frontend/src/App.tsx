@@ -6,6 +6,9 @@ import LoginPage from "./pages/LoginPage.tsx"
 import MainPage from "./pages/MainPage.tsx"
 import ProfilePage from "./pages/ProfilePage.tsx"
 import AddMealPage from "./pages/AddMealPage.tsx"
+import RecipesPage from "./pages/RecipesPage.tsx";
+import DishesPage from "./pages/DishesPage.tsx";
+import FoodsPage from "./pages/FoodsPage.tsx";
 
 function App() {
     return (
@@ -14,6 +17,9 @@ function App() {
             <Route path="/verify-email" element={<VerifyEmailPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/add-meal" element={<AddMealPage />} />
+            <Route path="/recipes" element={<RecipesPage />} />
+            <Route path="/recipes/dishes" element={<DishesPage />} />
+            <Route path="/recipes/foods" element={<FoodsPage />} />
             <Route element={<BaseLayout/>}>
                 <Route path="/home" element={<MainPage />} />
                 <Route path="/profile" element={<ProfilePage />} />

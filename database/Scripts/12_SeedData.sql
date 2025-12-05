@@ -55,7 +55,7 @@ VALUES
     (10, 59.00);
 GO
 
-INSERT INTO nutrients (food_id, protein, fat, carbohydrates)
+INSERT INTO nutrients (food_id, protein, fat, carbohydrate)
 VALUES
     (1, 0.30, 0.20, 13.80),
     (2, 1.10, 0.30, 22.80),
@@ -91,12 +91,30 @@ VALUES
     (4, 10, 50.00);
 GO
 
-INSERT INTO meals (owner_id, name, created_at, updated_at, meal_type_id)
+-- Ensure meal_types exist before inserting meals
+IF NOT EXISTS (SELECT 1 FROM meal_types)
+BEGIN
+    SET IDENTITY_INSERT meal_types ON;
+    INSERT INTO meal_types (id, name) VALUES
+        (1, 'Breakfast'),
+        (2, 'Lunch'),
+        (3, 'Dinner'),
+        (4, 'Snack'),
+        (5, 'Custom');
+    SET IDENTITY_INSERT meal_types OFF;
+END
+GO
+
+
+SET IDENTITY_INSERT meals ON;
+INSERT INTO meals (id, owner_id, name, created_at, updated_at, meal_type_id)
 VALUES
-    (1, 'Сніданок', '2024-01-15 08:00:00', '2024-01-15 08:00:00', 1),
-    (1, 'Обід', '2024-01-15 13:00:00', '2024-01-15 13:00:00', 2),
-    (2, 'Вечеря', '2024-01-16 19:00:00', '2024-01-16 19:00:00', 3),
-    (3, 'Сніданок', '2024-01-17 09:30:00', '2024-01-17 09:30:00', 1);
+    (1, 1, 'Сніданок', '2024-01-15 08:00:00', '2024-01-15 08:00:00', 1),
+    (2, 1, 'Обід', '2024-01-15 13:00:00', '2024-01-15 13:00:00', 2),
+    (3, 2, 'Вечеря', '2024-01-16 19:00:00', '2024-01-16 19:00:00', 3),
+    (4, 3, 'Сніданок', '2024-01-17 09:30:00', '2024-01-17 09:30:00', 1);
+SET IDENTITY_INSERT meals OFF;
+DBCC CHECKIDENT ('meals', RESEED, 4);
 GO
 
 INSERT INTO meals_dishes (meal_id, dish_id, quantity)

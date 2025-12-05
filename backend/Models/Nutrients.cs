@@ -5,16 +5,16 @@ namespace backend.Models
         public int FoodId { get; set; }
         public decimal Protein { get; set; }
         public decimal Fat { get; set; }
-        public decimal Carbohydrates { get; set; }
+        public decimal Carbohydrate { get; set; }
 
         public Nutrients() { }
 
-        public Nutrients(int foodId, decimal protein, decimal fat, decimal carbohydrates)
+        public Nutrients(int foodId, decimal protein, decimal fat, decimal carbohydrate)
         {
             FoodId = foodId;
             Protein = protein;
             Fat = fat;
-            Carbohydrates = carbohydrates;
+            Carbohydrate = carbohydrate;
         }
     }
 }

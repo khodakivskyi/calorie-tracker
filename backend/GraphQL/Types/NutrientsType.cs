@@ -9,7 +9,7 @@ namespace backend.GraphQL.Types
         {
             Field(x => x.Protein);
             Field(x => x.Fat);
-            Field(x => x.Carbohydrates);
+            Field(x => x.Carbohydrate);
             Field(x => x.FoodId);
         }
     }

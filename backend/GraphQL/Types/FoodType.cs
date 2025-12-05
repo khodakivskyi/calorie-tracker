@@ -14,23 +14,13 @@ namespace backend.GraphQL.Types
             Field(x => x.ImageId, nullable: true);
             Field(x => x.CreatedAt);
             Field(x => x.UpdatedAt);
+            Field(x => x.Calories);
+            Field(x => x.Protein);
+            Field(x => x.Carbohydrate);
+            Field(x => x.Fat);
             Field(x => x.IsExternal, nullable: true);
 
-            Field<DecimalGraphType, decimal>("calories")
-                .ResolveAsync(async context =>
-                {
-                    var food = context.Source;
-                    return await caloriesService.GetOrCalculateCaloriesForFoodAsync(food.Id);
-                });
-
-            Field<NutrientsType, Nutrients?>("nutrients")
-                .ResolveAsync(async context =>
-                {
-                    var food = context.Source;
-                    return await nutrientsService.GetNutrientsByFoodAsync(food.Id);
-                });
-
-            Field<StringGraphType, string?>("image")
+            /*Field<StringGraphType, string?>("image")
                 .ResolveAsync(async context =>
                 {
                     var food = context.Source;
@@ -46,7 +36,7 @@ namespace backend.GraphQL.Types
                     {
                         return null;
                     }
-                });
+                });*/
         }
     }
 }

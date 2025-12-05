@@ -19,7 +19,7 @@ namespace backend.GraphQL.Mutations
                 .Argument<DecimalGraphType>("calories")
                 .Argument<DecimalGraphType>("protein")
                 .Argument<DecimalGraphType>("fat")
-                .Argument<DecimalGraphType>("carbohydrates")
+                .Argument<DecimalGraphType>("carbohydrate")
                 .ResolveAsync(async context =>
                 {
                     var userId = context.GetArgument<int?>("userId");
@@ -28,9 +28,9 @@ namespace backend.GraphQL.Mutations
                     var calories = context.GetArgument<decimal?>("calories");
                     var protein = context.GetArgument<decimal?>("protein");
                     var fat = context.GetArgument<decimal?>("fat");
-                    var carbohydrates = context.GetArgument<decimal?>("carbohydrates");
+                    var carbohydrate = context.GetArgument<decimal?>("carbohydrate");
 
-                    return await foodService.CreateFoodAsync(userId, name, imageId, false, calories, protein, fat, carbohydrates);
+                    return await foodService.CreateFoodAsync(userId, name, imageId, false, calories, protein, fat, carbohydrate);
                 });
 
             Field<FoodType>("updateFood")
@@ -41,7 +41,7 @@ namespace backend.GraphQL.Mutations
                 .Argument<DecimalGraphType>("calories")
                 .Argument<DecimalGraphType>("protein")
                 .Argument<DecimalGraphType>("fat")
-                .Argument<DecimalGraphType>("carbohydrates")
+                .Argument<DecimalGraphType>("carbohydrate")
                 .ResolveAsync(async context =>
                 {
                     var foodId = context.GetArgument<int>("foodId");
@@ -51,9 +51,9 @@ namespace backend.GraphQL.Mutations
                     var calories = context.GetArgument<decimal?>("calories");
                     var protein = context.GetArgument<decimal?>("protein");
                     var fat = context.GetArgument<decimal?>("fat");
-                    var carbohydrates = context.GetArgument<decimal?>("carbohydrates");
+                    var carbohydrate = context.GetArgument<decimal?>("carbohydrate");
 
-                    return await foodService.UpdateFoodAsync(foodId, userId, name, imageId, false, calories, protein, fat, carbohydrates);
+                    return await foodService.UpdateFoodAsync(foodId, userId, name, imageId, false, calories, protein, fat, carbohydrate);
                 });
 
             Field<BooleanGraphType>("deleteFood")
