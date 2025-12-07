@@ -91,7 +91,7 @@ namespace backend.Services
                 isCorrectFood = true;
             }
 
-            if(!isCorrectFood)
+            if (!isCorrectFood)
             {
                 throw new ValidationException("Either calories or all macronutrients (protein, fat, carbohydrate) must be provided and greater than zero");
             }

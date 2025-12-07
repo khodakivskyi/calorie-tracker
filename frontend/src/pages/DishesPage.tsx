@@ -9,6 +9,7 @@ import type {DishFood, Dish} from "../store/types/dishTypes.ts";
 import type {Food} from "../store/types/foodTypes.ts";
 import {useAppDispatch, useAppSelector} from "../store";
 import {createDishRequest, getDishesByUserRequest} from "../store/slices/dishesSlice.ts";
+import { getFoodsByUserRequest } from '../store/slices/foodsSlice.ts';
 
 export default function DishesPage() {
     const dispatch = useAppDispatch();
@@ -26,6 +27,7 @@ export default function DishesPage() {
     useEffect(() => {
         if (user) {
             dispatch(getDishesByUserRequest({ ownerId: user.id }));
+            dispatch(getFoodsByUserRequest({ ownerId: user.id }));
         }
     }, [dispatch, user]);
 
@@ -37,8 +39,8 @@ export default function DishesPage() {
         setIsCreateDishOpen(true);
     };
 
-    const handleItemClick = (dish: Dish) => {
-        console.log('View dish:', dish);
+    const handleItemClick = (_dish: Dish) => {
+        // TODO: navigate to dish detail page or open edit modal
     };
 
     const handleSelectIngredient = (food: Food, quantity = 1) => {

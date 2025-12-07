@@ -41,7 +41,7 @@ export const addMealEpic: Epic<RootEpicAction, RootEpicAction, RootState> = acti
                     updatedAt: new Date(res.createMeal.updatedAt).toISOString(),
                 })),
                 catchError(err =>
-                    of(createMealFailure(err instanceof Error ? err.message : 'Authentication failed'))
+                    of(createMealFailure(err instanceof Error ? err.message : 'Meal creation failed'))
                 )
             )
         )
