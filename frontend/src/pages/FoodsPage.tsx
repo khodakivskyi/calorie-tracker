@@ -64,7 +64,7 @@ export default function FoodsPage() {
 
         }
 
-        setIsCreateIngredientOpen(false);
+        loading ? setIsCreateIngredientOpen(true) : setIsCreateIngredientOpen(false);
         setFoodToEdit(undefined);
     };
 
