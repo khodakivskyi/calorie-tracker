@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react';
+import {useEffect, useState} from 'react';
 import PageHeader from "../components/PageHeader.tsx";
 import SearchBar from "../components/SearchBar.tsx";
 import RecipeItemCard from "../components/RecipeItemCard.tsx";
 import CreateIngredientModal from "../components/modals/CreateIngredientModal.tsx";
-import type { Food } from "../store/types/foodTypes.ts";
-import { useAppDispatch, useAppSelector } from '../store';
+import type {Food} from "../store/types/foodTypes.ts";
+import {useAppDispatch, useAppSelector} from '../store';
 import {
     createFoodRequest,
     updateFoodRequest,
@@ -15,8 +15,8 @@ import {
 export default function FoodsPage() {
     const dispatch = useAppDispatch();
 
-    const { user } = useAppSelector(state => state.auth);
-    const { foods, loading, error } = useAppSelector(state => state.food);
+    const {user} = useAppSelector(state => state.auth);
+    const {foods, loading, error, success} = useAppSelector(state => state.food);
 
     const [isCreateIngredientOpen, setIsCreateIngredientOpen] = useState(false);
     const [foodToEdit, setFoodToEdit] = useState<Food | undefined>(undefined);
@@ -24,7 +24,7 @@ export default function FoodsPage() {
 
     useEffect(() => {
         if (user) {
-            dispatch(getFoodsByUserRequest({ ownerId: user.id }));
+            dispatch(getFoodsByUserRequest({ownerId: user.id}));
         }
     }, [dispatch, user]);
 
@@ -64,8 +64,12 @@ export default function FoodsPage() {
 
         }
 
-        setIsCreateIngredientOpen(loading);
-        setFoodToEdit(undefined);
+        useEffect(() => {
+            if (success) {
+                setIsCreateIngredientOpen(false);
+                setFoodToEdit(undefined);
+            }
+        }, [success]);
     };
 
 
@@ -85,7 +89,7 @@ export default function FoodsPage() {
 
     return (
         <div className="min-h-screen bg-green-100">
-            <PageHeader title="Foods" />
+            <PageHeader title="Foods"/>
 
             <div className="px-4">
                 <SearchBar
