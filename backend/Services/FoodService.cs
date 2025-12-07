@@ -64,12 +64,7 @@ namespace backend.Services
             {
                 await _caloriesService.CreateCaloriesAsync(createdFood.Id, calories.Value);
             }
-            else
-            {
-                //Todo: calculate calories from nutrients
-            }
-
-            if (protein.HasValue && fat.HasValue && carbohydrate.HasValue)
+            else if (protein.HasValue && fat.HasValue && carbohydrate.HasValue)
             {
                 var proteinValue = protein.Value;
                 var fatValue = fat.Value;
@@ -82,7 +77,7 @@ namespace backend.Services
                     carbohydrateValue
                 );
 
-                if (!calories.HasValue || calories.Value == 0)
+                if (!calories.HasValue || calories.Value <= 0)
                 {
                     var calculatedCalories = (proteinValue * 4) + (fatValue * 9) + (carbohydrateValue * 4);
                     if (calculatedCalories > 0)
@@ -90,8 +85,12 @@ namespace backend.Services
                         await _caloriesService.CreateCaloriesAsync(createdFood.Id, calculatedCalories);
                     }
                 }
+            } else
+            {
+                throw new ValidationException("Either calories or all macronutrients (protein, fat, carbohydrate) must be provided and greater than zero");
             }
-            return await GetFoodByIdAsync(createdFood.Id, createdFood.OwnerId ?? 0);
+
+                return await GetFoodByIdAsync(createdFood.Id, createdFood.OwnerId ?? 0);
         }
 
         public async Task<Food> UpdateFoodAsync(
@@ -126,7 +125,7 @@ namespace backend.Services
             if (updatedFood == null)
                 throw new NotFoundException("Failed to update food");
 
-            if (calories.HasValue)
+            if (calories.HasValue && calories.Value > 0)
             {
                 var existingCalories = await _caloriesService.GetCaloriesByFoodAsync(foodId);
                 if (existingCalories != null)
@@ -139,7 +138,7 @@ namespace backend.Services
                 }
             }
 
-            if (protein.HasValue && fat.HasValue && carbohydrate.HasValue)
+            if (protein.HasValue && protein.Value > 0 && fat.HasValue && fat.Value > 0 && carbohydrate.HasValue && carbohydrate.Value > 0)
             {
                 var proteinValue = protein.Value;
                 var fatValue = fat.Value;
