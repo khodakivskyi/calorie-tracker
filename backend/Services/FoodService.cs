@@ -60,11 +60,16 @@ namespace backend.Services
             if (createdFood == null)
                 throw new InvalidOperationException("Failed to create food");
 
+            bool isCorrectFood = false;
+            decimal? finalCalories = null;
+
             if (calories.HasValue && calories.Value > 0)
             {
-                await _caloriesService.CreateCaloriesAsync(createdFood.Id, calories.Value);
+                finalCalories = calories.Value;
+                isCorrectFood = true;
             }
-            else if (protein.HasValue && fat.HasValue && carbohydrate.HasValue)
+
+            if (protein.HasValue && fat.HasValue && carbohydrate.HasValue)
             {
                 var proteinValue = protein.Value;
                 var fatValue = fat.Value;
@@ -77,20 +82,26 @@ namespace backend.Services
                     carbohydrateValue
                 );
 
-                if (!calories.HasValue || calories.Value <= 0)
+                var calculatedCalories = (proteinValue * 4) + (fatValue * 9) + (carbohydrateValue * 4);
+
+                if (calculatedCalories > 0 && finalCalories is null)
                 {
-                    var calculatedCalories = (proteinValue * 4) + (fatValue * 9) + (carbohydrateValue * 4);
-                    if (calculatedCalories > 0)
-                    {
-                        await _caloriesService.CreateCaloriesAsync(createdFood.Id, calculatedCalories);
-                    }
+                    finalCalories = calculatedCalories;
                 }
-            } else
+                isCorrectFood = true;
+            }
+
+            if(!isCorrectFood)
             {
                 throw new ValidationException("Either calories or all macronutrients (protein, fat, carbohydrate) must be provided and greater than zero");
             }
 
-                return await GetFoodByIdAsync(createdFood.Id, createdFood.OwnerId ?? 0);
+            if (finalCalories is > 0)
+            {
+                await _caloriesService.CreateCaloriesAsync(createdFood.Id, finalCalories.Value);
+            }
+
+            return await GetFoodByIdAsync(createdFood.Id, createdFood.OwnerId ?? 0);
         }
 
         public async Task<Food> UpdateFoodAsync(
