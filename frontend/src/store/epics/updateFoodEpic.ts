@@ -13,7 +13,7 @@ import type { RootState } from '../slices/rootReducer';
 const updateFoodMutation = `
   mutation UpdateFood(
     $foodId: Int!
-    $userId: Int!
+    $ownerId: Int!
     $name: String
     $imageId: Int
     $calories: Decimal
@@ -23,7 +23,7 @@ const updateFoodMutation = `
   ) {
     updateFood(
       foodId: $foodId
-      userId: $userId
+      ownerId: $ownerId
       name: $name
       imageId: $imageId
       calories: $calories

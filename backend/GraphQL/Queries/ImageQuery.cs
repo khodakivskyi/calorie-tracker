@@ -18,11 +18,11 @@ namespace backend.GraphQL.Queries
                 });
 
             Field<ListGraphType<ImageType>>("getImagesByUser")
-                .Argument<NonNullGraphType<IntGraphType>>("userId")
+                .Argument<NonNullGraphType<IntGraphType>>("ownerId")
                 .ResolveAsync(async context =>
                 {
-                    var userId = context.GetArgument<int>("userId");
-                    return await imageService.GetImagesByUserAsync(userId);
+                    var ownerId = context.GetArgument<int>("ownerId");
+                    return await imageService.GetImagesByUserAsync(ownerId);
                 });
         }
     }

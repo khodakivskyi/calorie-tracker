@@ -11,8 +11,8 @@ import type { RootEpicAction } from './rootEpic';
 import type { RootState } from '../slices/rootReducer';
 
 const deleteDishMutation = `
-  mutation DeleteDish($dishId: Int!, $userId: Int!) {
-    deleteDish(dishId: $dishId, userId: $userId)
+  mutation DeleteDish($dishId: Int!, $ownerId: Int!) {
+    deleteDish(dishId: $dishId, ownerId: $ownerId)
   }
 `;
 

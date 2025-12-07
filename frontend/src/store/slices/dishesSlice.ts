@@ -38,7 +38,7 @@ const dishesSlice = createSlice({
             state.error = action.payload;
             state.success = null;
         },
-        getDishesByUserRequest(state, _action: PayloadAction<{ userId: number }>) {
+        getDishesByUserRequest(state, _action: PayloadAction<{ ownerId: number }>) {
             state.loading = true;
             state.error = null;
             state.success = null;
@@ -59,7 +59,7 @@ const dishesSlice = createSlice({
             state,
             _action: PayloadAction<{
                 dishId: number;
-                userId: number;
+                ownerId: number;
                 weight?: number;
                 name?: string;
             }>
@@ -84,7 +84,7 @@ const dishesSlice = createSlice({
         },
         deleteDishRequest(
             state,
-            _action: PayloadAction<{ dishId: number; userId: number }>
+            _action: PayloadAction<{ dishId: number; ownerId: number }>
         ) {
             state.loading = true;
             state.error = null;

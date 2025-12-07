@@ -11,8 +11,8 @@ import type { RootEpicAction } from './rootEpic';
 import type { RootState } from '../slices/rootReducer';
 
 const deleteFoodMutation = `
-  mutation DeleteFood($foodId: Int!, $userId: Int!) {
-    deleteFood(foodId: $foodId, userId: $userId)
+  mutation DeleteFood($foodId: Int!, $ownerId: Int!) {
+    deleteFood(foodId: $foodId, ownerId: $ownerId)
   }
 `;
 

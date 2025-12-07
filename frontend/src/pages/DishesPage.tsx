@@ -10,16 +10,11 @@ import type {Food} from "../store/types/foodTypes.ts";
 import {useAppDispatch, useAppSelector} from "../store";
 import {createDishRequest, getDishesByUserRequest} from "../store/slices/dishesSlice.ts";
 
-const readyFoods: Food[] = [
-    { id: 101, name: "Chicken Breast", ownerId: null, calories: 165, protein: 31, fat: 3.6, carbohydrate: 0, createdAt: new Date(), updatedAt: new Date() },
-    { id: 102, name: "Brown Rice", ownerId: null, calories: 112, protein: 2.6, fat: 0.9, carbohydrate: 23, createdAt: new Date(), updatedAt: new Date() },
-    { id: 103, name: "Broccoli", ownerId: null, calories: 34, protein: 2.8, fat: 0.4, carbohydrate: 7, createdAt: new Date(), updatedAt: new Date() },
-];
-
 export default function DishesPage() {
     const dispatch = useAppDispatch();
 
     const { user } = useAppSelector(state => state.auth);
+    const { foods } = useAppSelector(state => state.food)
     const { dishes, loading, error } = useAppSelector(state => state.dish);
 
     const [isCreateIngredientOpen, setIsCreateIngredientOpen] = useState(false);
@@ -30,7 +25,7 @@ export default function DishesPage() {
 
     useEffect(() => {
         if (user) {
-            dispatch(getDishesByUserRequest({ userId: user.id }));
+            dispatch(getDishesByUserRequest({ ownerId: user.id }));
         }
     }, [dispatch, user]);
 
@@ -128,7 +123,7 @@ export default function DishesPage() {
                     setIsSelectIngredientOpen(false);
                     setIsCreateIngredientOpen(true);
                 }}
-                readyFoods={readyFoods}
+                foods={foods}
             />
 
             <CreateIngredientModal

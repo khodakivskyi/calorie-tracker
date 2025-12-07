@@ -5,7 +5,7 @@ interface SelectIngredientModalProps {
     onClose: () => void;
     onSelectIngredient: (food: Food, quantity?: number) => void;
     onCreateIngredient: () => void;
-    readyFoods: Food[];
+    foods: Food[];
 }
 
 export default function SelectIngredientModal({
@@ -13,7 +13,7 @@ export default function SelectIngredientModal({
     onClose,
     onSelectIngredient,
     onCreateIngredient,
-    readyFoods }: SelectIngredientModalProps) {
+    foods }: SelectIngredientModalProps) {
     if (!isOpen) return null;
 
     return (
@@ -24,7 +24,7 @@ export default function SelectIngredientModal({
                 <div className="mb-4">
                     <h4 className="font-semibold mb-2">Ready ingredients:</h4>
                     <div className="space-y-2 max-h-48 overflow-y-auto">
-                        {readyFoods.map((food) => (
+                        {foods.map((food) => (
                             <button
                                 key={food.id}
                                 onClick={() => onSelectIngredient(food, 1)}

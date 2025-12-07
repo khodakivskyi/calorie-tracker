@@ -18,11 +18,11 @@ namespace backend.GraphQL.Queries
                 });
 
             Field<ListGraphType<MealType>>("getMealsByUser")
-                .Argument<NonNullGraphType<IntGraphType>>("userId")
+                .Argument<NonNullGraphType<IntGraphType>>("ownerId")
                 .ResolveAsync(async context =>
                 {
-                    var userId = context.GetArgument<int>("userId");
-                    return await mealService.GetMealsByUserAsync(userId);
+                    var ownerId = context.GetArgument<int>("ownerId");
+                    return await mealService.GetMealsByUserAsync(ownerId);
                 });
 
             Field<ListGraphType<MealDishType>>("getDishesByMeal")
@@ -35,36 +35,36 @@ namespace backend.GraphQL.Queries
                 });
 
             Field<DecimalGraphType>("getDailyCalories")
-                .Argument<NonNullGraphType<IntGraphType>>("userId")
+                .Argument<NonNullGraphType<IntGraphType>>("ownerId")
                 .Argument<NonNullGraphType<DateGraphType>>("date")
                 .ResolveAsync(async context =>
                 {
-                    var userId = context.GetArgument<int>("userId");
+                    var ownerId = context.GetArgument<int>("ownerId");
                     var date = context.GetArgument<DateTime>("date");
-                    return await mealService.GetDailyCaloriesAsync(userId, date);
+                    return await mealService.GetDailyCaloriesAsync(ownerId, date);
                 });
 
             Field<ListGraphType<CaloriesDataType>>("getWeeklyCalories")
-                .Argument<NonNullGraphType<IntGraphType>>("userId")
+                .Argument<NonNullGraphType<IntGraphType>>("ownerId")
                 .Argument<NonNullGraphType<DateGraphType>>("startDate")
                 .ResolveAsync(async context =>
                 {
-                    var userId = context.GetArgument<int>("userId");
+                    var ownerId = context.GetArgument<int>("ownerId");
                     var startDate = context.GetArgument<DateTime>("startDate");
-                    var weekly = await mealService.GetWeeklyCaloriesAsync(userId, startDate);
+                    var weekly = await mealService.GetWeeklyCaloriesAsync(ownerId, startDate);
                     return weekly.Select(kv => new { date = kv.Key, totalCalories = kv.Value });
                 });
 
             Field<ListGraphType<CaloriesDataType>>("getMonthlyCalories")
-                .Argument<NonNullGraphType<IntGraphType>>("userId")
+                .Argument<NonNullGraphType<IntGraphType>>("ownerId")
                 .Argument<NonNullGraphType<IntGraphType>>("year")
                 .Argument<NonNullGraphType<IntGraphType>>("month")
                 .ResolveAsync(async context =>
                 {
-                    var userId = context.GetArgument<int>("userId");
+                    var ownerId = context.GetArgument<int>("ownerId");
                     var year = context.GetArgument<int>("year");
                     var month = context.GetArgument<int>("month");
-                    var monthly = await mealService.GetMonthlyCaloriesAsync(userId, year, month);
+                    var monthly = await mealService.GetMonthlyCaloriesAsync(ownerId, year, month);
                     return monthly.Select(kv => new { date = kv.Key, totalCalories = kv.Value });
                 });
         }

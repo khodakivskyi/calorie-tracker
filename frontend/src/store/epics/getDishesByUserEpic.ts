@@ -11,8 +11,8 @@ import type { RootEpicAction } from "./rootEpic";
 import type { RootState } from "../slices/rootReducer";
 
 const getDishesByUserQuery = `
-  query GetDishesByUser($userId: Int!) {
-    getDishesByUser(userId: $userId) {
+  query GetDishesByUser($ownerId: Int!) {
+    getDishesByUser(ownerId: $ownerId) {
       id
       name
       ownerId
@@ -51,7 +51,7 @@ export const getDishesByUserEpic: Epic<RootEpicAction, RootEpicAction, RootState
         mergeMap((action: ReturnType<typeof getDishesByUserRequest>) =>
             from(
                 graphqlRequest<GetDishesByUserResponse>(getDishesByUserQuery, {
-                    userId: action.payload.userId
+                    ownerId: action.payload.ownerId
                 })
             ).pipe(
                 map((res) =>

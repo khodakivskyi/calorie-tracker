@@ -13,13 +13,13 @@ import type { RootState } from '../slices/rootReducer';
 const updateDishMutation = `
   mutation UpdateDish(
     $dishId: Int!
-    $userId: Int!
+    $ownerId: Int!
     $weight: Decimal
     $name: String
   ) {
     updateDish(
       dishId: $dishId
-      userId: $userId
+      ownerId: $ownerId
       weight: $weight
       name: $name
     ) {

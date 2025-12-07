@@ -22,7 +22,7 @@ const foodSlice = createSlice({
         createFoodRequest(
             state,
             _action: PayloadAction<{
-                userId: number;
+                ownerId?: number | null;
                 name: string;
                 imageId?: number | null;
                 calories?: number | null;
@@ -47,7 +47,7 @@ const foodSlice = createSlice({
             state.error = action.payload;
             state.success = null;
         },
-        getFoodsByUserRequest(state, _action: PayloadAction<{ userId: number }>) {
+        getFoodsByUserRequest(state, _action: PayloadAction<{ ownerId: number }>) {
             state.loading = true;
             state.error = null;
             state.success = null;
@@ -69,7 +69,7 @@ const foodSlice = createSlice({
             state,
             _action: PayloadAction<{
                 foodId: number;
-                userId: number;
+                ownerId: number;
                 name?: string;
                 imageId?: number;
                 calories?: number;
@@ -98,7 +98,7 @@ const foodSlice = createSlice({
         },
         deleteFoodRequest(
             state,
-            _action: PayloadAction<{ foodId: number; userId: number }>
+            _action: PayloadAction<{ foodId: number; ownerId: number }>
         ) {
             state.loading = true;
             state.error = null;

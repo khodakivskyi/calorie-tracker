@@ -12,12 +12,12 @@ import type { RootState } from '../slices/rootReducer';
 
 const createDishMutation = `
   mutation CreateDish(
-    $userId: Int
+    $ownerId: Int
     $weight: Decimal!
     $name: String!
   ) {
     createDish(
-      userId: $userId
+      ownerId: $ownerId
       weight: $weight
       name: $name
     ) {

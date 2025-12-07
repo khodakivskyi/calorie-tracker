@@ -7,8 +7,8 @@ import type {RootEpicAction} from './rootEpic.ts';
 import type {RootState} from "../slices/rootReducer.ts";
 
 const createMealMutation = `
-    mutation CreateMeal($userId: Int!, $typeId: Int!, $name: String!) {
-        createMeal(userId: $userId, typeId: $typeId, name: $name) {
+    mutation CreateMeal($ownerId: Int!, $typeId: Int!, $name: String!) {
+        createMeal(ownerId: $ownerId, typeId: $typeId, name: $name) {
             id
             ownerId
             name

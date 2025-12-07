@@ -24,7 +24,7 @@ export default function FoodsPage() {
 
     useEffect(() => {
         if (user) {
-            dispatch(getFoodsByUserRequest({ userId: user.id }));
+            dispatch(getFoodsByUserRequest({ ownerId: user.id }));
         }
     }, [dispatch, user]);
 
@@ -43,7 +43,7 @@ export default function FoodsPage() {
         if (foodToEdit) {
             dispatch(updateFoodRequest({
                 foodId: food.id,
-                userId: user.id,
+                ownerId: user.id,
                 name: food.name,
                 calories: food.calories ?? undefined,
                 protein: food.protein ?? undefined,
@@ -54,7 +54,7 @@ export default function FoodsPage() {
         } else {
             dispatch(createFoodRequest({
                 name: food.name,
-                userId: user.id,
+                ownerId: user.id,
                 calories: food.calories ?? undefined,
                 protein: food.protein ?? undefined,
                 fat: food.fat ?? undefined,
@@ -78,7 +78,7 @@ export default function FoodsPage() {
         if (!user) return;
         dispatch(deleteFoodRequest({
             foodId: id,
-            userId: user.id,
+            ownerId: user.id,
         }));
     };
 
