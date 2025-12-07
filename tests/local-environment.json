@@ -13,7 +13,7 @@
       "type": "default"
     },
     {
-      "key": "userId",
+      "key": "ownerId",
       "value": "1",
       "type": "default"
     },

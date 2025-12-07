@@ -1,14 +1,14 @@
 import {type Epic, ofType} from 'redux-observable';
 import {from, of} from 'rxjs';
 import {mergeMap, map, catchError} from 'rxjs/operators';
-import {createMealRequest, createMealSuccess, createMealFailure} from '../slices/mealSlice';
-import {graphqlRequest} from '../../config/graphqlClient';
-import type {RootEpicAction} from './rootEpic.ts';
-import type {RootState} from "../slices/rootReducer.ts";
+import {createMealRequest, createMealSuccess, createMealFailure} from '../../slices/mealSlice.ts';
+import {graphqlRequest} from '../../../config/graphqlClient.ts';
+import type {RootEpicAction} from '../rootEpic.ts';
+import type {RootState} from "../../slices/rootReducer.ts";
 
 const createMealMutation = `
-    mutation CreateMeal($userId: Int!, $typeId: Int!, $name: String!) {
-        createMeal(userId: $userId, typeId: $typeId, name: $name) {
+    mutation CreateMeal($ownerId: Int!, $typeId: Int!, $name: String!) {
+        createMeal(ownerId: $ownerId, typeId: $typeId, name: $name) {
             id
             ownerId
             name
@@ -37,11 +37,11 @@ export const addMealEpic: Epic<RootEpicAction, RootEpicAction, RootState> = acti
             from(graphqlRequest<CreateMealResponse>(createMealMutation, action.payload)).pipe(
                 map(res => createMealSuccess({
                     ...res.createMeal,
-                    createdAt: new Date(res.createMeal.createdAt),
-                    updatedAt: new Date(res.createMeal.updatedAt)
+                    createdAt: new Date(res.createMeal.createdAt).toISOString(),
+                    updatedAt: new Date(res.createMeal.updatedAt).toISOString(),
                 })),
                 catchError(err =>
-                    of(createMealFailure(err instanceof Error ? err.message : 'Authentication failed'))
+                    of(createMealFailure(err instanceof Error ? err.message : 'Meal creation failed'))
                 )
             )
         )

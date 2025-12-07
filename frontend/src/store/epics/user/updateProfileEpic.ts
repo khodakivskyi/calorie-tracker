@@ -1,11 +1,11 @@
 import {type Epic, ofType} from 'redux-observable';
 import {from, of} from 'rxjs';
 import {mergeMap, catchError} from 'rxjs/operators';
-import {updateProfileRequest, updateProfileSuccess, updateProfileFailure} from '../slices/profileSlice.ts';
-import {authenticateUserSuccess} from '../slices/authSlice';
-import {graphqlRequest} from '../../config/graphqlClient';
-import type {RootState} from "../slices/rootReducer.ts";
-import type {RootEpicAction} from './rootEpic.ts';
+import {updateProfileRequest, updateProfileSuccess, updateProfileFailure} from '../../slices/profileSlice.ts';
+import {authenticateUserSuccess} from '../../slices/authSlice.ts';
+import {graphqlRequest} from '../../../config/graphqlClient.ts';
+import type {RootState} from "../../slices/rootReducer.ts";
+import type {RootEpicAction} from '../rootEpic.ts';
 
 const updateUserMutation = `
     mutation UpdateUser($userId: Int!, $name: String, $password: String) {
