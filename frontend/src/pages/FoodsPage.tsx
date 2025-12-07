@@ -28,6 +28,13 @@ export default function FoodsPage() {
         }
     }, [dispatch, user]);
 
+    useEffect(() => {
+        if (success) {
+            setIsCreateIngredientOpen(false);
+            setFoodToEdit(undefined);
+        }
+    }, [success]);
+
     const filteredFoods = searchQuery.trim()
         ? foods.filter(food => food.name.toLowerCase().includes(searchQuery.toLowerCase()))
         : foods;
@@ -63,13 +70,6 @@ export default function FoodsPage() {
             }));
 
         }
-
-        useEffect(() => {
-            if (success) {
-                setIsCreateIngredientOpen(false);
-                setFoodToEdit(undefined);
-            }
-        }, [success]);
     };
 
 
