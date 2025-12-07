@@ -2,9 +2,9 @@ import {useEffect, useState} from 'react';
 import PageHeader from "../components/PageHeader.tsx";
 import SearchBar from "../components/SearchBar.tsx";
 import RecipeItemCard from "../components/RecipeItemCard.tsx";
-import CreateDishModal from "../components/CreateDishModal.tsx";
-import SelectIngredientModal from "../components/SelectIngredientModal.tsx";
-import CreateIngredientModal from "../components/CreateIngredientModal.tsx";
+import CreateDishModal from "../components/modals/CreateDishModal.tsx";
+import SelectIngredientModal from "../components/modals/SelectIngredientModal.tsx";
+import CreateIngredientModal from "../components/modals/CreateIngredientModal.tsx";
 import type {DishFood, Dish} from "../store/types/dishTypes.ts";
 import type {Food} from "../store/types/foodTypes.ts";
 import {useAppDispatch, useAppSelector} from "../store";
@@ -90,7 +90,7 @@ export default function DishesPage() {
                                 key={dish.id}
                                 id={dish.id}
                                 name={dish.name}
-                                calories={dish.calories}
+                                calories={dish.calories ?? null}
                                 onClick={() => handleItemClick(dish)}
                             />
                         ))
@@ -123,7 +123,7 @@ export default function DishesPage() {
                     setIsSelectIngredientOpen(false);
                     setIsCreateIngredientOpen(true);
                 }}
-                foods={foods}
+                readyFoods={foods}
             />
 
             <CreateIngredientModal

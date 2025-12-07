@@ -5,10 +5,10 @@ import {
     deleteFoodRequest,
     deleteFoodSuccess,
     deleteFoodFailure
-} from '../slices/foodsSlice';
-import { graphqlRequest } from '../../config/graphqlClient';
-import type { RootEpicAction } from './rootEpic';
-import type { RootState } from '../slices/rootReducer';
+} from '../../slices/foodsSlice.ts';
+import { graphqlRequest } from '../../../config/graphqlClient.ts';
+import type { RootEpicAction } from '../rootEpic.ts';
+import type { RootState } from '../../slices/rootReducer.ts';
 
 const deleteFoodMutation = `
   mutation DeleteFood($foodId: Int!, $ownerId: Int!) {

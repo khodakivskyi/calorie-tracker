@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import PageHeader from "../components/PageHeader.tsx";
 import SearchBar from "../components/SearchBar.tsx";
 import RecipeItemCard from "../components/RecipeItemCard.tsx";
-import CreateIngredientModal from "../components/CreateIngredientModal.tsx";
+import CreateIngredientModal from "../components/modals/CreateIngredientModal.tsx";
 import type { Food } from "../store/types/foodTypes.ts";
 import { useAppDispatch, useAppSelector } from '../store';
 import {

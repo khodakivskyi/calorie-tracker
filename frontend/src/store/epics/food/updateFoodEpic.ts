@@ -5,10 +5,10 @@ import {
     updateFoodRequest,
     updateFoodSuccess,
     updateFoodFailure
-} from '../slices/foodsSlice';
-import { graphqlRequest } from '../../config/graphqlClient';
-import type { RootEpicAction } from './rootEpic';
-import type { RootState } from '../slices/rootReducer';
+} from '../../slices/foodsSlice.ts';
+import { graphqlRequest } from '../../../config/graphqlClient.ts';
+import type { RootEpicAction } from '../rootEpic.ts';
+import type { RootState } from '../../slices/rootReducer.ts';
 
 const updateFoodMutation = `
   mutation UpdateFood(
@@ -71,8 +71,8 @@ export const updateFoodEpic: Epic<RootEpicAction, RootEpicAction, RootState> = (
                 map((res) =>
                     updateFoodSuccess({
                         ...res.updateFood,
-                        createdAt: new Date(res.updateFood.createdAt),
-                        updatedAt: new Date(res.updateFood.updatedAt),
+                        createdAt: new Date(res.updateFood.createdAt).toISOString(),
+                        updatedAt: new Date(res.updateFood.updatedAt).toISOString(),
                     })
                 ),
 

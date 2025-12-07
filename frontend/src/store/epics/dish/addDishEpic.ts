@@ -5,10 +5,10 @@ import {
     createDishRequest,
     createDishSuccess,
     createDishFailure,
-} from '../slices/dishesSlice';
-import { graphqlRequest } from '../../config/graphqlClient';
-import type { RootEpicAction } from './rootEpic';
-import type { RootState } from '../slices/rootReducer';
+} from '../../slices/dishesSlice.ts';
+import { graphqlRequest } from '../../../config/graphqlClient.ts';
+import type { RootEpicAction } from '../rootEpic.ts';
+import type { RootState } from '../../slices/rootReducer.ts';
 
 const createDishMutation = `
   mutation CreateDish(
@@ -72,8 +72,8 @@ export const createDishEpic: Epic<
                 map((res) =>
                     createDishSuccess({
                         ...res.createDish,
-                        createdAt: new Date(res.createDish.createdAt),
-                        updatedAt: new Date(res.createDish.updatedAt),
+                        createdAt: new Date(res.createDish.createdAt).toISOString(),
+                        updatedAt: new Date(res.createDish.updatedAt).toISOString(),
                     })
                 ),
 

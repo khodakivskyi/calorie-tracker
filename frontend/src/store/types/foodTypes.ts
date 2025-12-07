@@ -20,8 +20,8 @@ export type Food = {
     fat?: number | null;
     carbohydrate?: number | null;
     imageId?: number | null;
-    createdAt: Date;
-    updatedAt: Date;
+    createdAt: string;
+    updatedAt: string;
 };
 
 export type FoodAction =

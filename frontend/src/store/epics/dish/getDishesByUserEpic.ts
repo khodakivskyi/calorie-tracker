@@ -5,10 +5,10 @@ import {
     getDishesByUserRequest,
     getDishesByUserSuccess,
     getDishesByUserFailure
-} from "../slices/dishesSlice";
-import { graphqlRequest } from "../../config/graphqlClient";
-import type { RootEpicAction } from "./rootEpic";
-import type { RootState } from "../slices/rootReducer";
+} from "../../slices/dishesSlice.ts";
+import { graphqlRequest } from "../../../config/graphqlClient.ts";
+import type { RootEpicAction } from "../rootEpic.ts";
+import type { RootState } from "../../slices/rootReducer.ts";
 
 const getDishesByUserQuery = `
   query GetDishesByUser($ownerId: Int!) {
@@ -58,8 +58,8 @@ export const getDishesByUserEpic: Epic<RootEpicAction, RootEpicAction, RootState
                     getDishesByUserSuccess(
                         res.getDishesByUser.map((dish) => ({
                             ...dish,
-                            createdAt: new Date(dish.createdAt),
-                            updatedAt: new Date(dish.updatedAt),
+                            createdAt: new Date(dish.createdAt).toISOString(),
+                            updatedAt: new Date(dish.updatedAt).toISOString(),
                         }))
                     )
                 ),

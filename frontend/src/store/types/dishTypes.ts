@@ -17,13 +17,13 @@ export type Dish = {
     name: string;
     ownerId: number | null;
     weight: number;
-    calories: number | null;//TODO: not null
+    calories?: number | null;
     protein?: number | null;
     fat?: number | null;
     carbohydrate?: number | null;
     imageId?: number | null;
-    createdAt: Date;
-    updatedAt: Date;
+    createdAt: string;
+    updatedAt: string;
 };
 
 //probably need improve

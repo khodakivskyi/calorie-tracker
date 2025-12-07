@@ -5,10 +5,10 @@ import {
     getFoodsByUserRequest,
     getFoodsByUserSuccess,
     getFoodsByUserFailure
-} from '../slices/foodsSlice';
-import { graphqlRequest } from '../../config/graphqlClient';
-import type { RootEpicAction } from './rootEpic';
-import type { RootState } from '../slices/rootReducer';
+} from '../../slices/foodsSlice.ts';
+import { graphqlRequest } from '../../../config/graphqlClient.ts';
+import type { RootEpicAction } from '../rootEpic.ts';
+import type { RootState } from '../../slices/rootReducer.ts';
 
 const getFoodsByUserQuery = `
   query GetFoodsByUser($ownerId: Int!) {
@@ -58,8 +58,8 @@ export const getFoodsByUserEpic: Epic<RootEpicAction, RootEpicAction, RootState>
                     getFoodsByUserSuccess(
                         res.getFoodsByUser.map((f) => ({
                             ...f,
-                            createdAt: new Date(f.createdAt),
-                            updatedAt: new Date(f.updatedAt),
+                            createdAt: new Date(f.createdAt).toISOString(),
+                            updatedAt: new Date(f.updatedAt).toISOString(),
                         }))
                     )
                 ),

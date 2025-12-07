@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import type { Food } from "../store/types/foodTypes.ts";
+import type { Food } from "../../store/types/foodTypes.ts";
 
 interface CreateIngredientModalProps {
     isOpen: boolean;
@@ -47,8 +47,8 @@ export default function CreateIngredientModal({
             protein: ingredient.protein === "" ? 0 : parseFloat(ingredient.protein),
             fat: ingredient.fat === "" ? 0 : parseFloat(ingredient.fat),
             carbohydrate: ingredient.carbohydrate === "" ? 0 : parseFloat(ingredient.carbohydrate),
-            createdAt: foodToEdit?.createdAt ?? new Date(),
-            updatedAt: new Date(),
+            createdAt: foodToEdit?.createdAt ?? new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
         };
 
         onCreateIngredient(createdFood);

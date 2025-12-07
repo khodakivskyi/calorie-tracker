@@ -1,11 +1,11 @@
-import type {Food} from "../store/types/foodTypes.ts";
+import type {Food} from "../../store/types/foodTypes.ts";
 
 interface SelectIngredientModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSelectIngredient: (food: Food, quantity?: number) => void;
     onCreateIngredient: () => void;
-    foods: Food[];
+    readyFoods : Food[];
 }
 
 export default function SelectIngredientModal({
@@ -13,7 +13,7 @@ export default function SelectIngredientModal({
     onClose,
     onSelectIngredient,
     onCreateIngredient,
-    foods }: SelectIngredientModalProps) {
+    readyFoods }: SelectIngredientModalProps) {
     if (!isOpen) return null;
 
     return (
@@ -24,7 +24,7 @@ export default function SelectIngredientModal({
                 <div className="mb-4">
                     <h4 className="font-semibold mb-2">Ready ingredients:</h4>
                     <div className="space-y-2 max-h-48 overflow-y-auto">
-                        {foods.map((food) => (
+                        {readyFoods.map((food) => (
                             <button
                                 key={food.id}
                                 onClick={() => onSelectIngredient(food, 1)}
