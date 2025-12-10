@@ -11,8 +11,8 @@ import type { RootState } from "../slices/rootReducer";
 import type { RootEpicAction } from './rootEpic';
 
 const GET_MONTHLY_CALORIES = `
-    query GetMonthlyCaloriesForHeatmap($userId: Int!, $year: Int!, $month: Int!) {
-        getMonthlyCalories(userId: $userId, year: $year, month: $month) {
+    query GetMonthlyCaloriesForHeatmap($ownerId: Int!, $year: Int!, $month: Int!) {
+        getMonthlyCalories(ownerId: $ownerId, year: $year, month: $month) {
             date
             totalCalories
         }
@@ -28,7 +28,7 @@ export const activityHeatmapEpic: Epic<RootEpicAction, RootEpicAction, RootState
 
             const today = new Date();
             const variables = {
-                userId,
+                ownerId: userId,
                 year: today.getFullYear(),
                 month: today.getMonth() + 1
             };
@@ -38,12 +38,11 @@ export const activityHeatmapEpic: Epic<RootEpicAction, RootEpicAction, RootState
                     const rawData = response.getMonthlyCalories || [];
 
                     const formattedLogs = rawData.map((item: any) => {
-                        const dateObj = new Date(item.date);
-                        const dateString = dateObj.toISOString().split('T')[0];
+                        const dateString = item.date;
 
                         return {
                             date: dateString,
-                            calories: item.totalCalories
+                            calories: Math.round(item.totalCalories)
                         };
                     });
 

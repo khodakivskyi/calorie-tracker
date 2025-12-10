@@ -1,8 +1,11 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
+export type ChartPeriod = 'Week' | 'Month';
+
 export interface ChartDataPoint {
-    name: string;
-    calories: number;
+    name: string; 
+    calories: number; 
+    fullDate: string; 
 }
 
 interface CaloriesChartState {
@@ -21,7 +24,7 @@ const caloriesChartSlice = createSlice({
     name: 'caloriesChart',
     initialState,
     reducers: {
-        fetchChartDataRequest: (state, action: PayloadAction<{ period: 'Week' | 'Month' | 'Year' }>) => {
+        fetchChartDataRequest: (state, action: PayloadAction<{ period: ChartPeriod }>) => {
             state.isLoading = true;
             state.error = null;
         },
