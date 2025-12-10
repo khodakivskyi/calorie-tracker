@@ -80,7 +80,7 @@ VALUES
     (NULL, 'Паста карбонара', 350.00, '2024-01-18 13:00:00', '2024-01-18 13:00:00', NULL, 1);
 GO
 
-INSERT INTO dishes_foods (dish_id, food_id, quantity)
+INSERT INTO dishes_foods (dish_id, food_id, weight)
 VALUES
     (1, 3, 150.00),
     (1, 4, 100.00),
@@ -117,13 +117,13 @@ SET IDENTITY_INSERT meals OFF;
 DBCC CHECKIDENT ('meals', RESEED, 4);
 GO
 
-INSERT INTO meals_dishes (meal_id, dish_id, quantity)
+INSERT INTO meals_dishes (meal_id, dish_id, weight)
 VALUES
-    (1, 4, 1.00),
-    (2, 1, 1.00),
-    (2, 2, 1.00),
-    (3, 3, 1.00),
-    (4, 4, 1.00);
+    (1, 4, 200.00),
+    (2, 1, 337.00),
+    (2, 2, 100.00),
+    (3, 3, 50.00),
+    (4, 4, 150.00);
 GO
 
 INSERT INTO verification_tokens (user_id, token, expires_at, created_at)

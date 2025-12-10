@@ -1,5 +1,5 @@
 import type {Dish, DishFood} from "../../store/types/dishTypes.ts";
-import {useState} from "react";
+import {useState, useMemo} from "react";
 
 interface CreateDishModalProps {
     isOpen: boolean;
@@ -8,6 +8,7 @@ interface CreateDishModalProps {
     onAddIngredient: () => void;
     ingredients: DishFood[];
     onRemoveIngredient: (index: number) => void;
+    onUpdateIngredientWeight?: (index: number, weight: number) => void;
 }
 
 export default function CreateDishModal({
@@ -16,30 +17,34 @@ export default function CreateDishModal({
     onCreateDish,
     onAddIngredient,
     ingredients,
-    onRemoveIngredient}: CreateDishModalProps) {
+    onRemoveIngredient,
+    onUpdateIngredientWeight}: CreateDishModalProps) {
     const [dishName, setDishName] = useState("");
-    const [dishWeight, setDishWeight] = useState<number>(0);
+
+    const calculatedDishWeight = useMemo(() => {
+        return ingredients.reduce((total, ingredient) => {
+            return total + (ingredient.weight || 0);
+        }, 0);
+    }, [ingredients]);
 
     const handleCreate = () => {
-        if (!dishName || dishWeight <= 0) return;
+        if (!dishName || calculatedDishWeight <= 0) return;
         
         const createdDish: Dish = {
             id: Date.now(),
             name: dishName,
             ownerId: 1,
-            weight: dishWeight,
+            weight: calculatedDishWeight,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
         };
         
         onCreateDish(createdDish);
         setDishName("");
-        setDishWeight(0);
     };
 
     const handleClose = () => {
         setDishName("");
-        setDishWeight(0);
         onClose();
     };
 
@@ -63,14 +68,17 @@ export default function CreateDishModal({
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium mb-1">Weight (g)</label>
+                        <label className="block text-sm font-medium mb-1">Total Weight (g)</label>
                         <input
                             type="number"
-                            value={dishWeight || ""}
-                            onChange={(e) => setDishWeight(parseFloat(e.target.value) || 0)}
-                            className="w-full border rounded px-3 py-2"
-                            placeholder="Weight in grams"
+                            value={calculatedDishWeight || ""}
+                            disabled={true}
+                            className="w-full border rounded px-3 py-2 bg-gray-100"
+                            placeholder="Calculated automatically"
                         />
+                        <p className="text-xs text-gray-500 mt-1">
+                            Sum of all ingredient weights
+                        </p>
                     </div>
 
                     <div>
@@ -86,11 +94,26 @@ export default function CreateDishModal({
                         {ingredients.length > 0 ? (
                             <ul className="space-y-1">
                                 {ingredients.map((dishFood, idx) => (
-                                    <li key={idx} className="flex justify-between items-center text-sm bg-gray-50 p-2 rounded">
-                                        <span>{dishFood.food?.name || "Ingredient"} - {dishFood.quantity}g</span>
+                                    <li key={idx}
+                                        className="flex justify-between items-center text-sm bg-gray-50 p-2 rounded gap-2">
+                                        <span className="flex-1">{dishFood.food?.name || "Ingredient"}</span>
+                                        <input
+                                            type="number"
+                                            min="1"
+                                            value={dishFood.weight || 0}
+                                            onChange={(e) => {
+                                                const weight = Number(e.target.value) || 0;
+                                                if (onUpdateIngredientWeight) {
+                                                    onUpdateIngredientWeight(idx, weight);
+                                                }
+                                            }}
+                                            className="w-20 border rounded px-2 py-1 text-center"
+                                            placeholder="g"
+                                        />
                                         <button
                                             onClick={() => onRemoveIngredient(idx)}
-                                            className="text-red-500 hover:text-red-700 ml-2"
+                                            className="text-red-500 hover:text-red-700"
+                                            title="Remove ingredient"
                                         >
                                             ×
                                         </button>

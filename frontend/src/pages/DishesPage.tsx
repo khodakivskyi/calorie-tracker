@@ -43,13 +43,13 @@ export default function DishesPage() {
         // TODO: navigate to dish detail page or open edit modal
     };
 
-    const handleSelectIngredient = (food: Food, quantity = 1) => {
-        setNewDishIngredients(prev => [...prev, { foodId: food.id, quantity, food }]);
+    const handleSelectIngredient = (food: Food, weight = 100) => {
+        setNewDishIngredients(prev => [...prev, { foodId: food.id, weight, food }]);
         setIsSelectIngredientOpen(false);
     };
 
     const handleCreateIngredient = (food: Food) => {
-        setNewDishIngredients(prev => [...prev, { foodId: food.id, quantity: 1, food }]);
+        setNewDishIngredients(prev => [...prev, { foodId: food.id, weight: 100, food }]);
         setIsCreateIngredientOpen(false);
     };
 
@@ -114,6 +114,11 @@ export default function DishesPage() {
                 ingredients={newDishIngredients}
                 onRemoveIngredient={(index) =>
                     setNewDishIngredients(prev => prev.filter((_, idx) => idx !== index))
+                }
+                onUpdateIngredientWeight={(index, weight) =>
+                    setNewDishIngredients(prev => prev.map((ing, idx) => 
+                        idx === index ? { ...ing, weight } : ing
+                    ))
                 }
             />
 

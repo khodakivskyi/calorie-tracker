@@ -52,7 +52,7 @@ namespace backend.Repositories
         public async Task<CaloriesModel?> GetCaloriesByDishAsync(int dishId)
         {
             using var connection = new SqlConnection(_connectionString);
-            const string sql = @"SELECT ISNULL(SUM(c.calories * df.quantity / 100.0), 0) as Calories
+            const string sql = @"SELECT ISNULL(SUM(c.calories * df.weight / 100.0), 0) as Calories
                                 FROM dishes_foods df
                                 INNER JOIN foods f ON df.food_id = f.id
                                 INNER JOIN calories c ON c.food_id = f.id
@@ -72,9 +72,10 @@ namespace backend.Repositories
                             WHEN c.calories IS NOT NULL THEN c.calories
                             ELSE (n.protein * 4 + n.fat * 9 + n.carbohydrate * 4)
                         END
-                    ) * (df.quantity / 100.0) * (md.quantity / 100.0)
+                    ) * df.weight * md.weight / d.weight / 100.0
                 ), 0) AS Calories
                 FROM meals_dishes md
+                INNER JOIN dishes d ON md.dish_id = d.id
                 INNER JOIN dishes_foods df ON md.dish_id = df.dish_id
                 INNER JOIN foods f ON df.food_id = f.id
                 LEFT JOIN calories c ON c.food_id = f.id

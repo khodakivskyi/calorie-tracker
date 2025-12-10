@@ -4,15 +4,15 @@ namespace backend.Models
     {
         public int MealId { get; set; }
         public int DishId { get; set; }
-        public decimal Quantity { get; set; }
+        public decimal Weight { get; set; }
 
         public MealDishDto() { }
 
-        public MealDishDto(int mealId, int dishId, decimal quantity)
+        public MealDishDto(int mealId, int dishId, decimal weight)
         {
             MealId = mealId;
             DishId = dishId;
-            Quantity = quantity;
+            Weight = weight;
         }
     }
 }

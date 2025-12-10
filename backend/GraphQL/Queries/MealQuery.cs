@@ -31,7 +31,7 @@ namespace backend.GraphQL.Queries
                 {
                     var mealId = context.GetArgument<int>("mealId");
                     var dishes = await mealService.GetDishesByMealAsync(mealId);
-                    return dishes.Select(d => new { dishId = d.DishId, quantity = d.Quantity });
+                    return dishes.Select(d => new { dishId = d.DishId, weight = d.Weight });
                 });
 
             Field<DecimalGraphType>("getDailyCalories")

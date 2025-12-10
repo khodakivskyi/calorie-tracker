@@ -482,7 +482,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"query\": \"mutation AddFoodToDish($dishId: Int!, $ownerId: Int!, $foodId: Int!, $quantity: Decimal!) {\\n    addFoodToDish(dishId: $dishId, ownerId: $ownerId, foodId: $foodId, quantity: $quantity)\\n  }\",\n  \"variables\": {\n    \"dishId\": {{dishId}},\n    \"ownerId\": {{userId}},\n    \"foodId\": {{foodId}},\n    \"quantity\": 100\n  }\n}"
+              "raw": "{\n  \"query\": \"mutation AddFoodToDish($dishId: Int!, $ownerId: Int!, $foodId: Int!, $weight: Decimal!) {\\n    addFoodToDish(dishId: $dishId, ownerId: $ownerId, foodId: $foodId, weight: $weight)\\n  }\",\n  \"variables\": {\n    \"dishId\": {{dishId}},\n    \"ownerId\": {{userId}},\n    \"foodId\": {{foodId}},\n    \"weight\": 100\n  }\n}"
             },
             "url": {
               "raw": "{{graphqlEndpoint}}",
@@ -739,7 +739,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"query\": \"mutation AddDishToMeal($ownerId: Int!, $mealId: Int!, $dishId: Int!, $quantity: Decimal!) {\\n    addDishToMeal(ownerId: $ownerId, mealId: $mealId, dishId: $dishId, quantity: $quantity)\\n  }\",\n  \"variables\": {\n    \"ownerId\": {{userId}},\n    \"mealId\": {{mealId}},\n    \"dishId\": {{dishId}},\n    \"quantity\": 1\n  }\n}"
+              "raw": "{\n  \"query\": \"mutation AddDishToMeal($ownerId: Int!, $mealId: Int!, $dishId: Int!, $weight: Decimal!) {\\n    addDishToMeal(ownerId: $ownerId, mealId: $mealId, dishId: $dishId, weight: $weight)\\n  }\",\n  \"variables\": {\n    \"ownerId\": {{userId}},\n    \"mealId\": {{mealId}},\n    \"dishId\": {{dishId}},\n    \"weight\": 1\n  }\n}"
             },
             "url": {
               "raw": "{{graphqlEndpoint}}",
