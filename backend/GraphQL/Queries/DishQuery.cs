@@ -19,19 +19,19 @@ namespace backend.GraphQL.Queries
                 });
 
             Field<ListGraphType<DishType>>("getDishesByUser")
-                .Argument<NonNullGraphType<IntGraphType>>("userId")
+                .Argument<NonNullGraphType<IntGraphType>>("ownerId")
                 .ResolveAsync(async context =>
                 {
-                    var userId = context.GetArgument<int>("userId");
-                    return await dishService.GetDishesByUserAsync(userId);
+                    var ownerId = context.GetArgument<int>("ownerId");
+                    return await dishService.GetDishesByUserAsync(ownerId);
                 });
 
             Field<ListGraphType<DishType>>("getPrivateDishesByUser")
-                .Argument<NonNullGraphType<IntGraphType>>("userId")
+                .Argument<NonNullGraphType<IntGraphType>>("ownerId")
                 .ResolveAsync(async context =>
                 {
-                    var userId = context.GetArgument<int>("userId");
-                    return await dishService.GetPrivateDishesByUserAsync(userId);
+                    var ownerId = context.GetArgument<int>("ownerId");
+                    return await dishService.GetPrivateDishesByUserAsync(ownerId);
                 });
 
             Field<ListGraphType<DishType>>("getGlobalDishes")

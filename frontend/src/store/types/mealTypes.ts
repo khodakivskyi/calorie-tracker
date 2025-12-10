@@ -9,8 +9,8 @@ export type Meal = {
     id: number;
     name: string;
     ownerId: number;
-    createdAt: Date;
-    updatedAt: Date;
+    createdAt: string;
+    updatedAt: string;
 };
 
 //probably need improve

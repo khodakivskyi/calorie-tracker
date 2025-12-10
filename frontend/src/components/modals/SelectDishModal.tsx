@@ -1,4 +1,4 @@
-import type {Dish} from "../store/types/dishTypes.ts";
+import type {Dish} from "../../store/types/dishTypes.ts";
 
 interface SelectDishModalProps {
     isOpen: boolean;

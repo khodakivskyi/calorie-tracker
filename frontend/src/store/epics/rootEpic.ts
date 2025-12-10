@@ -3,18 +3,36 @@ import type {ProfileAction} from "../types/profileTypes.ts";
 import type {MealAction} from "../types/mealTypes.ts";
 import type {RootState} from "../slices/rootReducer.ts";
 import {combineEpics} from 'redux-observable';
-import {registerUserEpic} from "./registerUserEpic.ts";
-import {verifyEmailEpic} from "./verifyEmailEpic.ts";
-import {authenticateUserEpic} from "./authenticateUserEpic.ts";
-import {updateProfileEpic} from "./updateProfileEpic.ts";
-import {addMealEpic} from "./addMealEpic.ts";
+import {registerUserEpic} from "./user/registerUserEpic.ts";
+import {verifyEmailEpic} from "./user/verifyEmailEpic.ts";
+import {authenticateUserEpic} from "./user/authenticateUserEpic.ts";
+import {updateProfileEpic} from "./user/updateProfileEpic.ts";
+import {addMealEpic} from "./meal/addMealEpic.ts";
+import type {FoodAction} from "../types/foodTypes.ts";
+import {createFoodEpic} from "./food/addFoodEpic.ts";
+import {createDishEpic} from "./dish/addDishEpic.ts";
+import {getFoodsByUserEpic} from "./food/getFoodsByUserEpic.ts";
+import type {DishAction} from "../types/dishTypes.ts";
+import {getDishesByUserEpic} from "./dish/getDishesByUserEpic.ts";
+import {updateFoodEpic} from "./food/updateFoodEpic.ts";
+import {updateDishEpic} from "./dish/updateDishEpic.ts";
+import {deleteFoodEpic} from "./food/deleteFoodEpic.ts";
+import {deleteDishEpic} from "./dish/deleteDishEpic.ts";
 
-export type RootEpicAction = AuthAction | ProfileAction | MealAction;
+export type RootEpicAction = AuthAction | ProfileAction | MealAction | FoodAction | DishAction;
 
 export const rootEpic = combineEpics<RootEpicAction, RootEpicAction, RootState>(
     registerUserEpic,
     verifyEmailEpic,
     authenticateUserEpic,
     updateProfileEpic,
-    addMealEpic
+    addMealEpic,
+    createFoodEpic,
+    createDishEpic,
+    getFoodsByUserEpic,
+    getDishesByUserEpic,
+    updateFoodEpic,
+    updateDishEpic,
+    deleteFoodEpic,
+    deleteDishEpic
 );

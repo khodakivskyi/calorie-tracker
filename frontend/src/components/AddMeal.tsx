@@ -3,7 +3,7 @@ import Lunch from '../assets/images/Lunch.png';
 import Snack from '../assets/images/Snack.png';
 import Dinner from '../assets/images/Dinner.png';
 
-import AddMealModal from './AddMealModal';
+import AddMealModal from './modals/AddMealModal.tsx';
 import {useState, useEffect} from "react";
 import type {Meal} from "../store/types/mealTypes.ts";
 

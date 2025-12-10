@@ -1,0 +1,50 @@
+import { type Epic, ofType } from 'redux-observable';
+import { from, of } from 'rxjs';
+import { mergeMap, map, catchError } from 'rxjs/operators';
+import {
+    deleteFoodRequest,
+    deleteFoodSuccess,
+    deleteFoodFailure
+} from '../../slices/foodsSlice.ts';
+import { graphqlRequest } from '../../../config/graphqlClient.ts';
+import type { RootEpicAction } from '../rootEpic.ts';
+import type { RootState } from '../../slices/rootReducer.ts';
+
+const deleteFoodMutation = `
+  mutation DeleteFood($foodId: Int!, $ownerId: Int!) {
+    deleteFood(foodId: $foodId, ownerId: $ownerId)
+  }
+`;
+
+type DeleteFoodResponse = {
+    deleteFood: boolean;
+};
+
+type DeleteFoodRequestAction = ReturnType<typeof deleteFoodRequest>;
+
+
+export const deleteFoodEpic: Epic<RootEpicAction, RootEpicAction, RootState> = (action$) =>
+    action$.pipe(
+        ofType(deleteFoodRequest.type),
+
+        mergeMap((action: DeleteFoodRequestAction) =>
+            from(
+                graphqlRequest<DeleteFoodResponse>(deleteFoodMutation, action.payload)
+            ).pipe(
+                map((res) => {
+                    if (res.deleteFood) {
+                        return deleteFoodSuccess({ foodId: action.payload.foodId });
+                    }
+                    return deleteFoodFailure("Delete failed");
+                }),
+
+                catchError((err) =>
+                    of(
+                        deleteFoodFailure(
+                            err instanceof Error ? err.message : 'Delete food failed'
+                        )
+                    )
+                )
+            )
+        )
+    );

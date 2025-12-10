@@ -1,0 +1,88 @@
+import { type Epic, ofType } from 'redux-observable';
+import { from, of } from 'rxjs';
+import { mergeMap, map, catchError } from 'rxjs/operators';
+import {
+    updateFoodRequest,
+    updateFoodSuccess,
+    updateFoodFailure
+} from '../../slices/foodsSlice.ts';
+import { graphqlRequest } from '../../../config/graphqlClient.ts';
+import type { RootEpicAction } from '../rootEpic.ts';
+import type { RootState } from '../../slices/rootReducer.ts';
+
+const updateFoodMutation = `
+  mutation UpdateFood(
+    $foodId: Int!
+    $ownerId: Int!
+    $name: String
+    $imageId: Int
+    $calories: Decimal
+    $protein: Decimal
+    $fat: Decimal
+    $carbohydrate: Decimal
+  ) {
+    updateFood(
+      foodId: $foodId
+      ownerId: $ownerId
+      name: $name
+      imageId: $imageId
+      calories: $calories
+      protein: $protein
+      fat: $fat
+      carbohydrate: $carbohydrate
+    ) {
+      id
+      ownerId
+      name
+      imageId
+      calories
+      protein
+      fat
+      carbohydrate
+      createdAt
+      updatedAt
+    }
+  }
+`;
+
+type UpdateFoodResponse = {
+    updateFood: {
+        id: number;
+        ownerId: number | null;
+        name: string;
+        imageId: number | null;
+        calories: number | null;
+        protein: number | null;
+        fat: number | null;
+        carbohydrate: number | null;
+        createdAt: string;
+        updatedAt: string;
+    };
+};
+
+type UpdateFoodRequestAction = ReturnType<typeof updateFoodRequest>;
+
+export const updateFoodEpic: Epic<RootEpicAction, RootEpicAction, RootState> = (action$) =>
+    action$.pipe(
+        ofType(updateFoodRequest.type),
+
+        mergeMap((action: UpdateFoodRequestAction) =>
+            from(graphqlRequest<UpdateFoodResponse>(updateFoodMutation, action.payload)).pipe(
+                map((res) =>
+                    updateFoodSuccess({
+                        ...res.updateFood,
+                        createdAt: new Date(res.updateFood.createdAt).toISOString(),
+                        updatedAt: new Date(res.updateFood.updatedAt).toISOString(),
+                    })
+                ),
+
+                catchError((err) =>
+                    of(
+                        updateFoodFailure(
+                            err instanceof Error ? err.message : 'Update food failed'
+                        )
+                    )
+                )
+            )
+        )
+    );

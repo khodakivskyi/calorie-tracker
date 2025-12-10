@@ -1,10 +1,10 @@
 import { type Epic, ofType } from 'redux-observable';
 import { from, of } from 'rxjs';
 import { mergeMap, map, catchError } from 'rxjs/operators';
-import { registerUserRequest,  registerUserSuccess, registerUserFailure } from '../slices/authSlice';
-import { graphqlRequest } from '../../config/graphqlClient';
-import type {RootEpicAction} from './rootEpic.ts'
-import type {RootState} from "../slices/rootReducer.ts";
+import { registerUserRequest,  registerUserSuccess, registerUserFailure } from '../../slices/authSlice.ts';
+import { graphqlRequest } from '../../../config/graphqlClient.ts';
+import type {RootEpicAction} from '../rootEpic.ts'
+import type {RootState} from "../../slices/rootReducer.ts";
 
 const registerUserMutation = `
   mutation CreateUser($email: String!, $password: String!, $name: String) {

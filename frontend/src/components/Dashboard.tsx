@@ -102,21 +102,21 @@ export default function Dashboard() {
             {/* Nutrient cards grid block */}
             <div className="grid grid-cols-2 gap-4">
                 <NutrientCard
-                    label="Proteins"
+                    label="Protein"
                     value={856}
                     color="#3b82f6"
                     progressValue={856}
                     progressMax={1200}
                 />
                 <NutrientCard
-                    label="Carbs"
+                    label="Carbohydrates"
                     value={128}
                     color="#f97316"
                     progressValue={128}
                     progressMax={200}
                 />
                 <NutrientCard
-                    label="Fats"
+                    label="Fat"
                     value={173}
                     color="#eab308"
                     progressValue={173}
