@@ -100,22 +100,22 @@ namespace backend.Repositories
         }
 
         // Dish-Food relationship
-        public async Task<bool> AddFoodAsync(int dishId, int foodId, decimal quantity)
+        public async Task<bool> AddFoodAsync(int dishId, int foodId, decimal weight)
         {
             using var connection = new SqlConnection(_connectionString);
-            const string sql = @"INSERT INTO dishes_foods (dish_id, food_id, quantity)
-                                VALUES (@DishId, @FoodId, @Quantity);";
-            var affectedRows = await connection.ExecuteAsync(sql, new { DishId = dishId, FoodId = foodId, Quantity = quantity });
+            const string sql = @"INSERT INTO dishes_foods (dish_id, food_id, weight)
+                                VALUES (@DishId, @FoodId, @Weight);";
+            var affectedRows = await connection.ExecuteAsync(sql, new { DishId = dishId, FoodId = foodId, Weight = weight });
             return affectedRows > 0;
         }
 
-        public async Task<bool> UpdateFoodQuantityAsync(int dishId, int foodId, decimal quantity)
+        public async Task<bool> UpdateFoodWeightAsync(int dishId, int foodId, decimal weight)
         {
             using var connection = new SqlConnection(_connectionString);
             const string sql = @"UPDATE dishes_foods 
-                                SET quantity = @Quantity
+                                SET weight = @Weight
                                 WHERE dish_id = @DishId AND food_id = @FoodId;";
-            var affectedRows = await connection.ExecuteAsync(sql, new { DishId = dishId, FoodId = foodId, Quantity = quantity });
+            var affectedRows = await connection.ExecuteAsync(sql, new { DishId = dishId, FoodId = foodId, Weight = weight });
             return affectedRows > 0;
         }
 
@@ -128,10 +128,10 @@ namespace backend.Repositories
             return affectedRows > 0;
         }
 
-        public async Task<IEnumerable<(Food food, decimal quantity)>> GetAllFoodsByDishAsync(int dishId)
+        public async Task<IEnumerable<(Food food, decimal weight)>> GetAllFoodsByDishAsync(int dishId)
         {
             using var connection = new SqlConnection(_connectionString);
-            const string sql = @"SELECT f.id, f.owner_id, f.name, f.image_id, f.created_at, f.updated_at, f.is_external, df.quantity
+            const string sql = @"SELECT f.id, f.owner_id, f.name, f.image_id, f.created_at, f.updated_at, f.is_external, df.weight
                                 FROM dishes_foods df
                                 INNER JOIN foods f ON df.food_id = f.id
                                 WHERE df.dish_id = @DishId;";
@@ -150,7 +150,7 @@ namespace backend.Repositories
                     CreatedAt = r.created_at,
                     UpdatedAt = r.updated_at
                 },
-                quantity: (decimal)r.quantity
+                weight: (decimal)r.weight
             ));
         }
     }

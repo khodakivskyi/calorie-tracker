@@ -16,7 +16,7 @@ export type Meal = {
 //probably need improve
 export type MealDish = {
     dishId: number;
-    quantity: number;
+    weight: number;
     dish?: Dish;
 };
 

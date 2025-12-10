@@ -48,16 +48,16 @@ export default function AddMealModal({isOpen, onClose, onAddMeal, mealType}: Add
 
     //
     const handleAddReadyDish = (dish: Dish) => {
-        setMealDishes([...mealDishes, {dishId: dish.id, quantity: 1, dish}]);
+        setMealDishes([...mealDishes, {dishId: dish.id, weight: 120, dish}]);
         setShowAddDishModal(false);
     };
 
-    const handleAddIngredientToDish = (dishId: number, food: Food, quantity: number = 1) => {
+    const handleAddIngredientToDish = (dishId: number, food: Food, weight: number = 100) => {
         setMealDishes(mealDishes.map(md => {
             if (md.dishId === dishId && md.dish) {
                 const updatedDish: Dish & { foods?: DishFood[] } = {
                     ...md.dish,
-                    foods: [...((md.dish as Dish & { foods?: DishFood[] }).foods || []), {foodId: food.id, quantity, food}]
+                    foods: [...((md.dish as Dish & { foods?: DishFood[] }).foods || []), {foodId: food.id, weight, food}]
                 };
                 return {...md, dish: updatedDish};
             }
@@ -74,13 +74,13 @@ export default function AddMealModal({isOpen, onClose, onAddMeal, mealType}: Add
         setShowCreateIngredientModal(null);
     };
 
-    const handleAddIngredientToNewDish = (food: Food, quantity: number = 1) => {
-        setNewDishIngredients([...newDishIngredients, {foodId: food.id, quantity, food}]);
+    const handleAddIngredientToNewDish = (food: Food, weight: number = 100) => {
+        setNewDishIngredients([...newDishIngredients, {foodId: food.id, weight, food}]);
         setShowAddIngredientModal(null);
     };
 
     const handleCreateIngredientForNewDish = (food: Food) => {
-        setNewDishIngredients([...newDishIngredients, {foodId: food.id, quantity: 1, food}]);
+        setNewDishIngredients([...newDishIngredients, {foodId: food.id, weight: 100, food}]);
         setShowCreateIngredientModal(null);
     };
 
@@ -175,7 +175,7 @@ export default function AddMealModal({isOpen, onClose, onAddMeal, mealType}: Add
                                                     {(mealDish.dish as Dish & { foods?: DishFood[] }).foods!.map((dishFood: DishFood) => (
                                                         <li key={dishFood.foodId}
                                                             className="flex justify-between items-center text-sm bg-white p-2 rounded">
-                                                            <span>{dishFood.food?.name || "Ingredient"} - {dishFood.quantity}g</span>
+                                                            <span>{dishFood.food?.name || "Ingredient"} - {dishFood.weight}g</span>
                                                             <button
                                                                 onClick={() => handleRemoveIngredient(mealDish.dishId, dishFood.foodId)}
                                                                 className="text-red-500 hover:text-red-700 ml-2"
@@ -221,7 +221,7 @@ export default function AddMealModal({isOpen, onClose, onAddMeal, mealType}: Add
                     setNewDishIngredients([]);
                 }}
                 onCreateDish={(dish) => {
-                    setMealDishes([...mealDishes, {dishId: dish.id, quantity: 1, dish}]);
+                    setMealDishes([...mealDishes, {dishId: dish.id, weight: 120, dish}]);
                     setNewDishIngredients([]);
                     setShowCreateDishModal(false);
                 }}
@@ -236,11 +236,11 @@ export default function AddMealModal({isOpen, onClose, onAddMeal, mealType}: Add
             <SelectIngredientModal
                 isOpen={showAddIngredientModal !== null}
                 onClose={() => setShowAddIngredientModal(null)}
-                onSelectIngredient={(food, quantity = 1) => {
+                onSelectIngredient={(food, weight = 100) => {
                     if (showAddIngredientModal === -1) {
-                        handleAddIngredientToNewDish(food, quantity);
+                        handleAddIngredientToNewDish(food, weight);
                     } else if (showAddIngredientModal !== null) {
-                        handleAddIngredientToDish(showAddIngredientModal, food, quantity);
+                        handleAddIngredientToDish(showAddIngredientModal, food, weight);
                     }
                 }}
                 onCreateIngredient={() => {

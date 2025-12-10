@@ -9,7 +9,7 @@ namespace backend.GraphQL.Types
             Name = "DishFood";
             Field<IntGraphType>("id");
             Field<StringGraphType>("name");
-            Field<DecimalGraphType>("quantity");
+            Field<DecimalGraphType>("weight");
         }
     }
 }

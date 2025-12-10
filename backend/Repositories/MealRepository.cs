@@ -73,22 +73,22 @@ namespace backend.Repositories
         }
 
         // Meal-Dish relationship
-        public async Task<bool> AddDishToMealAsync(int mealId, int dishId, decimal quantity)
+        public async Task<bool> AddDishToMealAsync(int mealId, int dishId, decimal weight)
         {
             using var connection = new SqlConnection(_connectionString);
-            const string sql = @"INSERT INTO meals_dishes (meal_id, dish_id, quantity)
-                                 VALUES (@MealId, @DishId, @Quantity);";
-            var affectedRows = await connection.ExecuteAsync(sql, new { MealId = mealId, DishId = dishId, Quantity = quantity });
+            const string sql = @"INSERT INTO meals_dishes (meal_id, dish_id, weight)
+                                 VALUES (@MealId, @DishId, @Weight);";
+            var affectedRows = await connection.ExecuteAsync(sql, new { MealId = mealId, DishId = dishId, Weight = weight });
             return affectedRows > 0;
         }
 
-        public async Task<bool> UpdateDishQuantityInMealAsync(int mealId, int dishId, decimal quantity)
+        public async Task<bool> UpdateDishWeightInMealAsync(int mealId, int dishId, decimal weight)
         {
             using var connection = new SqlConnection(_connectionString);
             const string sql = @"UPDATE meals_dishes
-                                 SET quantity = @Quantity
+                                 SET weight = @Weight
                                  WHERE meal_id = @MealId AND dish_id = @DishId;";
-            var affectedRows = await connection.ExecuteAsync(sql, new { MealId = mealId, DishId = dishId, Quantity = quantity });
+            var affectedRows = await connection.ExecuteAsync(sql, new { MealId = mealId, DishId = dishId, Weight = weight });
             return affectedRows > 0;
         }
 
@@ -104,7 +104,7 @@ namespace backend.Repositories
         public async Task<IEnumerable<MealDishDto>> GetDishesByMealAsync(int mealId)
         {
             using var connection = new SqlConnection(_connectionString);
-            const string sql = @"SELECT meal_id AS MealId, dish_id AS DishId, quantity
+            const string sql = @"SELECT meal_id AS MealId, dish_id AS DishId, weight AS Weight
                                  FROM meals_dishes
                                  WHERE meal_id = @MealId;";
             return await connection.QueryAsync<MealDishDto>(sql, new { MealId = mealId });
@@ -161,10 +161,11 @@ namespace backend.Repositories
                             WHEN c.calories IS NOT NULL THEN c.calories
                             ELSE (n.protein * 4 + n.fat * 9 + n.carbohydrate * 4)
                         END
-                    ) * (df.quantity / 100.0) * (md.quantity / 100.0)
+                    ) * df.weight * md.weight / d.weight / 100.0
                 ), 0) AS TotalCalories
                 FROM meals m
                 INNER JOIN meals_dishes md ON m.id = md.meal_id
+                INNER JOIN dishes d ON md.dish_id = d.id
                 INNER JOIN dishes_foods df ON md.dish_id = df.dish_id
                 INNER JOIN foods f ON df.food_id = f.id
                 LEFT JOIN calories c ON c.food_id = f.id
@@ -191,10 +192,11 @@ namespace backend.Repositories
                                 WHEN c.calories IS NOT NULL THEN c.calories
                                 ELSE (n.protein * 4 + n.fat * 9 + n.carbohydrate * 4)
                             END
-                        ) * (df.quantity / 100.0) * (md.quantity / 100.0)
+                        ) * df.weight * md.weight / d.weight / 100.0
                     ), 0) AS TotalCalories
                 FROM meals m
                 INNER JOIN meals_dishes md ON m.id = md.meal_id
+                INNER JOIN dishes d ON md.dish_id = d.id
                 INNER JOIN dishes_foods df ON md.dish_id = df.dish_id
                 INNER JOIN foods f ON df.food_id = f.id
                 LEFT JOIN calories c ON c.food_id = f.id
@@ -227,10 +229,11 @@ namespace backend.Repositories
                                 WHEN c.calories IS NOT NULL THEN c.calories
                                 ELSE (n.protein * 4 + n.fat * 9 + n.carbohydrate * 4)
                             END
-                        ) * (df.quantity / 100.0) * (md.quantity / 100.0)
+                        ) * df.weight * md.weight / d.weight / 100.0
                     ), 0) AS TotalCalories
                 FROM meals m
                 INNER JOIN meals_dishes md ON m.id = md.meal_id
+                INNER JOIN dishes d ON md.dish_id = d.id
                 INNER JOIN dishes_foods df ON md.dish_id = df.dish_id
                 INNER JOIN foods f ON df.food_id = f.id
                 LEFT JOIN calories c ON c.food_id = f.id

@@ -29,7 +29,7 @@ export type Dish = {
 //probably need improve
 export type DishFood = {
     foodId: number;
-    quantity: number;
+    weight: number;
     food?: Food;
 };
 

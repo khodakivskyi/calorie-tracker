@@ -59,28 +59,28 @@ namespace backend.GraphQL.Mutations
                 .Argument<NonNullGraphType<IntGraphType>>("dishId")
                 .Argument<NonNullGraphType<IntGraphType>>("ownerId")
                 .Argument<NonNullGraphType<IntGraphType>>("foodId")
-                .Argument<NonNullGraphType<DecimalGraphType>>("quantity")
+                .Argument<NonNullGraphType<DecimalGraphType>>("weight")
                 .ResolveAsync(async context =>
                 {
                     var dishId = context.GetArgument<int>("dishId");
                     var ownerId = context.GetArgument<int>("ownerId");
                     var foodId = context.GetArgument<int>("foodId");
-                    var quantity = context.GetArgument<decimal>("quantity");
-                    return await dishService.AddFoodToDishAsync(ownerId, dishId, foodId, quantity);
+                    var weight = context.GetArgument<decimal>("weight");
+                    return await dishService.AddFoodToDishAsync(ownerId, dishId, foodId, weight);
                 });
 
-            Field<BooleanGraphType>("updateFoodQuantityInDish")
+            Field<BooleanGraphType>("updateFoodWeightInDish")
                 .Argument<NonNullGraphType<IntGraphType>>("dishId")
                 .Argument<NonNullGraphType<IntGraphType>>("ownerId")
                 .Argument<NonNullGraphType<IntGraphType>>("foodId")
-                .Argument<NonNullGraphType<DecimalGraphType>>("quantity")
+                .Argument<NonNullGraphType<DecimalGraphType>>("weight")
                 .ResolveAsync(async context =>
                 {
                     var dishId = context.GetArgument<int>("dishId");
                     var ownerId = context.GetArgument<int>("ownerId");
                     var foodId = context.GetArgument<int>("foodId");
-                    var quantity = context.GetArgument<decimal>("quantity");
-                    return await dishService.UpdateFoodQuantityInDishAsync(ownerId, dishId, foodId, quantity);
+                    var weight = context.GetArgument<decimal>("weight");
+                    return await dishService.UpdateFoodWeightInDishAsync(ownerId, dishId, foodId, weight);
                 });
 
             Field<BooleanGraphType>("removeFoodFromDish")

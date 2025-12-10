@@ -57,9 +57,9 @@ namespace backend.Repositories
             using var connection = new SqlConnection(_connectionString);
             const string sql = @"
                 SELECT 
-                    SUM(n.protein * df.quantity / 100.0) AS Protein,
-                    SUM(n.fat * df.quantity / 100.0) AS Fat,
-                    SUM(n.carbohydrate * df.quantity / 100.0) AS Carbohydrate
+                    SUM(n.protein * df.weight / 100.0) AS Protein,
+                    SUM(n.fat * df.weight / 100.0) AS Fat,
+                    SUM(n.carbohydrate * df.weight / 100.0) AS Carbohydrate
                 FROM dishes_foods df
                 INNER JOIN foods f ON df.food_id = f.id
                 INNER JOIN nutrients n ON n.food_id = f.id
@@ -79,10 +79,11 @@ namespace backend.Repositories
             using var connection = new SqlConnection(_connectionString);
             const string sql = @"
                 SELECT 
-                    SUM(n.protein * (df.quantity / 100.0) * (md.quantity / 100.0)) AS Protein,
-                    SUM(n.fat * (df.quantity / 100.0) * (md.quantity / 100.0)) AS Fat,
-                    SUM(n.carbohydrate * (df.quantity / 100.0) * (md.quantity / 100.0)) AS Carbohydrate
+                    SUM(n.protein * df.weight * md.weight / d.weight / 100.0) AS Protein,
+                    SUM(n.fat * df.weight * md.weight / d.weight / 100.0) AS Fat,
+                    SUM(n.carbohydrate * df.weight * md.weight / d.weight / 100.0) AS Carbohydrate
                 FROM meals_dishes md
+                JOIN dishes d ON md.dish_id = d.id
                 JOIN dishes_foods df ON md.dish_id = df.dish_id
                 JOIN nutrients n ON df.food_id = n.food_id
                 WHERE md.meal_id = @MealId;

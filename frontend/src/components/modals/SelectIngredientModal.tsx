@@ -3,7 +3,7 @@ import type {Food} from "../../store/types/foodTypes.ts";
 interface SelectIngredientModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onSelectIngredient: (food: Food, quantity?: number) => void;
+    onSelectIngredient: (food: Food, weight?: number) => void;
     onCreateIngredient: () => void;
     readyFoods : Food[];
 }

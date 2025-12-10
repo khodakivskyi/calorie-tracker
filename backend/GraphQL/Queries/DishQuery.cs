@@ -47,7 +47,7 @@ namespace backend.GraphQL.Queries
                     var dishId = context.GetArgument<int>("dishId");
                     var userId = 0; //we will get userId from jwt soon
                     var foods = await dishService.GetAllFoodsByDishAsync(userId, dishId);
-                    return foods.Select(f => new { id = f.food.Id, name = f.food.Name, quantity = f.quantity });
+                    return foods.Select(f => new { id = f.food.Id, name = f.food.Name, weight = f.weight });
                 });
         }
     }

@@ -87,7 +87,7 @@ export default function CreateDishModal({
                             <ul className="space-y-1">
                                 {ingredients.map((dishFood, idx) => (
                                     <li key={idx} className="flex justify-between items-center text-sm bg-gray-50 p-2 rounded">
-                                        <span>{dishFood.food?.name || "Ingredient"} - {dishFood.quantity}g</span>
+                                        <span>{dishFood.food?.name || "Ingredient"} - {dishFood.weight}g</span>
                                         <button
                                             onClick={() => onRemoveIngredient(idx)}
                                             className="text-red-500 hover:text-red-700 ml-2"
