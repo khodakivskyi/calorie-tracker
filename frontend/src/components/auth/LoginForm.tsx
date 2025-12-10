@@ -1,60 +1,40 @@
-import React, {useState} from 'react';
-import {Link} from 'react-router-dom';
-import {useAppDispatch, useAppSelector} from "../store";
-import {registerUserRequest} from "../store/slices/authSlice.ts";
+import React, {useState, useEffect} from 'react';
+import {Link, useLocation, useNavigate} from 'react-router-dom';
+import {useAppDispatch, useAppSelector} from "../../store";
+import {authenticateUserRequest} from "../../store/slices/authSlice.ts";
 
-export default function RegisterForm() {
+export default function LoginForm() {
     const dispatch = useAppDispatch();
-    const {loading, error, userEmail} = useAppSelector(state => state.auth);
+    const location = useLocation();
+    const navigate = useNavigate();
+    const {loading, error, userEmail, isAuthenticated, user} = useAppSelector(state => state.auth);
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [name, setName] = useState('');
+
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        const emailFromUrl = params.get("email");
+        if (emailFromUrl) {
+            setEmail(emailFromUrl);
+        } else if (userEmail) {
+            setEmail(userEmail);
+        }
+    }, [location.search, userEmail]);
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        dispatch(registerUserRequest(email, password, name))
+        dispatch(authenticateUserRequest(email, password))
     }
 
-    if (userEmail) {
-        return (
-            <div className="bg-green-50 border-l-4 border-green-500 p-6 rounded-lg shadow-sm">
-                <div className="flex items-center">
-                    <div className="flex-shrink-0">
-                        <svg className="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                    </div>
-                    <div className="ml-4">
-                        <h3 className="text-lg font-semibold text-green-800">Registration successful! 🎉</h3>
-                        <p className="text-green-700 mt-1">
-                            A verification email has been sent to <span className="font-semibold">{userEmail}</span>
-                        </p>
-                        <p className="text-green-600 text-sm mt-2">
-                            Please check your email and verify your email address to complete registration.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        );
-    }
+    useEffect(()=>{
+        if(user && isAuthenticated){
+            navigate('/home');
+        }
+    }, [user, isAuthenticated, navigate])
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-                    Name
-                </label>
-                <input
-                    id="name"
-                    type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="Enter your name"
-                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition duration-200 ease-in-out"
-                />
-            </div>
-
             <div>
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
                     Email <span className="text-red-500">*</span>
@@ -114,17 +94,17 @@ export default function RegisterForm() {
                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
-                        Registering...
+                        Logging in...
                     </span>
                 ) : (
-                    'Sign Up'
+                    'Log In'
                 )}
             </button>
 
             <p className="text-sm text-center text-gray-600">
-                Already have an account?{' '}
-                <Link to="/login" className="text-primary-600 hover:text-primary-700 font-semibold hover:underline">
-                    Log In
+                Don't have an account?{' '}
+                <Link to="/" className="text-primary-600 hover:text-primary-700 font-semibold hover:underline">
+                    Sign Up
                 </Link>
             </p>
         </form>

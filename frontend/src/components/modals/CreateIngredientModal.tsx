@@ -1,45 +1,63 @@
-import {useState, useEffect} from "react";
-import type {Food} from "../store/types/foodTypes.ts";
+import { useState, useEffect } from "react";
+import type { Food } from "../../store/types/foodTypes.ts";
 
 interface CreateIngredientModalProps {
     isOpen: boolean;
     onClose: () => void;
     onCreateIngredient: (food: Food) => void;
+    foodToEdit?: Food;
 }
 
 export default function CreateIngredientModal({
-    isOpen,
-    onClose,
-    onCreateIngredient}: CreateIngredientModalProps) {
-    const [ingredient, setIngredient] = useState({ name: "", calories: 0, protein: 0, fat: 0, carbohydrates: 0 });
+                                                  isOpen,
+                                                  onClose,
+                                                  onCreateIngredient,
+                                                  foodToEdit
+                                              }: CreateIngredientModalProps) {
+    const [ingredient, setIngredient] = useState({
+        name: "",
+        calories: "",
+        protein: "",
+        fat: "",
+        carbohydrate: ""
+    });
 
     useEffect(() => {
         if (!isOpen) {
-            setIngredient({ name: "", calories: 0, protein: 0, fat: 0, carbohydrates: 0 });
+            setIngredient({ name: "", calories: "", protein: "", fat: "", carbohydrate: "" });
+        } else if (foodToEdit) {
+            setIngredient({
+                name: foodToEdit.name ?? "",
+                calories: foodToEdit.calories?.toString() ?? "",
+                protein: foodToEdit.protein?.toString() ?? "",
+                fat: foodToEdit.fat?.toString() ?? "",
+                carbohydrate: foodToEdit.carbohydrate?.toString() ?? "",
+            });
         }
-    }, [isOpen]);
+    }, [isOpen, foodToEdit]);
 
     const handleCreate = () => {
         if (!ingredient.name) return;
-        
+
         const createdFood: Food = {
-            id: Date.now(),
+            id: foodToEdit?.id ?? Date.now(),
             name: ingredient.name,
             ownerId: 1,
-            calories: ingredient.calories,
-            protein: ingredient.protein,
-            fat: ingredient.fat,
-            carbohydrates: ingredient.carbohydrates,
-            createdAt: new Date(),
-            updatedAt: new Date(),
+            calories: ingredient.calories === "" ? 0 : parseFloat(ingredient.calories),
+            protein: ingredient.protein === "" ? 0 : parseFloat(ingredient.protein),
+            fat: ingredient.fat === "" ? 0 : parseFloat(ingredient.fat),
+            carbohydrate: ingredient.carbohydrate === "" ? 0 : parseFloat(ingredient.carbohydrate),
+            createdAt: foodToEdit?.createdAt ?? new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
         };
-        
+
         onCreateIngredient(createdFood);
-        setIngredient({ name: "", calories: 0, protein: 0, fat: 0, carbohydrates: 0 });
+
+        setIngredient({ name: "", calories: "", protein: "", fat: "", carbohydrate: "" });
     };
 
     const handleClose = () => {
-        setIngredient({ name: "", calories: 0, protein: 0, fat: 0, carbohydrates: 0 });
+        setIngredient({ name: "", calories: "", protein: "", fat: "", carbohydrate: "" });
         onClose();
     };
 
@@ -48,8 +66,10 @@ export default function CreateIngredientModal({
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-[70]">
             <div className="bg-white p-6 rounded-lg w-96">
-                <h3 className="text-lg font-bold mb-4">Create new ingredient</h3>
-                
+                <h3 className="text-lg font-bold mb-4">
+                    {foodToEdit ? "Edit ingredient" : "Create new ingredient"}
+                </h3>
+
                 <div className="space-y-4">
                     <div>
                         <label className="block text-sm font-medium mb-1">Ingredient name</label>
@@ -66,8 +86,8 @@ export default function CreateIngredientModal({
                         <label className="block text-sm font-medium mb-1">Calories (per 100g)</label>
                         <input
                             type="number"
-                            value={ingredient.calories || ""}
-                            onChange={(e) => setIngredient({...ingredient, calories: parseFloat(e.target.value) || 0})}
+                            value={ingredient.calories}
+                            onChange={(e) => setIngredient({...ingredient, calories: e.target.value})}
                             className="w-full border rounded px-3 py-2"
                             placeholder="Calories"
                         />
@@ -78,8 +98,8 @@ export default function CreateIngredientModal({
                             <label className="block text-sm font-medium mb-1">Protein (g)</label>
                             <input
                                 type="number"
-                                value={ingredient.protein || ""}
-                                onChange={(e) => setIngredient({...ingredient, protein: parseFloat(e.target.value) || 0})}
+                                value={ingredient.protein}
+                                onChange={(e) => setIngredient({...ingredient, protein: e.target.value})}
                                 className="w-full border rounded px-3 py-2"
                                 placeholder="P"
                             />
@@ -88,18 +108,18 @@ export default function CreateIngredientModal({
                             <label className="block text-sm font-medium mb-1">Fat (g)</label>
                             <input
                                 type="number"
-                                value={ingredient.fat || ""}
-                                onChange={(e) => setIngredient({...ingredient, fat: parseFloat(e.target.value) || 0})}
+                                value={ingredient.fat}
+                                onChange={(e) => setIngredient({...ingredient, fat: e.target.value})}
                                 className="w-full border rounded px-3 py-2"
                                 placeholder="F"
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium mb-1">Carbs (g)</label>
+                            <label className="block text-sm font-medium mb-1">Carbohydrates (g)</label>
                             <input
                                 type="number"
-                                value={ingredient.carbohydrates || ""}
-                                onChange={(e) => setIngredient({...ingredient, carbohydrates: parseFloat(e.target.value) || 0})}
+                                value={ingredient.carbohydrate}
+                                onChange={(e) => setIngredient({...ingredient, carbohydrate: e.target.value})}
                                 className="w-full border rounded px-3 py-2"
                                 placeholder="C"
                             />
@@ -118,11 +138,10 @@ export default function CreateIngredientModal({
                         onClick={handleCreate}
                         className="flex-1 bg-primary-500 text-white px-4 py-2 rounded-lg"
                     >
-                        Create
+                        {foodToEdit ? "Save" : "Create"}
                     </button>
                 </div>
             </div>
         </div>
     );
 }
-

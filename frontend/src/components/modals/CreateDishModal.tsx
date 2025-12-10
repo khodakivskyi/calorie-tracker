@@ -1,4 +1,4 @@
-import type {Dish, DishFood} from "../store/types/dishTypes.ts";
+import type {Dish, DishFood} from "../../store/types/dishTypes.ts";
 import {useState} from "react";
 
 interface CreateDishModalProps {
@@ -28,9 +28,8 @@ export default function CreateDishModal({
             name: dishName,
             ownerId: 1,
             weight: dishWeight,
-            foods: ingredients,
-            createdAt: new Date(),
-            updatedAt: new Date(),
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
         };
         
         onCreateDish(createdDish);

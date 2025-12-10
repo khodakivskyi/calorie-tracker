@@ -11,28 +11,28 @@ namespace backend.GraphQL.Queries
         {
             Field<FoodType>("getFoodById")
                 .Argument<NonNullGraphType<IntGraphType>>("foodId")
-                .Argument<NonNullGraphType<IntGraphType>>("userId")
+                .Argument<NonNullGraphType<IntGraphType>>("ownerId")
                 .ResolveAsync(async context =>
                 {
                     var foodId = context.GetArgument<int>("foodId");
-                    var userId = context.GetArgument<int>("userId");
-                    return await foodService.GetFoodByIdAsync(foodId, userId);
+                    var ownerId = context.GetArgument<int>("ownerId");
+                    return await foodService.GetFoodByIdAsync(foodId, ownerId);
                 });
 
             Field<ListGraphType<FoodType>>("getFoodsByUser")
-                .Argument<NonNullGraphType<IntGraphType>>("userId")
+                .Argument<NonNullGraphType<IntGraphType>>("ownerId")
                 .ResolveAsync(async context =>
                 {
-                    var userId = context.GetArgument<int>("userId");
-                    return await foodService.GetFoodsByUserAsync(userId);
+                    var ownerId = context.GetArgument<int>("ownerId");
+                    return await foodService.GetFoodsByUserAsync(ownerId);
                 });
 
             Field<ListGraphType<FoodType>>("getPrivateFoodsByUser")
-                .Argument<NonNullGraphType<IntGraphType>>("userId")
+                .Argument<NonNullGraphType<IntGraphType>>("ownerId")
                 .ResolveAsync(async context =>
                 {
-                    var userId = context.GetArgument<int>("userId");
-                    return await foodService.GetPrivateFoodsByUserAsync(userId);
+                    var ownerId = context.GetArgument<int>("ownerId");
+                    return await foodService.GetPrivateFoodsByUserAsync(ownerId);
                 });
 
             Field<ListGraphType<FoodType>>("getGlobalFoods")
