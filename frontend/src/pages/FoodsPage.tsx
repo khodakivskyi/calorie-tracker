@@ -3,6 +3,7 @@ import PageHeader from "../components/PageHeader.tsx";
 import SearchBar from "../components/SearchBar.tsx";
 import RecipeItemCard from "../components/RecipeItemCard.tsx";
 import CreateIngredientModal from "../components/modals/CreateIngredientModal.tsx";
+import FoodInfoModal from "../components/modals/FoodInfoModal.tsx";
 import type {Food} from "../store/types/foodTypes.ts";
 import {useAppDispatch, useAppSelector} from '../store';
 import {
@@ -19,7 +20,9 @@ export default function FoodsPage() {
     const {foods, loading, error, success} = useAppSelector(state => state.food);
 
     const [isCreateIngredientOpen, setIsCreateIngredientOpen] = useState(false);
+    const [isFoodInfoOpen, setIsFoodInfoOpen] = useState(false);
     const [foodToEdit, setFoodToEdit] = useState<Food | undefined>(undefined);
+    const [selectedFood, setSelectedFood] = useState<Food | null>(null);
     const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
@@ -40,7 +43,7 @@ export default function FoodsPage() {
         : foods;
 
     const handleAddClick = () => {
-        setFoodToEdit(undefined); // створюємо новий фуд
+        setFoodToEdit(undefined);
         setIsCreateIngredientOpen(true);
     };
 
@@ -68,14 +71,7 @@ export default function FoodsPage() {
                 carbohydrate: food.carbohydrate ?? undefined,
                 imageId: food.imageId ?? undefined,
             }));
-
         }
-    };
-
-
-    const handleEditClick = (food: Food) => {
-        setFoodToEdit(food);
-        setIsCreateIngredientOpen(true);
     };
 
     const handleDeleteFood = (id: number) => {
@@ -85,7 +81,6 @@ export default function FoodsPage() {
             ownerId: user.id,
         }));
     };
-
 
     return (
         <div className="min-h-screen bg-green-100">
@@ -103,15 +98,18 @@ export default function FoodsPage() {
 
                 <div className="pb-24">
                     {filteredFoods.length > 0 ? (
-                        filteredFoods.map((food) => (
-                            <RecipeItemCard
-                                key={food.id}
-                                id={food.id}
-                                name={food.name}
-                                calories={food.calories ?? 0}
-                                onEdit={() => handleEditClick(food)}
-                                onDelete={() => handleDeleteFood(food.id)}
-                            />
+                        filteredFoods.map(food => (
+                            <div key={food.id}>
+                                <RecipeItemCard
+                                    id={food.id}
+                                    name={food.name}
+                                    calories={food.calories ?? 0}
+                                    onClick={() => {
+                                        setSelectedFood(food);
+                                        setIsFoodInfoOpen(true);
+                                    }}
+                                />
+                            </div>
                         ))
                     ) : (
                         <div className="bg-white rounded-2xl p-8 text-center">
@@ -120,6 +118,28 @@ export default function FoodsPage() {
                     )}
                 </div>
             </div>
+
+            {selectedFood && (
+                <FoodInfoModal
+                    isOpen={isFoodInfoOpen}
+                    onClose={() => setIsFoodInfoOpen(false)}
+                    name={selectedFood.name}
+                    calories={selectedFood.calories}
+                    protein={selectedFood.protein ?? 0}
+                    fat={selectedFood.fat ?? 0}
+                    carbohydrate={selectedFood.carbohydrate ?? 0}
+                    food={selectedFood}
+                    onEdit={() => {
+                        setFoodToEdit(selectedFood);
+                        setIsCreateIngredientOpen(true);
+                        setIsFoodInfoOpen(false);
+                    }}
+                    onDelete={() => {
+                        handleDeleteFood(selectedFood.id);
+                        setIsFoodInfoOpen(false);
+                    }}
+                />
+            )}
 
             <CreateIngredientModal
                 isOpen={isCreateIngredientOpen}
