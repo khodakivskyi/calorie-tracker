@@ -115,6 +115,11 @@ export default function DishesPage() {
                 onRemoveIngredient={(index) =>
                     setNewDishIngredients(prev => prev.filter((_, idx) => idx !== index))
                 }
+                onUpdateIngredientWeight={(index, weight) =>
+                    setNewDishIngredients(prev => prev.map((ing, idx) => 
+                        idx === index ? { ...ing, weight } : ing
+                    ))
+                }
             />
 
             <SelectIngredientModal

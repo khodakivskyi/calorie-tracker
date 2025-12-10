@@ -27,7 +27,7 @@ export default function SelectIngredientModal({
                         {readyFoods.map((food) => (
                             <button
                                 key={food.id}
-                                onClick={() => onSelectIngredient(food, 1)}
+                                onClick={() => onSelectIngredient(food, 100)}
                                 className="w-full text-left p-3 border rounded hover:bg-gray-50"
                             >
                                 <div className="font-medium">{food.name}</div>
