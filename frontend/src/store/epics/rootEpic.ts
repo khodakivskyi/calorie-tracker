@@ -18,8 +18,8 @@ import {updateFoodEpic} from "./food/updateFoodEpic.ts";
 import {updateDishEpic} from "./dish/updateDishEpic.ts";
 import {deleteFoodEpic} from "./food/deleteFoodEpic.ts";
 import {deleteDishEpic} from "./dish/deleteDishEpic.ts";
-import { caloriesChartEpic } from './caloriesChartEpic';
-import { activityHeatmapEpic } from './activityHeatmapEpic';
+import { caloriesChartEpic } from './analytics/caloriesChartEpic.ts';
+import { activityHeatmapEpic } from './analytics/activityHeatmapEpic.ts';
 import type {ActivityHeatmapAction} from "../slices/activityHeatmapSlice.ts";
 import type {CaloriesChartAction} from "../slices/caloriesChartSlice.ts";
 import type {CalorieLimitAction} from "../types/calorieLimitTypes.ts";
@@ -44,7 +44,7 @@ export const rootEpic = combineEpics<RootEpicAction, RootEpicAction, RootState>(
     deleteFoodEpic,
     deleteDishEpic,
     caloriesChartEpic,
-    activityHeatmapEpic
+    activityHeatmapEpic,
     setCalorieLimitEpic,
     getCalorieLimitEpic,
     removeCalorieLimitEpic

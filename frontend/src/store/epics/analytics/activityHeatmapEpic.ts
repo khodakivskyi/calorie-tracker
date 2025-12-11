@@ -1,14 +1,14 @@
 import { type Epic, ofType } from 'redux-observable';
 import { from, of } from 'rxjs';
 import { mergeMap, map, catchError } from 'rxjs/operators';
-import { graphqlRequest } from '../../config/graphqlClient';
+import { graphqlRequest } from '../../../config/graphqlClient.ts';
 import {
     fetchHeatmapRequest,
     fetchHeatmapSuccess,
     fetchHeatmapFailure
-} from '../slices/activityHeatmapSlice';
-import type { RootState } from "../slices/rootReducer";
-import type { RootEpicAction } from './rootEpic';
+} from '../../slices/activityHeatmapSlice.ts';
+import type { RootState } from "../../slices/rootReducer.ts";
+import type { RootEpicAction } from '../rootEpic.ts';
 
 const GET_MONTHLY_CALORIES = `
     query GetMonthlyCaloriesForHeatmap($ownerId: Int!, $year: Int!, $month: Int!) {

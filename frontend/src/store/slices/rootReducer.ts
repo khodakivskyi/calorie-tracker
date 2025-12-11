@@ -69,7 +69,7 @@ export type RootAction =
     | ReturnType<typeof caloriesChartActions.fetchChartDataFailure>
     | ReturnType<typeof activityHeatmapActions.fetchHeatmapRequest>
     | ReturnType<typeof activityHeatmapActions.fetchHeatmapSuccess>
-    | ReturnType<typeof activityHeatmapActions.fetchHeatmapFailure>;
+    | ReturnType<typeof activityHeatmapActions.fetchHeatmapFailure>
     | ReturnType<typeof calorieLimitActions.getLimitRequest>
     | ReturnType<typeof calorieLimitActions.getLimitSuccess>
     | ReturnType<typeof calorieLimitActions.getLimitFailure>
