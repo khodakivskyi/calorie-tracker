@@ -112,11 +112,6 @@ export default function AddMeal() {
                         `}
                             />
                         </div>
-
-
-
-
-
                     </div>
                 </div>
             ))}
