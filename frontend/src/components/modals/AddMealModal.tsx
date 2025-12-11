@@ -169,7 +169,7 @@ export default function AddMealModal({isOpen, onClose, onAddMeal, mealType}: Add
                                                         <p className="text-xs font-medium text-gray-700 mb-1">Ingredients:</p>
                                                         <ul className="text-xs text-gray-600 space-y-0.5">
                                                             {mealDish.dish.foods.map((ing) => (
-                                                                <li key={ing.foodId}>
+                                                                <li key={`${ing.foodId}-${idx}`}>
                                                                     • {ing.food?.name || "Ingredient"} - {ing.weight}g
                                                                 </li>
                                                             ))}
