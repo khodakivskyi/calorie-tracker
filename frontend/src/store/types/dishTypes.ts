@@ -24,13 +24,17 @@ export type Dish = {
     imageId?: number | null;
     createdAt: string;
     updatedAt: string;
+    foods?: DishFood[];
 };
 
-//probably need improve
 export type DishFood = {
     foodId: number;
-    weight: number;
+    weight?: number;
     food?: Food;
+};
+
+export type DishWithFoods = Dish & {
+    foods?: DishFood[];
 };
 
 export type DishAction =

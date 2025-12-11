@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import type { Food } from "../../store/types/foodTypes.ts";
+import { useAppDispatch, useAppSelector } from "../../store";
+import { createFoodRequest } from "../../store/slices/foodsSlice.ts";
 
 interface CreateIngredientModalProps {
     isOpen: boolean;
@@ -21,6 +23,8 @@ export default function CreateIngredientModal({
         fat: "",
         carbohydrate: ""
     });
+    const dispatch = useAppDispatch();
+    const { user } = useAppSelector(state => state.auth);
 
     useEffect(() => {
         if (!isOpen) {
@@ -36,6 +40,8 @@ export default function CreateIngredientModal({
         }
     }, [isOpen, foodToEdit]);
 
+    const parseNumberOrNull = (value: string) => value === "" ? null : parseFloat(value);
+
     const handleCreate = () => {
         if (!ingredient.name) return;
 
@@ -43,17 +49,27 @@ export default function CreateIngredientModal({
             id: foodToEdit?.id ?? Date.now(),
             name: ingredient.name,
             ownerId: 1,
-            calories: ingredient.calories === "" ? 0 : parseFloat(ingredient.calories),
-            protein: ingredient.protein === "" ? 0 : parseFloat(ingredient.protein),
-            fat: ingredient.fat === "" ? 0 : parseFloat(ingredient.fat),
-            carbohydrate: ingredient.carbohydrate === "" ? 0 : parseFloat(ingredient.carbohydrate),
+            calories: parseNumberOrNull(ingredient.calories) ?? 0,
+            protein: parseNumberOrNull(ingredient.protein) ?? 0,
+            fat: parseNumberOrNull(ingredient.fat) ?? 0,
+            carbohydrate: parseNumberOrNull(ingredient.carbohydrate) ?? 0,
             createdAt: foodToEdit?.createdAt ?? new Date().toISOString(),
             updatedAt: new Date().toISOString(),
         };
 
+        dispatch(createFoodRequest({
+            ownerId: user?.id ?? null,
+            name: createdFood.name,
+            calories: parseNumberOrNull(ingredient.calories),
+            protein: parseNumberOrNull(ingredient.protein),
+            fat: parseNumberOrNull(ingredient.fat),
+            carbohydrate: parseNumberOrNull(ingredient.carbohydrate),
+        }));
+
         onCreateIngredient(createdFood);
 
         setIngredient({ name: "", calories: "", protein: "", fat: "", carbohydrate: "" });
+        onClose();
     };
 
     const handleClose = () => {

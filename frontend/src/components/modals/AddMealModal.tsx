@@ -1,11 +1,8 @@
 import type {Meal, MealDish} from "../../store/types/mealTypes.ts";
-import type {Food} from "../../store/types/foodTypes.ts";
-import type {Dish, DishFood} from "../../store/types/dishTypes.ts";
-import {useState, useEffect} from "react";
+import type {Dish, DishWithFoods, DishFood} from "../../store/types/dishTypes.ts";
+import {useState, useEffect, useCallback} from "react";
 import SelectDishModal from "./SelectDishModal.tsx";
 import CreateDishModal from "./CreateDishModal.tsx";
-import SelectIngredientModal from "./SelectIngredientModal.tsx";
-import CreateIngredientModal from "./CreateIngredientModal.tsx";
 import {useAppSelector, useAppDispatch} from "../../store";
 import {getFoodsByUserRequest} from "../../store/slices/foodsSlice.ts";
 import {getDishesByUserRequest} from "../../store/slices/dishesSlice.ts";
@@ -17,14 +14,25 @@ interface AddMealModalProps {
     mealType: string;
 }
 
+/**
+ * Modal for adding a meal (breakfast/lunch/dinner).
+ * User can add multiple dishes to the meal.
+ * Simple architecture: uses boolean flags for child modals.
+ */
 export default function AddMealModal({isOpen, onClose, onAddMeal, mealType}: AddMealModalProps) {
     const dispatch = useAppDispatch();
     const {user} = useAppSelector(state => state.auth);
     const {foods} = useAppSelector(state => state.food);
     const {dishes} = useAppSelector(state => state.dish);
 
+    // Main state: list of dishes in this meal
     const [mealDishes, setMealDishes] = useState<MealDish[]>([]);
+    
+    // Child modals
+    const [showSelectDish, setShowSelectDish] = useState(false);
+    const [showCreateDish, setShowCreateDish] = useState(false);
 
+    // Load data when modal opens
     useEffect(() => {
         if (isOpen && user) {
             if (foods.length === 0) {
@@ -35,87 +43,58 @@ export default function AddMealModal({isOpen, onClose, onAddMeal, mealType}: Add
             }
         }
     }, [isOpen, user, dispatch, foods.length, dishes.length]);
-    
-    const [showAddDishModal, setShowAddDishModal] = useState(false);
-    const [showCreateDishModal, setShowCreateDishModal] = useState(false);
 
-    const [showAddIngredientModal, setShowAddIngredientModal] = useState<number | null>(null);
-    const [showCreateIngredientModal, setShowCreateIngredientModal] = useState<number | null>(null);
-
-    const [newDishIngredients, setNewDishIngredients] = useState<DishFood[]>([]);
-
-    const [currentDishForIngredient, setCurrentDishForIngredient] = useState<number | null>(null);
-
-    //
-    const handleAddReadyDish = (dish: Dish) => {
-        setMealDishes([...mealDishes, {dishId: dish.id, weight: 120, dish}]);
-        setShowAddDishModal(false);
-    };
-
-    const handleAddIngredientToDish = (dishId: number, food: Food, weight: number = 100) => {
-        setMealDishes(mealDishes.map(md => {
-            if (md.dishId === dishId && md.dish) {
-                const updatedDish: Dish & { foods?: DishFood[] } = {
-                    ...md.dish,
-                    foods: [...((md.dish as Dish & { foods?: DishFood[] }).foods || []), {foodId: food.id, weight, food}]
-                };
-                return {...md, dish: updatedDish};
-            }
-            return md;
-        }));
-        setShowAddIngredientModal(null);
-    };
-
-    const handleCreateIngredient = (food: Food) => {
-        if (currentDishForIngredient) {
-            handleAddIngredientToDish(currentDishForIngredient, food, 1);
+    // Reset when modal closes
+    useEffect(() => {
+        if (!isOpen) {
+            setMealDishes([]);
+            setShowSelectDish(false);
+            setShowCreateDish(false);
         }
-        setCurrentDishForIngredient(null);
-        setShowCreateIngredientModal(null);
-    };
+    }, [isOpen]);
 
-    const handleAddIngredientToNewDish = (food: Food, weight: number = 100) => {
-        setNewDishIngredients([...newDishIngredients, {foodId: food.id, weight, food}]);
-        setShowAddIngredientModal(null);
-    };
+    // Add existing dish from library
+    const handleSelectDish = useCallback((dish: Dish) => {
+        const dishWithFoods: DishWithFoods = {...dish, foods: []};
+        setMealDishes(prev => [...prev, {
+            dishId: dish.id,
+            weight: dish.weight,
+            dish: dishWithFoods
+        }]);
+        setShowSelectDish(false);
+    }, []);
 
-    const handleCreateIngredientForNewDish = (food: Food) => {
-        setNewDishIngredients([...newDishIngredients, {foodId: food.id, weight: 100, food}]);
-        setShowCreateIngredientModal(null);
-    };
+    // Add newly created dish
+    const handleCreateDish = useCallback((dish: Dish, ingredients: DishFood[]) => {
+        const dishWithFoods: DishWithFoods = {...dish, foods: ingredients};
+        setMealDishes(prev => [...prev, {
+            dishId: dish.id,
+            weight: dish.weight,
+            dish: dishWithFoods
+        }]);
+        setShowCreateDish(false);
+    }, []);
 
-    const handleRemoveDish = (dishId: number) => {
-        setMealDishes(mealDishes.filter(md => md.dishId !== dishId));
-    };
+    // Remove dish from meal
+    const handleRemoveDish = useCallback((dishId: number) => {
+        setMealDishes(prev => prev.filter(md => md.dishId !== dishId));
+    }, []);
 
-    //
-    const handleRemoveIngredient = (dishId: number, foodId: number) => {
-        setMealDishes(mealDishes.map(md => {
-            if (md.dishId === dishId && md.dish) {
-                const updatedDish: Dish & { foods?: DishFood[] } = {
-                    ...md.dish,
-                    foods: ((md.dish as Dish & { foods?: DishFood[] }).foods || []).filter((f: DishFood) => f.foodId !== foodId)
-                };
-                return {...md, dish: updatedDish};
-            }
-            return md;
-        }));
-    };
+    // Submit meal
+    const handleSubmit = useCallback(() => {
+        if (!user || mealDishes.length === 0) return;
 
-    const handleSubmit = () => {
         const newMeal: Meal = {
-            id: 1,
-            name: "test",//mealType or custom
-            ownerId: 1,
+            id: Date.now(),
+            name: mealType,
+            ownerId: user.id,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
         };
 
-
         onAddMeal(newMeal);
-        setMealDishes([]);
         onClose();
-    }
+    }, [user, mealType, mealDishes.length, onAddMeal, onClose]);
 
     if (!isOpen) return null;
 
@@ -125,69 +104,49 @@ export default function AddMealModal({isOpen, onClose, onAddMeal, mealType}: Add
                 <div className="bg-white p-6 rounded-lg w-[90vw] max-w-4xl max-h-[90vh] overflow-y-auto">
                     <h2 className="text-xl font-bold mb-4">Add {mealType}</h2>
 
-                    {/* List of added dishes */}
+                    {/* Dishes section */}
                     <div className="mb-4">
                         <div className="flex justify-between items-center mb-3">
                             <h3 className="text-lg font-semibold">Dishes</h3>
                             <button
-                                onClick={() => setShowAddDishModal(true)}
-                                className="bg-primary-500 text-white px-4 py-2 rounded-lg text-sm"
+                                onClick={() => setShowSelectDish(true)}
+                                className="bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 rounded-lg text-sm transition-colors"
                             >
-                                + Add dish
+                                + Add Dish
                             </button>
                         </div>
 
                         {mealDishes.length === 0 ? (
-                            <p className="text-gray-500 text-sm">No dishes added yet</p>
+                            <p className="text-gray-500 text-center py-8">No dishes added yet</p>
                         ) : (
                             <div className="space-y-3">
                                 {mealDishes.map((mealDish) => (
                                     <div key={mealDish.dishId} className="border rounded-lg p-4 bg-gray-50">
-                                        <div className="flex justify-between items-start mb-2">
+                                        <div className="flex justify-between items-start">
                                             <div>
-                                                <h4 className="font-semibold">{mealDish.dish?.name || "Dish"}</h4>
+                                                <h4 className="font-semibold text-lg">{mealDish.dish?.name || "Dish"}</h4>
                                                 <p className="text-sm text-gray-600">Weight: {mealDish.dish?.weight || 0}g</p>
+                                                
+                                                {/* Show ingredients if available */}
+                                                {mealDish.dish?.foods && mealDish.dish.foods.length > 0 && (
+                                                    <div className="mt-2">
+                                                        <p className="text-xs font-medium text-gray-700 mb-1">Ingredients:</p>
+                                                        <ul className="text-xs text-gray-600 space-y-0.5">
+                                                            {mealDish.dish.foods.map((ing) => (
+                                                                <li key={ing.foodId}>
+                                                                    • {ing.food?.name || "Ingredient"} - {ing.weight}g
+                                                                </li>
+                                                            ))}
+                                                        </ul>
+                                                    </div>
+                                                )}
                                             </div>
                                             <button
                                                 onClick={() => handleRemoveDish(mealDish.dishId)}
-                                                className="text-red-500 hover:text-red-700 text-sm"
+                                                className="text-red-500 hover:text-red-700 text-sm font-medium transition-colors"
                                             >
                                                 Remove
                                             </button>
-                                        </div>
-
-                                        {/* Dish ingredients */}
-                                        <div className="mt-3">
-                                            <div className="flex justify-between items-center mb-2">
-                                                <h5 className="text-sm font-medium text-gray-700">Ingredients:</h5>
-                                                <button
-                                                    onClick={() => {
-                                                        setShowAddIngredientModal(mealDish.dishId);
-                                                        setCurrentDishForIngredient(mealDish.dishId);
-                                                    }}
-                                                    className="text-primary-500 hover:text-primary-700 text-xs"
-                                                >
-                                                    + Add ingredient
-                                                </button>
-                                            </div>
-                                            {(mealDish.dish as Dish & { foods?: DishFood[] })?.foods && (mealDish.dish as Dish & { foods?: DishFood[] }).foods!.length > 0 ? (
-                                                <ul className="space-y-1">
-                                                    {(mealDish.dish as Dish & { foods?: DishFood[] }).foods!.map((dishFood: DishFood) => (
-                                                        <li key={dishFood.foodId}
-                                                            className="flex justify-between items-center text-sm bg-white p-2 rounded">
-                                                            <span>{dishFood.food?.name || "Ingredient"} - {dishFood.weight}g</span>
-                                                            <button
-                                                                onClick={() => handleRemoveIngredient(mealDish.dishId, dishFood.foodId)}
-                                                                className="text-red-500 hover:text-red-700 ml-2"
-                                                            >
-                                                                ×
-                                                            </button>
-                                                        </li>
-                                                    ))}
-                                                </ul>
-                                            ) : (
-                                                <p className="text-gray-400 text-xs">No ingredients</p>
-                                            )}
                                         </div>
                                     </div>
                                 ))}
@@ -195,73 +154,41 @@ export default function AddMealModal({isOpen, onClose, onAddMeal, mealType}: Add
                         )}
                     </div>
 
+                    {/* Actions */}
                     <div className="flex justify-end gap-2 mt-6">
-                        <button onClick={onClose} className="bg-gray-300 px-4 py-2 rounded">Cancel</button>
-                        <button onClick={handleSubmit} className="bg-primary-500 text-white px-4 py-2 rounded-lg">Add
+                        <button
+                            onClick={onClose}
+                            className="bg-gray-300 hover:bg-gray-400 px-4 py-2 rounded transition-colors"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            onClick={handleSubmit}
+                            disabled={mealDishes.length === 0}
+                            className="bg-primary-500 hover:bg-primary-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white px-4 py-2 rounded-lg transition-colors"
+                        >
+                            Add Meal
                         </button>
                     </div>
                 </div>
             </div>
 
+            {/* Child modals */}
             <SelectDishModal
-                isOpen={showAddDishModal}
-                onClose={() => setShowAddDishModal(false)}
-                onSelectDish={handleAddReadyDish}
+                isOpen={showSelectDish}
+                onClose={() => setShowSelectDish(false)}
+                onSelectDish={handleSelectDish}
                 onCreateDish={() => {
-                    setShowAddDishModal(false);
-                    setShowCreateDishModal(true);
+                    setShowSelectDish(false);
+                    setShowCreateDish(true);
                 }}
                 readyDishes={dishes}
             />
 
             <CreateDishModal
-                isOpen={showCreateDishModal}
-                onClose={() => {
-                    setShowCreateDishModal(false);
-                    setNewDishIngredients([]);
-                }}
-                onCreateDish={(dish) => {
-                    setMealDishes([...mealDishes, {dishId: dish.id, weight: 120, dish}]);
-                    setNewDishIngredients([]);
-                    setShowCreateDishModal(false);
-                }}
-                onAddIngredient={() => {
-                    setShowAddIngredientModal(-1);
-                    setCurrentDishForIngredient(null);
-                }}
-                ingredients={newDishIngredients}
-                onRemoveIngredient={(idx) => setNewDishIngredients(newDishIngredients.filter((_, i) => i !== idx))}
-            />
-
-            <SelectIngredientModal
-                isOpen={showAddIngredientModal !== null}
-                onClose={() => setShowAddIngredientModal(null)}
-                onSelectIngredient={(food, weight = 100) => {
-                    if (showAddIngredientModal === -1) {
-                        handleAddIngredientToNewDish(food, weight);
-                    } else if (showAddIngredientModal !== null) {
-                        handleAddIngredientToDish(showAddIngredientModal, food, weight);
-                    }
-                }}
-                onCreateIngredient={() => {
-                    setShowAddIngredientModal(null);
-                    setShowCreateIngredientModal(showAddIngredientModal);
-                }}
-                readyFoods={foods}
-            />
-
-            <CreateIngredientModal
-                isOpen={showCreateIngredientModal !== null}
-                onClose={() => {
-                    setShowCreateIngredientModal(null);
-                }}
-                onCreateIngredient={(food) => {
-                    if (showCreateIngredientModal === -1) {
-                        handleCreateIngredientForNewDish(food);
-                    } else {
-                        handleCreateIngredient(food);
-                    }
-                }}
+                isOpen={showCreateDish}
+                onClose={() => setShowCreateDish(false)}
+                onSuccess={handleCreateDish}
             />
         </>
     );
