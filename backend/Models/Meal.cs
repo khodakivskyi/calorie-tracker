@@ -6,8 +6,12 @@ namespace backend.Models
     {
         public int Id { get; }
         public int OwnerId { get; set; }
+        public int TypeId { get; set; }
         public string Name { get; set; } = string.Empty;
-        public int MealTypeId { get; set; }
+        public decimal? Calories { get; set; }
+        public decimal? Protein { get; set; }
+        public decimal? Carbohydrate { get; set; }
+        public decimal? Fat { get; set; }
         public DateTime CreatedAt { get; init; }
         public DateTime UpdatedAt { get; set; }
 
@@ -15,7 +19,7 @@ namespace backend.Models
         public Meal(int ownerId, int mealTypeId, string name)
         {
             OwnerId = ownerId;
-            MealTypeId = mealTypeId;
+            TypeId = mealTypeId;
             Name = name;
         }
     }
