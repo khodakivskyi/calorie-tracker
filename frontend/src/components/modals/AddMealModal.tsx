@@ -7,6 +7,7 @@ import UpdateDishModal from "./UpdateDishModal.tsx";
 import {useAppSelector, useAppDispatch} from "../../store";
 import {getFoodsByUserRequest} from "../../store/slices/foodsSlice.ts";
 import {getDishesByUserRequest} from "../../store/slices/dishesSlice.ts";
+import {createMealRequest} from "../../store/slices/mealSlice.ts";
 
 interface AddMealModalProps {
     isOpen: boolean;
@@ -119,15 +120,16 @@ export default function AddMealModal({isOpen, onClose, onAddMeal, mealType}: Add
     const handleSubmit = useCallback(() => {
         if (!user || mealDishes.length === 0) return;
 
-        const newMeal: Meal = {
-            id: Date.now(),
-            name: mealType,
+        dispatch(createMealRequest({
             ownerId: user.id,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-        };
+            typeId: 3,
+            name: mealType,
+            dishes: mealDishes.map(dish => ({
+                dishId: dish.dishId,
+                weight: dish.weight,
+            })),
+        }));
 
-        onAddMeal(newMeal);
         onClose();
     }, [user, mealType, mealDishes.length, onAddMeal, onClose]);
 
