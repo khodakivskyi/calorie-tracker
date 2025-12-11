@@ -81,7 +81,7 @@ export default function Dashboard({ onSetLimitClick }: DashboardProps) {
 
     useEffect(() => {
         dispatch(getLimitRequest({ ownerId }));
-    }, [dispatch]);
+    }, [dispatch, ownerId]);
 
     const consumedCalories = 529;
     const dailyGoal = calorieLimit?.limitValue;
@@ -100,7 +100,7 @@ export default function Dashboard({ onSetLimitClick }: DashboardProps) {
                     <span className="text-3xl font-bold text-green-500">{consumedCalories}</span>
                     <span className="text-xl text-gray-400"> / {dailyGoal?.toLocaleString()} Cal</span>
                 </div>
-                {!hasLimit && (
+                {!hasLimit && onSetLimitClick && (
                     <div className="flex justify-center mt-2">
                         <button
                             onClick={onSetLimitClick}

@@ -36,7 +36,7 @@ namespace backend
             builder.Services.AddScoped<IMealTypeRepository, MealTypeRepository>(provider => new MealTypeRepository(connectionString!));
             builder.Services.AddScoped<ICaloriesRepository, CaloriesRepository>(provider => new CaloriesRepository(connectionString!));
             builder.Services.AddScoped<INutrientsRepository, NutrientsRepository>(provider => new NutrientsRepository(connectionString!));
-            builder.Services.AddScoped<ICalorieLimitRepository, CalorieLimitRepository> (provider => new CalorieLimitRepository(connectionString!));
+            builder.Services.AddScoped<ICalorieLimitRepository, CalorieLimitRepository>(provider => new CalorieLimitRepository(connectionString!));
 
             builder.Services.Configure<ImageSettings>(builder.Configuration.GetSection("ImageSettings"));
             builder.Services.AddScoped<IImageRepository, ImageRepository>(provider => new ImageRepository(connectionString!));
