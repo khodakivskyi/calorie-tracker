@@ -1,18 +1,19 @@
-import { type Epic, ofType } from 'redux-observable';
+﻿import { type Epic, ofType } from 'redux-observable';
 import { from, of } from 'rxjs';
 import { mergeMap, map, catchError } from 'rxjs/operators';
 import { graphqlRequest } from '../../config/graphqlClient';
 import {
     fetchChartDataRequest,
     fetchChartDataSuccess,
-    fetchChartDataFailure
+    fetchChartDataFailure,
+    type ChartPeriod
 } from '../slices/caloriesChartSlice';
 import type { RootState } from "../slices/rootReducer";
 import type { RootEpicAction } from './rootEpic';
 
 const GET_WEEKLY_CALORIES = `
-    query GetWeeklyCalories($userId: Int!, $startDate: Date!) {
-        getWeeklyCalories(userId: $userId, startDate: $startDate) {
+    query GetWeeklyCalories($ownerId: Int!, $startDate: Date!) {
+        getWeeklyCalories(ownerId: $ownerId, startDate: $startDate) {
             date
             totalCalories
         }
@@ -20,18 +21,22 @@ const GET_WEEKLY_CALORIES = `
 `;
 
 const GET_MONTHLY_CALORIES = `
-    query GetMonthlyCalories($userId: Int!, $year: Int!, $month: Int!) {
-        getMonthlyCalories(userId: $userId, year: $year, month: $month) {
+    query GetMonthlyCalories($ownerId: Int!, $year: Int!, $month: Int!) {
+        getMonthlyCalories(ownerId: $ownerId, year: $year, month: $month) {
             date
             totalCalories
         }
     }
 `;
 
-const formatLabel = (dateString: string, period: 'Week' | 'Month') => {
-    const date = new Date(dateString);
-    if (period === 'Week') return date.toLocaleDateString('en-US', { weekday: 'short' }); // "Mon"
-    return `${date.getDate()} ${date.toLocaleDateString('en-US', { month: 'short' })}`; // "1 Nov"
+const formatLabel = (dateString: string, period: ChartPeriod) => {
+    const [year, month, day] = dateString.split('-').map(Number);
+    const date = new Date(year, month - 1, day);
+
+    if (period === 'Week') {
+        return date.toLocaleDateString('en-US', { weekday: 'short' });
+    }
+    return date.getDate().toString();
 };
 
 export const caloriesChartEpic: Epic<RootEpicAction, RootEpicAction, RootState> = (action$, state$) =>
@@ -49,15 +54,23 @@ export const caloriesChartEpic: Epic<RootEpicAction, RootEpicAction, RootState> 
 
             if (period === 'Week') {
                 query = GET_WEEKLY_CALORIES;
-                const lastWeek = new Date(today);
-                lastWeek.setDate(today.getDate() - 6);
-                variables = { userId, startDate: lastWeek.toISOString() };
-            } else if (period === 'Month') {
-                query = GET_MONTHLY_CALORIES;
-                variables = { userId, year: today.getFullYear(), month: today.getMonth() + 1 };
+
+                const currentDay = today.getDay();
+                const distanceToMonday = currentDay === 0 ? 6 : currentDay - 1;
+
+                const lastMonday = new Date(today);
+                lastMonday.setDate(today.getDate() - distanceToMonday);
+
+                const startDateStr = lastMonday.toISOString().split('T')[0];
+                variables = { ownerId: userId, startDate: startDateStr };
+
             } else {
-                // in development
-                return of(fetchChartDataSuccess([]));
+                query = GET_MONTHLY_CALORIES;
+                variables = {
+                    ownerId: userId,
+                    year: today.getFullYear(),
+                    month: today.getMonth() + 1
+                };
             }
 
             return from(graphqlRequest<any>(query, variables)).pipe(
@@ -66,7 +79,8 @@ export const caloriesChartEpic: Epic<RootEpicAction, RootEpicAction, RootState> 
 
                     const formattedData = rawData.map((item: any) => ({
                         name: formatLabel(item.date, period),
-                        calories: item.totalCalories
+                        calories: Math.round(item.totalCalories),
+                        fullDate: item.date
                     }));
 
                     return fetchChartDataSuccess(formattedData);

@@ -3,7 +3,7 @@ import CaloriesChart from '../components/CaloriesChart';
 
 export default function AnalyticsPage() {
 
-    const dailyGoal = 2400;
+    const dailyGoal = 500;
 
     return (
         <div className="p-6 bg-green-50 min-h-screen font-sans">

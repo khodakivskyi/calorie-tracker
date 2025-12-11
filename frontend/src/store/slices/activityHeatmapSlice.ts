@@ -1,7 +1,7 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
 export interface HeatmapLog {
-    date: string;
+    date: string; 
     calories: number;
 }
 
