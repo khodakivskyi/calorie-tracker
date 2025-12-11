@@ -22,7 +22,7 @@ export default function RecipeItemCard({
         >
             <div className="flex items-center justify-between">
                 <div className="flex items-center flex-1 gap-3">
-                    <FoodItemIcon className="w-8 h-8 text-gray-900" />
+                    <FoodItemIcon className="w-8 h-8" />
                     <div className="flex flex-col">
                         <h3 className="font-semibold text-lg">{name}</h3>
                         <span className="text-sm text-gray-600">{calories ?? 0} Cal</span>
