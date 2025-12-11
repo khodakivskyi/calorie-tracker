@@ -3,6 +3,7 @@ import PageHeader from "../components/PageHeader.tsx";
 import SearchBar from "../components/SearchBar.tsx";
 import RecipeItemCard from "../components/RecipeItemCard.tsx";
 import CreateDishModal from "../components/modals/CreateDishModal.tsx";
+import UpdateDishModal from "../components/modals/UpdateDishModal.tsx";
 import type {Dish} from "../store/types/dishTypes.ts";
 import {useAppDispatch, useAppSelector} from "../store";
 import {getDishesByUserRequest} from "../store/slices/dishesSlice.ts";
@@ -20,6 +21,7 @@ export default function DishesPage() {
 
     const [searchQuery, setSearchQuery] = useState('');
     const [isCreateDishOpen, setIsCreateDishOpen] = useState(false);
+    const [dishToEdit, setDishToEdit] = useState<Dish | null>(null);
 
     // Load dishes and foods on mount
     useEffect(() => {
@@ -37,8 +39,10 @@ export default function DishesPage() {
         setIsCreateDishOpen(true);
     };
 
-    const handleItemClick = (_dish: Dish) => {
-        // TODO: navigate to dish detail page or open edit modal
+    const handleItemClick = (dish: Dish) => {
+        if (dish.ownerId && user && dish.ownerId === user.id) {
+            setDishToEdit(dish);
+        }
     };
 
     // Filter dishes by search query
@@ -85,6 +89,12 @@ export default function DishesPage() {
             <CreateDishModal
                 isOpen={isCreateDishOpen}
                 onClose={() => setIsCreateDishOpen(false)}
+            />
+
+            <UpdateDishModal
+                isOpen={!!dishToEdit}
+                dish={dishToEdit}
+                onClose={() => setDishToEdit(null)}
             />
         </div>
     );

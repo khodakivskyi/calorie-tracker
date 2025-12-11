@@ -30,9 +30,9 @@ export default function SelectDishModal({
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-            <div className="bg-white p-6 rounded-lg w-96 max-h-[80vh] overflow-y-auto">
-                <h3 className="text-lg font-bold mb-4">Select or create a dish</h3>
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-[1px] flex justify-center items-center z-50">
+            <div className="bg-white p-6 rounded-2xl shadow-2xl border border-gray-100 w-[480px] max-h-[80vh] overflow-y-auto">
+                <h3 className="text-xl font-bold mb-2">Select or create a dish</h3>
                 
                 {/* Search bar */}
                 <div className="mb-4">

@@ -80,11 +80,14 @@ export default function CreateIngredientModal({
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-[70]">
-            <div className="bg-white p-6 rounded-lg w-96">
-                <h3 className="text-lg font-bold mb-4">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-[1px] flex justify-center items-center z-[70]">
+            <div className="bg-white p-6 rounded-2xl shadow-2xl border border-gray-100 w-[480px]">
+                <h3 className="text-xl font-bold mb-2">
                     {foodToEdit ? "Edit ingredient" : "Create new ingredient"}
                 </h3>
+                <p className="text-sm text-gray-500 mb-4">
+                    Set nutrition per 100g and reuse it in dishes.
+                </p>
 
                 <div className="space-y-4">
                     <div>
