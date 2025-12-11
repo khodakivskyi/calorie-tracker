@@ -18,8 +18,12 @@ import {updateFoodEpic} from "./food/updateFoodEpic.ts";
 import {updateDishEpic} from "./dish/updateDishEpic.ts";
 import {deleteFoodEpic} from "./food/deleteFoodEpic.ts";
 import {deleteDishEpic} from "./dish/deleteDishEpic.ts";
+import type {CalorieLimitAction} from "../types/calorieLimitTypes.ts";
+import {setCalorieLimitEpic} from "./calorieLimit/setLimitEpic.ts"
+import {getCalorieLimitEpic} from "./calorieLimit/getLimitEpic.ts";
+import {removeCalorieLimitEpic} from "./calorieLimit/removeLimitEpic.ts";
 
-export type RootEpicAction = AuthAction | ProfileAction | MealAction | FoodAction | DishAction;
+export type RootEpicAction = AuthAction | ProfileAction | MealAction | FoodAction | DishAction | CalorieLimitAction;
 
 export const rootEpic = combineEpics<RootEpicAction, RootEpicAction, RootState>(
     registerUserEpic,
@@ -34,5 +38,8 @@ export const rootEpic = combineEpics<RootEpicAction, RootEpicAction, RootState>(
     updateFoodEpic,
     updateDishEpic,
     deleteFoodEpic,
-    deleteDishEpic
-);
+    deleteDishEpic,
+    setCalorieLimitEpic,
+    getCalorieLimitEpic,
+    removeCalorieLimitEpic
+)

@@ -4,13 +4,15 @@ import profileReducer, * as profileActions from './profileSlice.ts';
 import mealReducer, * as mealActions from './mealSlice.ts';
 import foodReducer, * as foodActions from './foodsSlice.ts';
 import dishReducer, * as dishActions from './dishesSlice.ts';
+import calorieLimitReducer, * as calorieLimitActions from './calorieLimitSlice.ts';
 
 export const rootReducer = combineReducers({
     auth: authReducer,
     profile: profileReducer,
     meal: mealReducer,
     food: foodReducer,
-    dish: dishReducer
+    dish: dishReducer,
+    calorieLimit: calorieLimitReducer
 });
 
 export type RootState = ReturnType<typeof rootReducer>;
@@ -57,4 +59,13 @@ export type RootAction =
     | ReturnType<typeof foodActions.deleteFoodFailure>
     | ReturnType<typeof dishActions.deleteDishRequest>
     | ReturnType<typeof dishActions.deleteDishSuccess>
-    | ReturnType<typeof dishActions.deleteDishFailure>;
+    | ReturnType<typeof dishActions.deleteDishFailure>
+    | ReturnType<typeof calorieLimitActions.getLimitRequest>
+    | ReturnType<typeof calorieLimitActions.getLimitSuccess>
+    | ReturnType<typeof calorieLimitActions.getLimitFailure>
+    | ReturnType<typeof calorieLimitActions.setLimitRequest>
+    | ReturnType<typeof calorieLimitActions.setLimitSuccess>
+    | ReturnType<typeof calorieLimitActions.setLimitFailure>
+    | ReturnType<typeof calorieLimitActions.removeLimitRequest>
+    | ReturnType<typeof calorieLimitActions.removeLimitSuccess>
+    | ReturnType<typeof calorieLimitActions.removeLimitFailure>;

@@ -4,16 +4,20 @@ import {useAppDispatch, useAppSelector} from '../store';
 import {updateProfileRequest, clearSettingsMessages} from '../store/slices/profileSlice.ts';
 import {graphqlRequest} from '../config/graphqlClient';
 import {logout} from '../store/slices/authSlice';
+import CalorieGoalModal from '../components/modals/CalorieGoalModal.tsx';
+import { setLimitRequest, removeLimitRequest } from '../store/slices/calorieLimitSlice'; // додано
 
 export default function ProfilePage() {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const {user} = useAppSelector(state => state.auth);
     const {loading, error, success} = useAppSelector(state => state.profile);
+    const calorieLimit = useAppSelector(state => state.calorieLimit.limit); // додано
 
     const [name, setName] = useState(user?.name || '');
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [isCalorieModalOpen, setIsCalorieModalOpen] = useState(false);
 
     useEffect(() => {
         if (user?.name) {
@@ -34,22 +38,14 @@ export default function ProfilePage() {
 
     const handleChangePassword = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-
-        if (newPassword !== confirmPassword) {
-            return;
-        }
-
-        if (newPassword.length < 6) {
-            return;
-        }
-
+        if (newPassword !== confirmPassword) return;
+        if (newPassword.length < 6) return;
         dispatch(updateProfileRequest(null, newPassword));
         setNewPassword('');
         setConfirmPassword('');
     };
 
     const handleLogout = async () => {
-        //move to epic
         try {
             await graphqlRequest<{ logout: boolean }>(`
                 query {
@@ -62,6 +58,17 @@ export default function ProfilePage() {
             dispatch(logout());
             navigate('/login');
         }
+    };
+
+    const ownerId = user?.id ?? 1; // або auth.userId
+
+    const handleSaveLimit = (newLimit: number) => {
+        if (newLimit <= 0) {
+            dispatch(removeLimitRequest({ ownerId }));
+        } else {
+            dispatch(setLimitRequest({ ownerId, limitValue: newLimit }));
+        }
+        setIsCalorieModalOpen(false);
     };
 
     if (!user) {
@@ -81,7 +88,6 @@ export default function ProfilePage() {
             <div className="bg-white rounded-2xl shadow-lg p-6">
                 <h1 className="text-2xl font-bold text-gray-900 mb-6">Profile Settings</h1>
 
-                {/* Success/Error*/}
                 {success && (
                     <div className="bg-green-50 border-l-4 border-green-500 p-4 rounded-lg mb-4">
                         <p className="text-green-700">{success}</p>
@@ -94,7 +100,22 @@ export default function ProfilePage() {
                     </div>
                 )}
 
-                {/* Profile Section */}
+                <div className="mb-6">
+                    <button
+                        onClick={() => setIsCalorieModalOpen(true)}
+                        className="w-full py-3 px-6 rounded-lg font-semibold text-white bg-green-500 hover:bg-green-600 transition-all duration-200"
+                    >
+                        Set Daily Calorie Goal
+                    </button>
+                </div>
+
+                <CalorieGoalModal
+                    isOpen={isCalorieModalOpen}
+                    onClose={() => setIsCalorieModalOpen(false)}
+                    currentLimit={calorieLimit?.limitValue ?? 2500} // передаємо актуальний ліміт
+                    onSave={handleSaveLimit} // передаємо функцію збереження
+                />
+
                 <div className="mb-8">
                     <h2 className="text-lg font-semibold text-gray-800 mb-4">Profile Information</h2>
 
@@ -139,7 +160,6 @@ export default function ProfilePage() {
                     </form>
                 </div>
 
-                {/* Password */}
                 <div className="mb-8 border-t border-gray-200 pt-8">
                     <h2 className="text-lg font-semibold text-gray-800 mb-4">Change Password</h2>
 
@@ -194,7 +214,6 @@ export default function ProfilePage() {
                     </form>
                 </div>
 
-                {/* Security */}
                 <div className="border-t border-gray-200 pt-8">
                     <h2 className="text-lg font-semibold text-gray-800 mb-4">Security</h2>
 
@@ -209,4 +228,3 @@ export default function ProfilePage() {
         </div>
     );
 }
-
