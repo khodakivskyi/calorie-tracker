@@ -98,8 +98,8 @@ export default function AddMealModal({isOpen, onClose, onAddMeal, mealType}: Add
     }, []);
 
     // Remove dish from meal
-    const handleRemoveDish = useCallback((dishId: number) => {
-        setMealDishes(prev => prev.filter(md => md.dishId !== dishId));
+    const handleRemoveDish = useCallback((idx: number) => {
+        setMealDishes(prev => prev.filter((_, i) => i !== idx));
     }, []);
 
     const handleOpenUpdateDish = useCallback((mealDish: MealDish) => {
@@ -185,7 +185,7 @@ export default function AddMealModal({isOpen, onClose, onAddMeal, mealType}: Add
                                                     Edit
                                                 </button>
                                                 <button
-                                                    onClick={() => handleRemoveDish(mealDish.dishId)}
+                                                    onClick={() => handleRemoveDish(idx)}
                                                     className="text-red-500 hover:text-red-700 text-sm font-medium transition-colors"
                                                 >
                                                     Remove
