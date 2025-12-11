@@ -7,11 +7,21 @@ import type {RootEpicAction} from '../rootEpic.ts';
 import type {RootState} from "../../slices/rootReducer.ts";
 
 const createMealMutation = `
-    mutation CreateMeal($ownerId: Int!, $typeId: Int!, $name: String!) {
-        createMeal(ownerId: $ownerId, typeId: $typeId, name: $name) {
+    mutation CreateMeal($ownerId: Int!, $typeId: Int!, $name: String, $dishes: [CreateDishInput!]) {
+        createMeal(input: {
+            ownerId: $ownerId
+            typeId: $typeId
+            name: $name
+            dishes: $dishes
+        }) {
             id
             ownerId
+            typeId
             name
+            calories
+            protein
+            carbohydrate
+            fat
             createdAt
             updatedAt
         }
@@ -22,7 +32,12 @@ type CreateMealResponse = {
     createMeal: {
         id: number;
         ownerId: number;
+        typeId: number;
         name: string;
+        calories: number | null;
+        protein: number | null;
+        carbohydrate: number | null;
+        fat: number | null;
         createdAt: string;
         updatedAt: string;
     };
