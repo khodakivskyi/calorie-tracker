@@ -13,7 +13,7 @@ export default function MainPage() {
         <div className="min-h-screen pb-24">
             <Header/>
             <DateSelector/>
-            <Dashboard/> {/* передаємо goal для Dashboard */}
+            <Dashboard/>
 
             <div className="mt-8 px-4 flex flex-col gap-3">
                 <Link to="/add-meal">
@@ -23,7 +23,6 @@ export default function MainPage() {
                     </button>
                 </Link>
 
-                {/* Кнопка для відкриття модалки ліміту калорій */}
                 <button
                     onClick={() => setIsCalorieModalOpen(true)}
                     className="w-full bg-green-500 hover:bg-green-600 text-white font-medium py-3 px-6 rounded-full transition-colors duration-200 shadow-md hover:shadow-lg"
@@ -32,7 +31,6 @@ export default function MainPage() {
                 </button>
             </div>
 
-            {/* Модалка */}
             <CalorieGoalModal
                 isOpen={isCalorieModalOpen}
                 onClose={() => setIsCalorieModalOpen(false)}

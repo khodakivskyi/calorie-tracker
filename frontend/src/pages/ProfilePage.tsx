@@ -85,7 +85,6 @@ export default function ProfilePage() {
             <div className="bg-white rounded-2xl shadow-lg p-6">
                 <h1 className="text-2xl font-bold text-gray-900 mb-6">Profile Settings</h1>
 
-                {/* Success/Error*/}
                 {success && (
                     <div className="bg-green-50 border-l-4 border-green-500 p-4 rounded-lg mb-4">
                         <p className="text-green-700">{success}</p>
@@ -97,7 +96,6 @@ export default function ProfilePage() {
                         <p className="text-red-700">{error}</p>
                     </div>
                 )}
-                {/* Кнопка для відкриття модалки */}
                 <div className="mb-6">
                     <button
                         onClick={() => setIsCalorieModalOpen(true)}
@@ -107,14 +105,12 @@ export default function ProfilePage() {
                     </button>
                 </div>
 
-                {/* Модалка */}
                 <CalorieGoalModal
                     isOpen={isCalorieModalOpen}
                     onClose={() => setIsCalorieModalOpen(false)}
                     currentLimit={2500}
                     onSave={() => {}}
                 />
-                {/* Profile Section */}
                 <div className="mb-8">
                     <h2 className="text-lg font-semibold text-gray-800 mb-4">Profile Information</h2>
 
@@ -159,7 +155,6 @@ export default function ProfilePage() {
                     </form>
                 </div>
 
-                {/* Password */}
                 <div className="mb-8 border-t border-gray-200 pt-8">
                     <h2 className="text-lg font-semibold text-gray-800 mb-4">Change Password</h2>
 
@@ -214,7 +209,6 @@ export default function ProfilePage() {
                     </form>
                 </div>
 
-                {/* Security */}
                 <div className="border-t border-gray-200 pt-8">
                     <h2 className="text-lg font-semibold text-gray-800 mb-4">Security</h2>
 
