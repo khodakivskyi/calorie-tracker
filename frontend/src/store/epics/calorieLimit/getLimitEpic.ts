@@ -9,21 +9,21 @@ import {
 import { graphqlRequest } from "../../../config/graphqlClient";
 import type { RootEpicAction } from "../rootEpic";
 import type { RootState } from "../../slices/rootReducer";
+import type { CalorieLimit } from "../../types/calorieLimitTypes"
 
 const getLimitQuery = `
   query GetCalorieLimit($ownerId: Int!) {
     getCalorieLimit(ownerId: $ownerId) {
+      id          
       ownerId
       limitValue
+      createdAt   
     }
   }
 `;
 
 type GetLimitResponse = {
-    getCalorieLimit: {
-        ownerId: number;
-        limitValue: number;
-    } | null;
+    getCalorieLimit: CalorieLimit | null;
 };
 
 type GetLimitRequestAction = ReturnType<typeof getLimitRequest>;
@@ -37,16 +37,8 @@ export const getCalorieLimitEpic: Epic<RootEpicAction, RootEpicAction, RootState
                     ownerId: action.payload.ownerId
                 })
             ).pipe(
-                map((res) =>
-                    getLimitSuccess(
-                        res.getCalorieLimit.map
-                            ? {
-                                ownerId: res.getCalorieLimit.ownerId,
-                                limitValue: res.getCalorieLimit.limitValue
-                            }
-                            : null
-                    )
-                ),
+                map((res) => getLimitSuccess(res.getCalorieLimit)),
+
                 catchError((err) =>
                     of(
                         getLimitFailure(

@@ -13,22 +13,22 @@ namespace backend.GraphQL.Mutations
             Name = "CalorieLimitMutations";
 
             Field<CalorieLimitType>("setCalorieLimit")
-                .Argument<NonNullGraphType<IntGraphType>>("userId")
+                .Argument<NonNullGraphType<IntGraphType>>("ownerId")
                 .Argument<NonNullGraphType<DecimalGraphType>>("limitValue")
                 .ResolveAsync(async context =>
                 {
-                    var userId = context.GetArgument<int>("userId");
+                    var ownerId = context.GetArgument<int>("ownerId");
                     var value = context.GetArgument<decimal>("limitValue");
 
-                    return await limitService.SetLimitAsync(userId, value);
+                    return await limitService.SetLimitAsync(ownerId, value);
                 });
 
             Field<BooleanGraphType>("removeCalorieLimit")
-                .Argument<NonNullGraphType<IntGraphType>>("userId")
+                .Argument<NonNullGraphType<IntGraphType>>("ownerId")
                 .ResolveAsync(async context =>
                 {
-                    var userId = context.GetArgument<int>("userId");
-                    return await limitService.DeleteLimitAsync(userId);
+                    var ownerId = context.GetArgument<int>("ownerId");
+                    return await limitService.DeleteLimitAsync(ownerId);
                 });
         }
     }

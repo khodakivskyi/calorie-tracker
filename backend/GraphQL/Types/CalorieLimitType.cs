@@ -8,7 +8,7 @@ namespace backend.GraphQL.Types
         public CalorieLimitType()
         {
             Field(x => x.Id);
-            Field(x => x.UserId);
+            Field(x => x.OwnerId);
             Field(x => x.LimitValue);
             Field(x => x.CreatedAt);
         }

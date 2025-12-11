@@ -4,10 +4,10 @@ namespace backend.Repositories.Interfaces
 {
     public interface ICalorieLimitRepository
     {
-        Task<CalorieLimit?> GetLimitByUserIdAsync(int userId);
+        Task<CalorieLimit?> GetLimitByOwnerIdAsync(int ownerId);
         Task<CalorieLimit?> CreateLimitAsync(CalorieLimit limit);
         Task<CalorieLimit?> UpdateLimitAsync(CalorieLimit limit);
-        Task<bool> DeleteLimitAsync(int userId);
+        Task<bool> DeleteLimitAsync(int ownerId);
     }
 
 }

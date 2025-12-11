@@ -13,18 +13,18 @@ namespace backend.Services
             _repository = repository;
         }
 
-        public async Task<CalorieLimit?> GetLimitByUserIdAsync(int userId)
+        public async Task<CalorieLimit?> GetLimitByOwnerIdAsync(int ownerId)
         {
-            return await _repository.GetLimitByUserIdAsync(userId);
+            return await _repository.GetLimitByOwnerIdAsync(ownerId);
         }
 
-        public async Task<CalorieLimit?> SetLimitAsync(int userId, decimal limitValue)
+        public async Task<CalorieLimit?> SetLimitAsync(int ownerId, decimal limitValue)
         {
-            var existing = await _repository.GetLimitByUserIdAsync(userId);
+            var existing = await _repository.GetLimitByOwnerIdAsync(ownerId);
 
             if (existing == null)
             {
-                var newLimit = new CalorieLimit(userId, limitValue);
+                var newLimit = new CalorieLimit(ownerId, limitValue);
                 return await _repository.CreateLimitAsync(newLimit);
             }
 
@@ -32,9 +32,9 @@ namespace backend.Services
             return await _repository.UpdateLimitAsync(existing);
         }
 
-        public async Task<bool> DeleteLimitAsync(int userId)
+        public async Task<bool> DeleteLimitAsync(int ownerId)
         {
-            return await _repository.DeleteLimitAsync(userId);
+            return await _repository.DeleteLimitAsync(ownerId);
         }
     }
 }

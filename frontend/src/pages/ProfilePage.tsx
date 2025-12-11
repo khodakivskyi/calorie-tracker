@@ -4,18 +4,19 @@ import {useAppDispatch, useAppSelector} from '../store';
 import {updateProfileRequest, clearSettingsMessages} from '../store/slices/profileSlice.ts';
 import {graphqlRequest} from '../config/graphqlClient';
 import {logout} from '../store/slices/authSlice';
-import CalorieGoalModal from '../components/CalorieGoalModal';
+import CalorieGoalModal from '../components/modals/CalorieGoalModal.tsx';
+import { setLimitRequest, removeLimitRequest } from '../store/slices/calorieLimitSlice'; // додано
 
 export default function ProfilePage() {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const {user} = useAppSelector(state => state.auth);
     const {loading, error, success} = useAppSelector(state => state.profile);
+    const calorieLimit = useAppSelector(state => state.calorieLimit.limit); // додано
 
     const [name, setName] = useState(user?.name || '');
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
-
     const [isCalorieModalOpen, setIsCalorieModalOpen] = useState(false);
 
     useEffect(() => {
@@ -37,22 +38,14 @@ export default function ProfilePage() {
 
     const handleChangePassword = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-
-        if (newPassword !== confirmPassword) {
-            return;
-        }
-
-        if (newPassword.length < 6) {
-            return;
-        }
-
+        if (newPassword !== confirmPassword) return;
+        if (newPassword.length < 6) return;
         dispatch(updateProfileRequest(null, newPassword));
         setNewPassword('');
         setConfirmPassword('');
     };
 
     const handleLogout = async () => {
-        //move to epic
         try {
             await graphqlRequest<{ logout: boolean }>(`
                 query {
@@ -67,6 +60,17 @@ export default function ProfilePage() {
         }
     };
 
+    const ownerId = user?.id ?? 1; // або auth.userId
+
+    const handleSaveLimit = (newLimit: number) => {
+        if (newLimit <= 0) {
+            dispatch(removeLimitRequest({ ownerId }));
+        } else {
+            dispatch(setLimitRequest({ ownerId, limitValue: newLimit }));
+        }
+        setIsCalorieModalOpen(false);
+    };
+
     if (!user) {
         return (
             <div className="min-h-screen pb-24 p-4">
@@ -78,7 +82,6 @@ export default function ProfilePage() {
             </div>
         );
     }
-
 
     return (
         <div className="min-h-screen pb-24">
@@ -96,6 +99,7 @@ export default function ProfilePage() {
                         <p className="text-red-700">{error}</p>
                     </div>
                 )}
+
                 <div className="mb-6">
                     <button
                         onClick={() => setIsCalorieModalOpen(true)}
@@ -108,9 +112,10 @@ export default function ProfilePage() {
                 <CalorieGoalModal
                     isOpen={isCalorieModalOpen}
                     onClose={() => setIsCalorieModalOpen(false)}
-                    currentLimit={2500}
-                    onSave={() => {}}
+                    currentLimit={calorieLimit?.limitValue ?? 2500} // передаємо актуальний ліміт
+                    onSave={handleSaveLimit} // передаємо функцію збереження
                 />
+
                 <div className="mb-8">
                     <h2 className="text-lg font-semibold text-gray-800 mb-4">Profile Information</h2>
 
@@ -223,4 +228,3 @@ export default function ProfilePage() {
         </div>
     );
 }
-

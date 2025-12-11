@@ -1,4 +1,6 @@
-import {useEffect} from "react";
+import { useEffect } from "react";
+import { useAppDispatch, useAppSelector } from "../store";
+import { getLimitRequest } from "../store/slices/calorieLimitSlice";
 
 interface CircularProgressProps {
     value: number;
@@ -15,11 +17,7 @@ function CircularProgress({ value, max, color, size = 60 }: CircularProgressProp
 
     return (
         <div className="relative" style={{ width: size, height: size }}>
-            <svg
-                className="transform -rotate-90"
-                width={size}
-                height={size}
-            >
+            <svg className="transform -rotate-90" width={size} height={size}>
                 <circle
                     cx={size / 2}
                     cy={size / 2}
@@ -69,37 +67,60 @@ function NutrientCard({ label, value, color, progressValue, progressMax }: Nutri
     );
 }
 
-export default function Dashboard() {
-    useEffect(() => {
+interface DashboardProps {
+    onSetLimitClick?: () => void; // callback для кнопки
+}
 
-    }, []);
+export default function Dashboard({ onSetLimitClick }: DashboardProps) {
+    const dispatch = useAppDispatch();
+
+    const calorieLimit = useAppSelector(state => state.calorieLimit.limit);
+    const loading = useAppSelector(state => state.calorieLimit.loading);
+
+    const ownerId = 1; // TODO: заміниш на auth.userId коли буде готово
+
+    useEffect(() => {
+        dispatch(getLimitRequest({ ownerId }));
+    }, [dispatch]);
 
     const consumedCalories = 529;
-    const dailyGoal = 2500;
-    const progressPercentage = (consumedCalories / dailyGoal) * 100;
+    const dailyGoal = calorieLimit?.limitValue;
+    const progressPercentage = dailyGoal ? (consumedCalories / dailyGoal) * 100 : 0;
+    const hasLimit = !!dailyGoal;
 
     return (
         <div className="space-y-4 mt-8">
-            {/* Main calorie summary block */}
-            <div className="bg-white rounded-2xl p-6">
-                <div className="space-y-3">
-                    <h2 className="text-gray-600 text-sm font-medium">Consumed today</h2>
-                    <div className="space-y-2">
-                        <div className="flex items-baseline gap-2">
-                            <span className="text-3xl font-bold text-green-500">{consumedCalories}</span>
-                            <span className="text-xl text-gray-400">/ {dailyGoal.toLocaleString()} Cal</span>
-                        </div>
-                        <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden">
-                            <div
-                                className="h-full bg-green-500 rounded-full transition-all duration-300"
-                                style={{ width: `${Math.min(progressPercentage, 100)}%` }}
-                            />
-                        </div>
+            {loading && (
+                <div className="text-center text-gray-500">Loading calorie limit...</div>
+            )}
+
+            <div className="relative bg-white rounded-2xl p-6">
+                <h2 className="text-gray-600 text-sm font-medium">Consumed today</h2>
+                <div className="text-center mb-3">
+                    <span className="text-3xl font-bold text-green-500">{consumedCalories}</span>
+                    <span className="text-xl text-gray-400"> / {dailyGoal?.toLocaleString()} Cal</span>
+                </div>
+                {!hasLimit && (
+                    <div className="flex justify-center mt-2">
+                        <button
+                            onClick={onSetLimitClick}
+                            className="w-auto bg-green-500 hover:bg-green-600 text-white font-medium py-1 px-6 rounded-full transition-colors duration-200 shadow-md hover:shadow-lg"
+                        >
+                            Set Goal
+                        </button>
+                    </div>
+
+                )}
+                <div className={`transition-all ${!hasLimit ? 'filter blur-sm pointer-events-none' : ''}`}>
+                    <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden">
+                        <div
+                            className="h-full bg-green-500 rounded-full transition-all duration-300"
+                            style={{ width: `${Math.min(progressPercentage, 100)}%` }}
+                        />
                     </div>
                 </div>
             </div>
 
-            {/* Nutrient cards grid block */}
             <div className="grid grid-cols-2 gap-4">
                 <NutrientCard
                     label="Protein"
@@ -131,5 +152,5 @@ export default function Dashboard() {
                 />
             </div>
         </div>
-    )
+    );
 }

@@ -11,11 +11,11 @@ namespace backend.GraphQL.Queries
         public CalorieLimitQuery(CalorieLimitService limitService)
         {
             Field<CalorieLimitType>("getCalorieLimit")
-                .Argument<NonNullGraphType<IntGraphType>>("userId")
+                .Argument<NonNullGraphType<IntGraphType>>("ownerId")
                 .ResolveAsync(async context =>
                 {
-                    var userId = context.GetArgument<int>("userId");
-                    return await limitService.GetLimitByUserIdAsync(userId);
+                    var ownerId = context.GetArgument<int>("ownerId");
+                    return await limitService.GetLimitByOwnerIdAsync(ownerId);
                 });
         }
     }

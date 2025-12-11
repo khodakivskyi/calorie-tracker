@@ -26,16 +26,18 @@ export default function CalorieLimitModal({ isOpen, onClose, currentLimit, onSav
     };
 
     const handleBlur = () => {
-        let val = calories;
-        if (val < 1000) val = 1000;
-        if (val > 5000) val = 5000;
-        setCalories(val);
+        setCalories(calories);
     };
 
     const handleSave = () => {
-        onSave(calories);
+        if (calories <= 0) {
+            onSave(-1);
+        } else {
+            onSave(calories);
+        }
         onClose();
     };
+
 
     if (!isOpen) return null;
 

@@ -14,21 +14,21 @@ namespace backend.Repositories
             _connectionString = connectionString;
         }
 
-        public async Task<CalorieLimit?> GetLimitByUserIdAsync(int userId)
+        public async Task<CalorieLimit?> GetLimitByOwnerIdAsync(int ownerId)
         {
             using var connection = new SqlConnection(_connectionString);
 
             const string sql = @"
                 SELECT 
                     id,
-                    user_id AS UserId,
+                    user_id AS OwnerId,
                     limit_value AS LimitValue,
                     created_at AS CreatedAt
                 FROM calorie_limits
-                WHERE user_id = @UserId;
+                WHERE user_id = @OwnerId;
             ";
 
-            return await connection.QuerySingleOrDefaultAsync<CalorieLimit>(sql, new { UserId = userId });
+            return await connection.QuerySingleOrDefaultAsync<CalorieLimit>(sql, new { OwnerId = ownerId });
         }
 
         public async Task<CalorieLimit?> CreateLimitAsync(CalorieLimit limit)
@@ -38,10 +38,10 @@ namespace backend.Repositories
             const string sql = @"
                 INSERT INTO calorie_limits (user_id, limit_value)
                 OUTPUT INSERTED.id,
-                       INSERTED.user_id AS UserId,
+                       INSERTED.user_id AS OwnerId,
                        INSERTED.limit_value AS LimitValue,
                        INSERTED.created_at AS CreatedAt
-                VALUES (@UserId, @LimitValue);
+                VALUES (@OwnerId, @LimitValue);
             ";
 
             return await connection.QuerySingleOrDefaultAsync<CalorieLimit>(sql, limit);
@@ -55,32 +55,22 @@ namespace backend.Repositories
                 UPDATE calorie_limits
                 SET limit_value = @LimitValue
                 OUTPUT INSERTED.id,
-                       INSERTED.user_id AS UserId,
+                       INSERTED.user_id AS OwnerId,
                        INSERTED.limit_value AS LimitValue,
                        INSERTED.created_at AS CreatedAt
-                WHERE user_id = @UserId;
+                WHERE user_id = @OwnerId;
             ";
 
             return await connection.QuerySingleOrDefaultAsync<CalorieLimit>(sql, limit);
         }
 
-        public async Task<bool> DeleteLimitAsync(int userId)
+        public async Task<bool> DeleteLimitAsync(int ownerId)
         {
             using var connection = new SqlConnection(_connectionString);
 
-            const string sql = @"DELETE FROM calorie_limits WHERE user_id = @UserId";
+            const string sql = @"DELETE FROM calorie_limits WHERE user_id = @OwnerId";
 
-            var affectedRows = await connection.ExecuteAsync(sql, new { UserId = userId });
-            return affectedRows > 0;
-        }
-
-        public async Task<bool> DeleteLimitByIdAsync(int id)
-        {
-            using var connection = new SqlConnection(_connectionString);
-
-            const string sql = @"DELETE FROM calorie_limits WHERE id = @Id";
-
-            var affectedRows = await connection.ExecuteAsync(sql, new { Id = id });
+            var affectedRows = await connection.ExecuteAsync(sql, new { OwnerId = ownerId });
             return affectedRows > 0;
         }
     }
