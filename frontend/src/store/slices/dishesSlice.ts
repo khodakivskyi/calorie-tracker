@@ -21,7 +21,7 @@ const dishesSlice = createSlice({
     reducers: {
         createDishRequest(
             state,
-            _action: PayloadAction<{ ownerId?: number; name: string; weight: number }>
+            _action: PayloadAction<{ ownerId?: number; name: string; weight: number,  imageId?: number | null; }>
         ) {
             state.loading = true;
             state.error = null;
