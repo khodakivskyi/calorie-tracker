@@ -4,6 +4,7 @@ import {useAppDispatch, useAppSelector} from "../../store";
 import {createDishRequest} from "../../store/slices/dishesSlice.ts";
 import SelectIngredientModal from "./SelectIngredientModal.tsx";
 import CreateIngredientModal from "./CreateIngredientModal.tsx";
+import type {Food} from "../../store/types/foodTypes.ts";
 
 interface CreateDishModalProps {
     isOpen: boolean;
@@ -16,18 +17,18 @@ interface CreateDishModalProps {
  * Manages its own ingredient selection/creation modals internally.
  */
 export default function CreateDishModal({
-    isOpen,
-    onClose,
-    onSuccess
-}: CreateDishModalProps) {
+                                            isOpen,
+                                            onClose,
+                                            onSuccess
+                                        }: CreateDishModalProps) {
     const dispatch = useAppDispatch();
     const {user} = useAppSelector(state => state.auth);
     const {foods} = useAppSelector(state => state.food);
-    
+
     // Dish data
     const [dishName, setDishName] = useState("");
     const [ingredients, setIngredients] = useState<DishFood[]>([]);
-    
+
     // Child modals state
     const [showSelectIngredient, setShowSelectIngredient] = useState(false);
     const [showCreateIngredient, setShowCreateIngredient] = useState(false);
@@ -38,13 +39,13 @@ export default function CreateDishModal({
     }, [ingredients]);
 
     // Add ingredient to list
-    const handleAddIngredient = useCallback((food: any, weight: number = 100) => {
+    const handleAddIngredient = useCallback((food: Food, weight: number = 100) => {
         setIngredients(prev => [...prev, {foodId: food.id, weight, food}]);
         setShowSelectIngredient(false);
     }, []);
 
     // Create new ingredient and add to list
-    const handleCreateIngredient = useCallback((food: any) => {
+    const handleCreateIngredient = useCallback((food: Food) => {
         setIngredients(prev => [...prev, {foodId: food.id, weight: 100, food}]);
         setShowCreateIngredient(false);
     }, []);
@@ -66,7 +67,7 @@ export default function CreateDishModal({
     // Create dish
     const handleCreate = useCallback(() => {
         if (!dishName.trim() || totalWeight <= 0 || !user) return;
-        
+
         const newDish: Dish = {
             id: Date.now(),
             name: dishName.trim(),
@@ -75,17 +76,17 @@ export default function CreateDishModal({
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
         };
-        
+
         // Dispatch to Redux
         dispatch(createDishRequest({
             name: newDish.name,
             ownerId: newDish.ownerId!,
             weight: newDish.weight
         }));
-        
+
         // Call success callback if provided
         onSuccess?.(newDish, ingredients);
-        
+
         // Reset and close
         resetForm();
         onClose();
@@ -109,10 +110,11 @@ export default function CreateDishModal({
     return (
         <>
             <div className="fixed inset-0 bg-black/60 backdrop-blur-[1px] flex justify-center items-center z-50">
-                <div className="bg-white p-6 rounded-2xl shadow-2xl border border-gray-100 w-[520px] max-h-[85vh] overflow-y-auto">
+                <div
+                    className="bg-white p-6 rounded-2xl shadow-2xl border border-gray-100 w-[520px] max-h-[85vh] overflow-y-auto">
                     <h3 className="text-xl font-bold mb-1">Create New Dish</h3>
                     <p className="text-sm text-gray-500 mb-4">Name your dish and add ingredients with weights.</p>
-                    
+
                     <div className="space-y-4">
                         {/* Dish name */}
                         <div>
@@ -152,7 +154,7 @@ export default function CreateDishModal({
                                     + Add
                                 </button>
                             </div>
-                            
+
                             {ingredients.length > 0 ? (
                                 <ul className="space-y-2">
                                     {ingredients.map((ing, idx) => (
