@@ -3,7 +3,7 @@ import { useAppDispatch, useAppSelector } from '../store';
 import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine
 } from 'recharts';
-import { fetchChartDataRequest } from '../store/slices/caloriesChartSlice';
+import { fetchChartDataRequest, type ChartDataPoint } from '../store/slices/caloriesChartSlice';
 
 interface CaloriesChartProps {
     dailyGoal: number;
@@ -46,9 +46,8 @@ export default function CaloriesChart({ dailyGoal }: CaloriesChartProps) {
             const d = String(loopDate.getDate()).padStart(2, '0');
             const dateString = `${y}-${m}-${d}`;
 
-            const existingData = data.find((item: any) =>
-                (item.fullDate && item.fullDate.startsWith(dateString)) ||
-                (item.date && item.date.startsWith(dateString))
+            const existingData = data.find((item: ChartDataPoint) =>
+                item.fullDate && item.fullDate.startsWith(dateString)
             );
 
             result.push({
@@ -62,7 +61,15 @@ export default function CaloriesChart({ dailyGoal }: CaloriesChartProps) {
     }, [data, activeTab]);
 
 
-    const CustomTooltip = ({ active, payload }: any) => {
+    interface TooltipProps {
+        active?: boolean;
+        payload?: Array<{
+            value: number;
+            payload: ChartDataPoint;
+        }>;
+    }
+
+    const CustomTooltip = ({ active, payload }: TooltipProps) => {
         if (active && payload && payload.length) {
             const dataPoint = payload[0].payload;
             const dateObj = new Date(dataPoint.fullDate);

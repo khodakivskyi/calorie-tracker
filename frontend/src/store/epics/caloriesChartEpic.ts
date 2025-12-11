@@ -29,6 +29,22 @@ const GET_MONTHLY_CALORIES = `
     }
 `;
 
+interface GraphQLResponse {
+    getWeeklyCalories?: Array<{
+        date: string;
+        totalCalories: number;
+    }>;
+    getMonthlyCalories?: Array<{
+        date: string;
+        totalCalories: number;
+    }>;
+}
+
+interface CaloriesItem {
+    date: string;
+    totalCalories: number;
+}
+
 const formatLabel = (dateString: string, period: ChartPeriod) => {
     const [year, month, day] = dateString.split('-').map(Number);
     const date = new Date(year, month - 1, day);
@@ -73,11 +89,11 @@ export const caloriesChartEpic: Epic<RootEpicAction, RootEpicAction, RootState> 
                 };
             }
 
-            return from(graphqlRequest<any>(query, variables)).pipe(
+            return from(graphqlRequest<GraphQLResponse>(query, variables)).pipe(
                 map((response) => {
                     const rawData = response.getWeeklyCalories || response.getMonthlyCalories || [];
 
-                    const formattedData = rawData.map((item: any) => ({
+                    const formattedData = rawData.map((item: CaloriesItem) => ({
                         name: formatLabel(item.date, period),
                         calories: Math.round(item.totalCalories),
                         fullDate: item.date
