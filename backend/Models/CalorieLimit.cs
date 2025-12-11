@@ -3,15 +3,15 @@
     public class CalorieLimit
     {
         public int Id { get; }
-        public int UserId { get; init; }
+        public int OwnerId { get; init; }
         public decimal LimitValue { get; set; }
         public DateTime CreatedAt { get; init; }
 
         public CalorieLimit() { }
 
-        public CalorieLimit(int userId, decimal limitValue)
+        public CalorieLimit(int ownerId, decimal limitValue)
         {
-            UserId = userId;
+            OwnerId = ownerId;
             LimitValue = limitValue;
         }
     }

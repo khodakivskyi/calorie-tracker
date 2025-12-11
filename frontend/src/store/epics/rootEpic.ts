@@ -22,8 +22,12 @@ import { caloriesChartEpic } from './caloriesChartEpic';
 import { activityHeatmapEpic } from './activityHeatmapEpic';
 import type {ActivityHeatmapAction} from "../slices/activityHeatmapSlice.ts";
 import type {CaloriesChartAction} from "../slices/caloriesChartSlice.ts";
+import type {CalorieLimitAction} from "../types/calorieLimitTypes.ts";
+import {setCalorieLimitEpic} from "./calorieLimit/setLimitEpic.ts"
+import {getCalorieLimitEpic} from "./calorieLimit/getLimitEpic.ts";
+import {removeCalorieLimitEpic} from "./calorieLimit/removeLimitEpic.ts";
 
-export type RootEpicAction = AuthAction | ProfileAction | MealAction | FoodAction | DishAction | ActivityHeatmapAction | CaloriesChartAction;
+export type RootEpicAction = AuthAction | ProfileAction | MealAction | FoodAction | DishAction | ActivityHeatmapAction | CaloriesChartAction | CalorieLimitAction;
 
 export const rootEpic = combineEpics<RootEpicAction, RootEpicAction, RootState>(
     registerUserEpic,
@@ -41,4 +45,7 @@ export const rootEpic = combineEpics<RootEpicAction, RootEpicAction, RootState>(
     deleteDishEpic,
     caloriesChartEpic,
     activityHeatmapEpic
+    setCalorieLimitEpic,
+    getCalorieLimitEpic,
+    removeCalorieLimitEpic
 );
