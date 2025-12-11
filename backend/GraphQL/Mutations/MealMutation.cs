@@ -1,4 +1,5 @@
 ﻿using backend.GraphQL.Types;
+using backend.Models;
 using backend.Services;
 using GraphQL;
 using GraphQL.Types;
@@ -11,20 +12,20 @@ namespace backend.GraphQL.Mutations
         {
             Name = "MealMutations";
 
-            Field<NonNullGraphType<MealType>>("createMeal")
-                .Argument<NonNullGraphType<IntGraphType>>("ownerId")
-                .Argument<NonNullGraphType<IntGraphType>>("typeId")
-                .Argument<NonNullGraphType<StringGraphType>>("name")
+            Field<NonNullGraphType<Types.MealType>>("createMeal")
+                .Argument<NonNullGraphType<CreateMealInputType>>("input")
                 .ResolveAsync(async context =>
                 {
-                    var ownerId = context.GetArgument<int>("ownerId");
-                    var typeId = context.GetArgument<int>("typeId");
-                    var name = context.GetArgument<string>("name");
+                    var input = context.GetArgument<CreateMealInput>("input");
 
-                    return await mealService.CreateMealAsync(ownerId, typeId, name);
+                    var dishes = input.Dishes?
+                        .Select(d => (d.DishId, d.Weight))
+                        .ToList() ?? new List<(int dishId, decimal weight)>();
+
+                    return await mealService.CreateMealAsync(input.OwnerId, input.TypeId, input.Name, dishes);
                 });
 
-            Field<NonNullGraphType<MealType>>("updateMeal")
+            Field<NonNullGraphType<Types.MealType>>("updateMeal")
                 .Argument<NonNullGraphType<IntGraphType>>("mealId")
                 .Argument<NonNullGraphType<IntGraphType>>("ownerId")
                 .Argument<NonNullGraphType<StringGraphType>>("name")
