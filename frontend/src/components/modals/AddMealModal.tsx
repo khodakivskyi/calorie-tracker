@@ -156,8 +156,8 @@ export default function AddMealModal({isOpen, onClose, onAddMeal, mealType}: Add
                             <p className="text-gray-500 text-center py-8">No dishes added yet</p>
                         ) : (
                             <div className="space-y-3">
-                                {mealDishes.map((mealDish) => (
-                                    <div key={mealDish.dishId} className="border border-gray-200 rounded-xl p-4 bg-gray-50 shadow-sm">
+                                {mealDishes.map((mealDish, idx) => (
+                                    <div key={`${mealDish.dishId}-${idx}`} className="border border-gray-200 rounded-xl p-4 bg-gray-50 shadow-sm">
                                         <div className="flex justify-between items-start">
                                             <div>
                                                 <h4 className="font-semibold text-lg">{mealDish.dish?.name || "Dish"}</h4>

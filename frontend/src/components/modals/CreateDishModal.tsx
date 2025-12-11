@@ -71,7 +71,7 @@ export default function CreateDishModal({
         const newDish: Dish = {
             id: Date.now(),
             name: dishName.trim(),
-            ownerId: user.id,
+            ownerId: user.id ?? null,
             weight: totalWeight,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
@@ -80,7 +80,7 @@ export default function CreateDishModal({
         // Dispatch to Redux
         dispatch(createDishRequest({
             name: newDish.name,
-            ownerId: newDish.ownerId!,
+            ownerId: user.id!,
             weight: newDish.weight
         }));
 
@@ -158,7 +158,7 @@ export default function CreateDishModal({
                             {ingredients.length > 0 ? (
                                 <ul className="space-y-2">
                                     {ingredients.map((ing, idx) => (
-                                        <li key={ing.foodId} className="flex items-center gap-2 bg-gray-50 p-2 rounded">
+                                        <li key={`${ing.foodId}-${idx}`} className="flex items-center gap-2 bg-gray-50 p-2 rounded">
                                             <span className="flex-1 text-sm">{ing.food?.name || "Ingredient"}</span>
                                             <input
                                                 type="number"

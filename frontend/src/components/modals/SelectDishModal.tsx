@@ -59,7 +59,7 @@ export default function SelectDishModal({
                                     <div className="font-medium">{dish.name}</div>
                                     <div className="text-sm text-gray-600">
                                         Weight: {dish.weight}g
-                                        {dish.calories && ` | ${dish.calories} kcal`}
+                                        {dish.calories != null && ` | ${dish.calories} kcal`}
                                     </div>
                                 </button>
                             ))}

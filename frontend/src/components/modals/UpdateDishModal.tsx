@@ -4,6 +4,7 @@ import {updateDishRequest} from "../../store/slices/dishesSlice.ts";
 import type {Dish, DishFood} from "../../store/types/dishTypes.ts";
 import SelectIngredientModal from "./SelectIngredientModal.tsx";
 import CreateIngredientModal from "./CreateIngredientModal.tsx";
+import type {Food} from "../../store/types/foodTypes.ts";
 
 interface UpdateDishModalProps {
     isOpen: boolean;
@@ -71,12 +72,12 @@ export default function UpdateDishModal({isOpen, dish, onClose}: UpdateDishModal
         return ingredients.reduce((sum, ing) => sum + (ing.weight || 0), 0);
     }, [ingredients]);
 
-    const handleAddIngredient = useCallback((food: any, weight: number = 100) => {
+    const handleAddIngredient = useCallback((food: Food, weight: number = 100) => {
         setIngredients(prev => [...prev, {foodId: food.id, weight, food}]);
         setShowSelectIngredient(false);
     }, []);
 
-    const handleCreateIngredient = useCallback((food: any) => {
+    const handleCreateIngredient = useCallback((food: Food) => {
         setIngredients(prev => [...prev, {foodId: food.id, weight: 100, food}]);
         setShowCreateIngredient(false);
     }, []);
