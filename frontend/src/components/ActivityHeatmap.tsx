@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from "../store";
 import { fetchHeatmapRequest } from "../store/slices/activityHeatmapSlice";
 

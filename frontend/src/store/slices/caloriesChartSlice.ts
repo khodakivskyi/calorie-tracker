@@ -21,7 +21,7 @@ const caloriesChartSlice = createSlice({
     name: 'caloriesChart',
     initialState,
     reducers: {
-        fetchChartDataRequest: (state, action: PayloadAction<{ period: 'Week' | 'Month' | 'Year' }>) => {
+        fetchChartDataRequest: (state, _action: PayloadAction<{ period: 'Week' | 'Month' | 'Year' }>) => {
             state.isLoading = true;
             state.error = null;
         },
@@ -38,3 +38,7 @@ const caloriesChartSlice = createSlice({
 
 export const { fetchChartDataRequest, fetchChartDataSuccess, fetchChartDataFailure } = caloriesChartSlice.actions;
 export default caloriesChartSlice.reducer;
+export type CaloriesChartAction =
+    | ReturnType<typeof fetchChartDataRequest>
+    | ReturnType<typeof fetchChartDataSuccess>
+    | ReturnType<typeof fetchChartDataFailure>;

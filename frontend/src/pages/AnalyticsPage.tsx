@@ -1,8 +1,5 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
 import ActivityHeatmap from "../components/ActivityHeatmap";
 import CaloriesChart from '../components/CaloriesChart';
-import type { RootState } from '../store/slices/rootReducer';
 
 export default function AnalyticsPage() {
 

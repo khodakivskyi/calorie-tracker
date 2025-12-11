@@ -18,7 +18,13 @@ export default function CaloriesChart({ dailyGoal }: CaloriesChartProps) {
         dispatch(fetchChartDataRequest({ period: activeTab }));
     }, [activeTab, dispatch]);
 
-    const CustomTooltip = ({ active, payload, label }: any) => {
+    interface TooltipProps {
+        active?: boolean;
+        payload?: Array<{ value: number }>;
+        label?: string;
+    }
+
+    const CustomTooltip = ({ active, payload, label }: TooltipProps) => {
         if (active && payload && payload.length) {
             return (
                 <div className="bg-white p-3 border border-gray-100 shadow-lg rounded-xl text-xs">
@@ -59,7 +65,7 @@ export default function CaloriesChart({ dailyGoal }: CaloriesChartProps) {
             <div className="h-64 w-full">
                 {isLoading && (
                     <div className="absolute inset-0 flex items-center justify-center bg-white/50 z-10">
-                        Завантаження...
+                        пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ...
                     </div>
                 )}
 

@@ -38,3 +38,7 @@ const activityHeatmapSlice = createSlice({
 
 export const { fetchHeatmapRequest, fetchHeatmapSuccess, fetchHeatmapFailure } = activityHeatmapSlice.actions;
 export default activityHeatmapSlice.reducer;
+export type ActivityHeatmapAction =
+    | ReturnType<typeof fetchHeatmapRequest>
+    | ReturnType<typeof fetchHeatmapSuccess>
+    | ReturnType<typeof fetchHeatmapFailure>;

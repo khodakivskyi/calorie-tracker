@@ -20,8 +20,10 @@ import {deleteFoodEpic} from "./food/deleteFoodEpic.ts";
 import {deleteDishEpic} from "./dish/deleteDishEpic.ts";
 import { caloriesChartEpic } from './caloriesChartEpic';
 import { activityHeatmapEpic } from './activityHeatmapEpic';
+import type {ActivityHeatmapAction} from "../slices/activityHeatmapSlice.ts";
+import type {CaloriesChartAction} from "../slices/caloriesChartSlice.ts";
 
-export type RootEpicAction = AuthAction | ProfileAction | MealAction | FoodAction | DishAction;
+export type RootEpicAction = AuthAction | ProfileAction | MealAction | FoodAction | DishAction | ActivityHeatmapAction | CaloriesChartAction;
 
 export const rootEpic = combineEpics<RootEpicAction, RootEpicAction, RootState>(
     registerUserEpic,
