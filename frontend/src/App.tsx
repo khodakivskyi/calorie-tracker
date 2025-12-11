@@ -24,7 +24,7 @@ function App() {
             <Route element={<BaseLayout/>}>
                 <Route path="/home" element={<MainPage />} />
                 <Route path="/profile" element={<ProfilePage />} />
-                <Route path="/analytics" element={<AnalyticsPage />} /> {}
+                <Route path="/analytics" element={<AnalyticsPage />} />
             </Route>
         </Routes>
     )
