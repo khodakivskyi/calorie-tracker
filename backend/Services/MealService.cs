@@ -2,6 +2,8 @@
 using backend.Models;
 using backend.Repositories;
 using backend.Repositories.Interfaces;
+using DotNetEnv;
+using Microsoft.Data.SqlClient;
 
 namespace backend.Services
 {
@@ -9,28 +11,65 @@ namespace backend.Services
     {
         private readonly IMealRepository _mealRepository;
         private readonly IMealTypeRepository _mealTypeRepository;
+        private readonly CaloriesService _caloriesService;
+        private readonly NutrientsService _nutrientsService;
 
-        public MealService(IMealRepository mealRepository, IMealTypeRepository mealTypeRepository)
+        public MealService(IMealRepository mealRepository, IMealTypeRepository mealTypeRepository, CaloriesService caloriesService, NutrientsService nutrientsService)
         {
             _mealRepository = mealRepository;
             _mealTypeRepository = mealTypeRepository;
+            _caloriesService = caloriesService;
+            _nutrientsService = nutrientsService;
         }
 
         public async Task<Meal> GetMealByIdAsync(int id)
         {
             var meal = await _mealRepository.GetMealByIdAsync(id);
             if (meal == null)
+            {
                 throw new NotFoundException($"Meal with id {id} not found");
+            }
+
+            var calories = await _caloriesService.GetOrCalculateCaloriesForMealAsync(meal.Id);
+            var nutrients = await _nutrientsService.GetNutrientsByMealAsync(meal.Id);
+            meal.Calories = calories;
+            if (nutrients != null)
+            {
+                meal.Protein = nutrients.Protein;
+                meal.Carbohydrate = nutrients.Carbohydrate;
+                meal.Fat = nutrients.Fat;
+            }
 
             return meal;
         }
 
         public async Task<IEnumerable<Meal>> GetMealsByUserAsync(int userId)
         {
-            return await _mealRepository.GetMealsByUserAsync(userId);
+            var meals = await _mealRepository.GetMealsByUserAsync(userId);
+
+            var tasks = meals.Select(async meal =>
+            {
+                var calories = await _caloriesService.GetOrCalculateCaloriesForMealAsync(meal.Id);
+                var nutrients = await _nutrientsService.GetNutrientsByMealAsync(meal.Id);
+                meal.Calories = calories;
+                if (nutrients != null)
+                {
+                    meal.Protein = nutrients.Protein;
+                    meal.Carbohydrate = nutrients.Carbohydrate;
+                    meal.Fat = nutrients.Fat;
+                }
+                return meal;
+            });
+
+            return await Task.WhenAll(tasks);
         }
 
-        public async Task<Meal> CreateMealAsync(int userId, int typeId, string name)
+
+        public async Task<Meal> CreateMealAsync(
+            int userId,
+            int typeId,
+            string name,
+            IEnumerable<(int dishId, decimal weight)> dishes)
         {
             var mealType = await _mealTypeRepository.GetMealTypeByIdAsync(typeId);
             if (mealType == null)
@@ -40,19 +79,29 @@ namespace backend.Services
                 throw new ValidationException("Meal name cannot be empty");
 
             if (!string.IsNullOrWhiteSpace(name) && typeId != 5)
-                throw new ValidationException("Name cannot be provided for system meal types (Breakfast, Lunch, Dinner, Snack)");
+                throw new ValidationException("Name cannot be provided for system meal types");
+
+
+            var dishesList = dishes.ToList();
+            foreach (var (dishId, weight) in dishesList)
+            {
+                if (weight <= 0)
+                    throw new ValidationException($"Weight must be greater than 0 for dish {dishId}");
+            }
 
             var newMeal = new Meal
             {
                 OwnerId = userId,
-                MealTypeId = typeId,
+                TypeId = typeId,
                 Name = typeId == 5 ? name : mealType.Name,
             };
-            var createdMeal = await _mealRepository.CreateMealAsync(newMeal);
-            if (createdMeal == null)
-                throw new InvalidOperationException("Failed to create meal");
 
-            return createdMeal;
+            var createdMeal = await _mealRepository.CreateMealAsync(newMeal, dishesList);
+            if (createdMeal == null)
+            {
+                throw new InvalidOperationException("Failed to create meal");
+            }
+            return await GetMealByIdAsync(createdMeal.Id);
         }
 
         public async Task<Meal> UpdateMealAsync(int mealId, int userId, string name)

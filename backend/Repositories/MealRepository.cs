@@ -1,4 +1,5 @@
-﻿using backend.Models;
+﻿using backend.Exceptions;
+using backend.Models;
 using backend.Repositories.Interfaces;
 using Dapper;
 using Microsoft.Data.SqlClient;
@@ -18,7 +19,7 @@ namespace backend.Repositories
         public async Task<Meal?> GetMealByIdAsync(int id)
         {
             using var connection = new SqlConnection(_connectionString);
-            const string sql = @"SELECT id, owner_id AS OwnerId, name, meal_type_id AS MealTypeId, created_at AS CreatedAt, updated_at AS UpdatedAt 
+            const string sql = @"SELECT id, owner_id AS OwnerId, name, meal_type_id AS TypeId, created_at AS CreatedAt, updated_at AS UpdatedAt 
                                  FROM meals WHERE id = @Id";
             return await connection.QueryFirstOrDefaultAsync<Meal>(sql, new { Id = id });
         }
@@ -26,21 +27,65 @@ namespace backend.Repositories
         public async Task<IEnumerable<Meal>> GetMealsByUserAsync(int userId)
         {
             using var connection = new SqlConnection(_connectionString);
-            const string sql = @"SELECT id, owner_id AS OwnerId, name, meal_type_id AS MealTypeId, created_at AS CreatedAt, updated_at AS UpdatedAt
+            const string sql = @"SELECT id, owner_id AS OwnerId, name, meal_type_id AS TypeId, created_at AS CreatedAt, updated_at AS UpdatedAt
                                  FROM meals
                                  WHERE owner_id = @UserId
                                  ORDER BY created_at DESC";
             return await connection.QueryAsync<Meal>(sql, new { UserId = userId });
         }
 
-        public async Task<Meal?> CreateMealAsync(Meal meal)
+        public async Task<Meal?> CreateMealAsync(Meal meal, List<(int dishId, decimal weight)> dishesList)
         {
             using var connection = new SqlConnection(_connectionString);
-            const string sql = @"INSERT INTO meals (owner_id, meal_type_id, name)
-                                 OUTPUT INSERTED.id, INSERTED.owner_id AS OwnerId, INSERTED.name, 
-                                        INSERTED.created_at AS CreatedAt, INSERTED.updated_at AS UpdatedAt, INSERTED.meal_type_id AS MealTypeId
-                                 VALUES (@OwnerId, @MealTypeId, @Name);";
-            return await connection.QueryFirstOrDefaultAsync<Meal>(sql, meal);
+            await connection.OpenAsync();
+            using var transaction = connection.BeginTransaction();
+
+            try
+            {
+                const string mealSql = @"INSERT INTO meals (owner_id, meal_type_id, name)
+                                       OUTPUT INSERTED.id, INSERTED.owner_id AS OwnerId, INSERTED.name, 
+                                              INSERTED.created_at AS CreatedAt, INSERTED.updated_at AS UpdatedAt, 
+                                              INSERTED.meal_type_id AS TypeId
+                                       VALUES (@OwnerId, @TypeId, @Name);";
+
+                var createdMeal = await connection.QueryFirstOrDefaultAsync<Meal>(
+                    mealSql,
+                    meal,
+                    transaction);
+
+                if (createdMeal == null)
+                {
+                    transaction.Rollback();
+                    throw new InvalidOperationException("Failed to create meal");
+                }
+
+                if (dishesList.Any())
+                {
+                    const string dishesSql = @"INSERT INTO meals_dishes (meal_id, dish_id, weight)
+                                               VALUES (@MealId, @DishId, @Weight);";
+
+                    var dishesParams = dishesList.Select(d => new
+                    {
+                        MealId = createdMeal.Id,
+                        DishId = d.dishId,
+                        Weight = d.weight
+                    });
+
+                    await connection.ExecuteAsync(dishesSql, dishesParams, transaction);
+                }
+
+                transaction.Commit();
+                return createdMeal;
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+
+                if (ex is ValidationException || ex is InvalidOperationException)
+                    throw;
+
+                throw new InvalidOperationException($"Failed to create meal with dishes: {ex.Message}", ex);
+            }
         }
 
         public async Task<Meal?> UpdateMealAsync(Meal meal)
@@ -49,7 +94,7 @@ namespace backend.Repositories
             const string sql = @"UPDATE meals
                                  SET name = @Name, updated_at = GETDATE()
                                  OUTPUT INSERTED.id, INSERTED.owner_id AS OwnerId, INSERTED.name, 
-                                        INSERTED.meal_type_id AS MealTypeId, INSERTED.created_at AS CreatedAt, INSERTED.updated_at AS UpdatedAt
+                                        INSERTED.meal_type_id AS TypeId, INSERTED.created_at AS CreatedAt, INSERTED.updated_at AS UpdatedAt
                                  WHERE id = @Id;";
             return await connection.QueryFirstOrDefaultAsync<Meal>(sql, meal);
         }
@@ -115,7 +160,7 @@ namespace backend.Repositories
         {
             using var connection = new SqlConnection(_connectionString);
             const string sql = @"
-                SELECT id, owner_id AS OwnerId, name, meal_type_id AS MealTypeId, created_at AS CreatedAt, updated_at AS UpdatedAt
+                SELECT id, owner_id AS OwnerId, name, meal_type_id AS TypeId, created_at AS CreatedAt, updated_at AS UpdatedAt
                 FROM meals
                 WHERE owner_id = @UserId
                   AND CAST(created_at AS date) BETWEEN @StartDate AND @EndDate
@@ -128,7 +173,7 @@ namespace backend.Repositories
         {
             using var connection = new SqlConnection(_connectionString);
             const string sql = @"
-                SELECT id, owner_id AS OwnerId, name, meal_type_id AS MealTypeId, created_at AS CreatedAt, updated_at AS UpdatedAt
+                SELECT id, owner_id AS OwnerId, name, meal_type_id AS TypeId, created_at AS CreatedAt, updated_at AS UpdatedAt
                 FROM meals
                 WHERE owner_id = @UserId
                   AND CAST(created_at AS date) = @Date
@@ -141,7 +186,7 @@ namespace backend.Repositories
         {
             using var connection = new SqlConnection(_connectionString);
             const string sql = @"
-                SELECT id, owner_id AS OwnerId, name, meal_type_id AS MealTypeId, created_at AS CreatedAt, updated_at AS UpdatedAt
+                SELECT id, owner_id AS OwnerId, name, meal_type_id AS TypeId, created_at AS CreatedAt, updated_at AS UpdatedAt
                 FROM meals
                 WHERE owner_id = @UserId
                   AND name LIKE '%' + @Name + '%'

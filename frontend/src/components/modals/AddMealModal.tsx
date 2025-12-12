@@ -7,6 +7,7 @@ import UpdateDishModal from "./UpdateDishModal.tsx";
 import {useAppSelector, useAppDispatch} from "../../store";
 import {getFoodsByUserRequest} from "../../store/slices/foodsSlice.ts";
 import {getDishesByUserRequest} from "../../store/slices/dishesSlice.ts";
+import {createMealRequest} from "../../store/slices/mealSlice.ts";
 
 interface AddMealModalProps {
     isOpen: boolean;
@@ -20,11 +21,12 @@ interface AddMealModalProps {
  * User can add multiple dishes to the meal.
  * Simple architecture: uses boolean flags for child modals.
  */
-export default function AddMealModal({isOpen, onClose, onAddMeal, mealType}: AddMealModalProps) {
+export default function AddMealModal({isOpen, onClose, mealType}: AddMealModalProps) {
     const dispatch = useAppDispatch();
     const {user} = useAppSelector(state => state.auth);
     const {foods} = useAppSelector(state => state.food);
     const {dishes} = useAppSelector(state => state.dish);
+    const {loading, error, success} = useAppSelector(state => state.meal);
 
     // Main state: list of dishes in this meal
     const [mealDishes, setMealDishes] = useState<MealDish[]>([]);
@@ -115,21 +117,49 @@ export default function AddMealModal({isOpen, onClose, onAddMeal, mealType}: Add
         setDishToUpdate(null);
     }, []);
 
+    // Map meal type name to typeId
+    const getMealTypeId = (type: string): number => {
+        const typeMap: Record<string, number> = {
+            'Breakfast': 1,
+            'Lunch': 2,
+            'Dinner': 3,
+            'Snack': 4,
+        };
+        return typeMap[type] || 5;
+    };
+
     // Submit meal
     const handleSubmit = useCallback(() => {
         if (!user || mealDishes.length === 0) return;
 
-        const newMeal: Meal = {
-            id: Date.now(),
-            name: mealType,
+        const typeId = getMealTypeId(mealType);
+        const payload: {
+            ownerId: number;
+            typeId: number;
+            name?: string;
+            dishes: Array<{ dishId: number; weight: number }>;
+        } = {
             ownerId: user.id,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
+            typeId,
+            dishes: mealDishes.map(dish => ({
+                dishId: dish.dishId,
+                weight: dish.weight,
+            })),
         };
 
-        onAddMeal(newMeal);
-        onClose();
-    }, [user, mealType, mealDishes.length, onAddMeal, onClose]);
+        // Only include name for Custom meals (typeId === 5)
+        if (typeId === 5) {
+            payload.name = mealType;
+        }
+
+        dispatch(createMealRequest(payload));
+    }, [user, mealType, mealDishes, dispatch]);
+
+    useEffect(() => {
+        if (success && !loading) {
+            onClose();
+        }
+    }, [success, loading, onClose]);
 
     if (!isOpen) return null;
 
@@ -139,6 +169,18 @@ export default function AddMealModal({isOpen, onClose, onAddMeal, mealType}: Add
                 <div className="bg-white p-6 rounded-2xl shadow-2xl border border-gray-100 w-[90vw] max-w-4xl max-h-[90vh] overflow-y-auto">
                     <h2 className="text-2xl font-bold mb-2">Add {mealType}</h2>
                     <p className="text-sm text-gray-500 mb-4">Build your meal by adding dishes below.</p>
+                    
+                    {error && (
+                        <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+                            {error}
+                        </div>
+                    )}
+                    
+                    {loading && (
+                        <div className="mb-4 p-3 bg-blue-100 border border-blue-400 text-blue-700 rounded">
+                            Creating meal...
+                        </div>
+                    )}
 
                     {/* Dishes section */}
                     <div className="mb-4">

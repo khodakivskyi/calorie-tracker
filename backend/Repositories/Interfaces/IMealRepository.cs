@@ -7,7 +7,7 @@ namespace backend.Repositories.Interfaces
         // crud
         Task<Meal?> GetMealByIdAsync(int id);
         Task<IEnumerable<Meal>> GetMealsByUserAsync(int userId);
-        Task<Meal?> CreateMealAsync(Meal meal);
+        Task<Meal?> CreateMealAsync(Meal meal, List<(int dishId, decimal weight)> dishesList);
         Task<Meal?> UpdateMealAsync(Meal meal);
         Task<bool> DeleteMealAsync(int id);
         Task<bool> DeleteAllMealsByUserAsync(int userId);
