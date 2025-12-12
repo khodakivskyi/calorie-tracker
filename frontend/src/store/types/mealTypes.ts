@@ -2,7 +2,12 @@ import type {Dish} from "./dishTypes.ts";
 import {
     createMealRequest,
     createMealSuccess,
-    createMealFailure
+    createMealFailure,
+    getMealsByUserRequest,
+    getMealsByUserSuccess,
+    getMealsByUserFailure,
+    getDishesByMealRequest,
+    getDishesByMealSuccess, getDishesByMealFailure
 } from '../slices/mealSlice.ts';
 
 export type Meal = {
@@ -28,4 +33,10 @@ export type MealDish = {
 export type MealAction =
     | ReturnType<typeof createMealRequest>
     | ReturnType<typeof createMealSuccess>
-    | ReturnType<typeof createMealFailure>;
+    | ReturnType<typeof createMealFailure>
+    | ReturnType<typeof getMealsByUserRequest>
+    | ReturnType<typeof getMealsByUserSuccess>
+    | ReturnType<typeof getMealsByUserFailure>
+    | ReturnType<typeof getDishesByMealRequest>
+    | ReturnType<typeof getDishesByMealSuccess>
+    | ReturnType<typeof getDishesByMealFailure>;
