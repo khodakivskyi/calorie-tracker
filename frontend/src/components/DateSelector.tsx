@@ -1,28 +1,38 @@
-import { useState } from 'react';
+import { useAppSelector, useAppDispatch } from '../store';
+import { setSelectedDate } from '../store/slices/dateSlice';
+import {useEffect} from "react";
 
 export default function DateSelector() {
+    const dispatch = useAppDispatch();
+    const selectedDate = useAppSelector(state => state.date.selectedDate);
+
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    const [selectedDate, setSelectedDate] = useState<Date>(today);
+
+    useEffect(() => {
+        if (!selectedDate) {
+            dispatch(setSelectedDate(today.toISOString()));
+        }
+    }, [dispatch, selectedDate, today]);
 
     const days = [];
     const baseDate = new Date();
+    baseDate.setHours(0, 0, 0, 0);
 
     for (let i = -3; i <= 3; i++) {
         const date = new Date(baseDate);
         date.setDate(baseDate.getDate() + i);
-        date.setHours(0, 0, 0, 0);
 
         const dayName = date.toLocaleDateString("en-US", { weekday: "short" });
         const day = date.getDate();
         const isToday = date.getTime() === today.getTime();
-        const isSelected = date.getTime() === selectedDate.getTime();
+        const isSelected = date.getTime() === new Date(selectedDate).getTime();
 
         days.push({ date, dayName, day, isToday, isSelected });
     }
 
     const handleDateClick = (date: Date) => {
-        setSelectedDate(date);
+        dispatch(setSelectedDate(date.toISOString())); // оновлюємо глобальний стейт
     };
 
     return (
@@ -35,8 +45,8 @@ export default function DateSelector() {
                         dayInfo.isSelected
                             ? 'bg-gradient-to-br from-primary-500 to-accent-600 text-white shadow-lg shadow-primary-500/50'
                             : dayInfo.isToday
-                            ? 'bg-primary-50 border-2 border-primary-300 text-primary-700 hover:bg-primary-100'
-                            : 'bg-white border-2 border-gray-200 text-gray-700 hover:border-primary-300 hover:bg-gray-50'
+                                ? 'bg-primary-50 border-2 border-primary-300 text-primary-700 hover:bg-primary-100'
+                                : 'bg-white border-2 border-gray-200 text-gray-700 hover:border-primary-300 hover:bg-gray-50'
                     }`}
                 >
                     <span className={`text-xs font-medium mb-1 ${

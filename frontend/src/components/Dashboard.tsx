@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import {useEffect, useMemo} from "react";
 import { useAppDispatch, useAppSelector } from "../store";
 import { getLimitRequest } from "../store/slices/calorieLimitSlice";
 
@@ -83,7 +83,22 @@ export default function Dashboard({ onSetLimitClick }: DashboardProps) {
         dispatch(getLimitRequest({ ownerId }));
     }, [dispatch, ownerId]);
 
-    const consumedCalories = 529;
+    const meals = useAppSelector(state => state.meal.meals); // <- саме так
+
+    const consumedCalories = useMemo(() => {
+        const today = new Date();
+
+        return meals
+            .filter(meal => {
+                const mealDate = new Date(meal.createdAt);
+                return mealDate.getFullYear() === today.getFullYear() &&
+                    mealDate.getMonth() === today.getMonth() &&
+                    mealDate.getDate() === today.getDate();
+            })
+            .reduce((sum, meal) => {
+                return sum + (meal.calories || 0);
+            }, 0);
+    }, [meals]);
     const dailyGoal = calorieLimit?.limitValue;
     const progressPercentage = dailyGoal ? (consumedCalories / dailyGoal) * 100 : 0;
     const hasLimit = !!dailyGoal;
