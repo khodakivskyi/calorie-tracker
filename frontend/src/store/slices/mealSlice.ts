@@ -20,26 +20,18 @@ const mealSlice = createSlice({
     initialState,
     reducers: {
         // Create Meal
-        createMealRequest(
-            state,
-            _action: PayloadAction<{
-                ownerId: number;
-                typeId: number;
-                name?: string;
-                dishes?: Array<{ dishId: number; weight: number }>
-            }>
-        ) {
+        createMealRequest(state, _action: PayloadAction<{ ownerId: number; typeId: number; name?: string; dishes: Array<{ dishId: number; weight: number }> }>) {
             state.loading = true;
             state.error = null;
             state.success = null;
         },
-        createMealSuccess: (state, action: PayloadAction<Meal>) => {
+        createMealSuccess(state, action: PayloadAction<Meal>) {
             state.loading = false;
             state.error = null;
-            state.success = 'Meal added successfully';
-            state.meals.push(action.payload);
+            state.success = "Meal added successfully";
+            state.meals = [action.payload, ...state.meals];
         },
-        createMealFailure: (state, action: PayloadAction<string>) => {
+        createMealFailure(state, action: PayloadAction<string>) {
             state.loading = false;
             state.error = action.payload;
             state.success = null;

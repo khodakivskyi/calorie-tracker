@@ -31,7 +31,7 @@ const dishesSlice = createSlice({
             state.loading = false;
             state.error = null;
             state.success = 'Dish added successfully';
-            state.dishes.push(action.payload);
+            state.dishes.unshift(action.payload);
         },
         createDishFailure: (state, action: PayloadAction<string>) => {
             state.loading = false;
