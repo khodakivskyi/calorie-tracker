@@ -62,7 +62,10 @@ export default function AddMealModal({isOpen, onClose, mealType}: AddMealModalPr
 
     // Keep local meal dishes in sync if a dish was updated in the store
     useEffect(() => {
-        if (!isOpen || dishes.length === 0) return;
+        if (!isOpen) return;
+        if (dishes.length === 0 && user) {
+            dispatch(getDishesByUserRequest({ownerId: user.id}));
+        }
         setMealDishes(prev => prev.map(md => {
             const updatedDish = dishes.find(d => d.id === md.dishId);
             if (!updatedDish) return md;
@@ -75,7 +78,7 @@ export default function AddMealModal({isOpen, onClose, mealType}: AddMealModalPr
                 }
             };
         }));
-    }, [dishes, isOpen]);
+    }, [dishes, isOpen, user, dispatch]);
 
     // Add existing dish from library
     const handleSelectDish = useCallback((dish: Dish) => {
@@ -88,7 +91,7 @@ export default function AddMealModal({isOpen, onClose, mealType}: AddMealModalPr
         setShowSelectDish(false);
     }, []);
 
-    // Add newly created dish
+    // Add newly created dish - receives Dish with real ID from backend
     const handleCreateDish = useCallback((dish: Dish, ingredients: DishFood[]) => {
         const dishWithFoods: DishWithFoods = {...dish, foods: ingredients};
         setMealDishes(prev => [...prev, {
