@@ -29,20 +29,8 @@ export default function MainPage() {
         <div className="min-h-screen pb-24">
             <Header />
             <DateSelector />
-
             <Dashboard onSetLimitClick={() => setIsCalorieModalOpen(true)} />
-
             <DailyMealsList />
-
-            <div className="mt-6 px-4">
-                <button
-                    onClick={() => setIsCalorieModalOpen(true)}
-                    className="w-full bg-green-500 hover:bg-green-600 text-white font-medium py-3 px-6 rounded-full transition shadow-md hover:shadow-lg"
-                >
-                    Change Daily Calorie Goal
-                </button>
-            </div>
-
             <CalorieGoalModal
                 isOpen={isCalorieModalOpen}
                 onClose={() => setIsCalorieModalOpen(false)}

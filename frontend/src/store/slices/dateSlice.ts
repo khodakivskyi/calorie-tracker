@@ -7,8 +7,12 @@ interface DateState {
 const today = new Date();
 today.setHours(0, 0, 0, 0);
 
+const yyyy = today.getFullYear();
+const mm = String(today.getMonth() + 1).padStart(2, '0');
+const dd = String(today.getDate()).padStart(2, '0');
+
 const initialState: DateState = {
-    selectedDate: today.toISOString().split('T')[0],
+    selectedDate: `${yyyy}-${mm}-${dd}`,
 };
 
 const dateSlice = createSlice({
