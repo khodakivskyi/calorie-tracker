@@ -6,6 +6,7 @@ type DishesState = {
     loading: boolean;
     error: string | null;
     success: string | null;
+    lastCreatedDish: Dish | null;
 };
 
 const initialState: DishesState = {
@@ -13,6 +14,7 @@ const initialState: DishesState = {
     loading: false,
     error: null,
     success: null,
+    lastCreatedDish: null,
 };
 
 const dishesSlice = createSlice({
@@ -29,12 +31,14 @@ const dishesSlice = createSlice({
             state.loading = true;
             state.error = null;
             state.success = null;
+            state.lastCreatedDish = null;
         },
         createDishSuccess: (state, action: PayloadAction<Dish>) => {
             state.loading = false;
             state.error = null;
             state.success = 'Dish added successfully';
             state.dishes.push(action.payload);
+            state.lastCreatedDish = action.payload;
         },
         createDishFailure: (state, action: PayloadAction<string>) => {
             state.loading = false;

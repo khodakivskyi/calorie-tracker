@@ -24,12 +24,11 @@ export default function CreateDishModal({
     const dispatch = useAppDispatch();
     const {user} = useAppSelector(state => state.auth);
     const {foods} = useAppSelector(state => state.food);
-    const {dishes, loading, success, error} = useAppSelector(state => state.dish);
+    const {loading, success, error, lastCreatedDish} = useAppSelector(state => state.dish);
 
     // Dish data
     const [dishName, setDishName] = useState("");
     const [ingredients, setIngredients] = useState<DishFood[]>([]);
-    const [lastCreatedName, setLastCreatedName] = useState<string | null>(null);
 
     // Child modals state
     const [showSelectIngredient, setShowSelectIngredient] = useState(false);
@@ -68,21 +67,17 @@ export default function CreateDishModal({
 
     // Handle successful dish creation - wait for backend response and pass correct dish object to callback
     useEffect(() => {
-        if (success && !loading && lastCreatedName) {
-            const createdDish = dishes.find(d => d.name === lastCreatedName);
-            if (createdDish) {
-                const dishWithFoods: DishWithFoods = {
-                    ...createdDish,
-                    foods: ingredients
-                };
-                
-                onSuccess?.(dishWithFoods, ingredients);
-                resetForm();
-                setLastCreatedName(null);
-                onClose();
-            }
+        if (success && !loading && lastCreatedDish) {
+            const dishWithFoods: DishWithFoods = {
+                ...lastCreatedDish,
+                foods: ingredients
+            };
+            
+            onSuccess?.(dishWithFoods, ingredients);
+            resetForm();
+            onClose();
         }
-    }, [success, loading, dishes, lastCreatedName, ingredients, onSuccess, onClose]);
+    }, [success, loading, lastCreatedDish, ingredients, onSuccess, onClose]);
 
     // Create dish
     const handleCreate = useCallback(() => {
@@ -98,8 +93,6 @@ export default function CreateDishModal({
                 weight: ing.weight || 0
             }))
         }));
-
-        setLastCreatedName(dishName.trim());
     }, [dishName, totalWeight, user, ingredients, dispatch]);
 
     // Close and reset
@@ -113,7 +106,6 @@ export default function CreateDishModal({
         setIngredients([]);
         setShowSelectIngredient(false);
         setShowCreateIngredient(false);
-        setLastCreatedName(null);
     };
 
     if (!isOpen) return null;
