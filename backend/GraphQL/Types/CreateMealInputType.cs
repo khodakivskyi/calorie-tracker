@@ -10,7 +10,7 @@ namespace backend.GraphQL.Types
             Field<NonNullGraphType<IntGraphType>>("ownerId");
             Field<NonNullGraphType<IntGraphType>>("typeId");
             Field<StringGraphType>("name");
-            Field<ListGraphType<CreateDishInputType>>("dishes");
+            Field<ListGraphType<MealDishInputType>>("dishes");
         }
     }
 }

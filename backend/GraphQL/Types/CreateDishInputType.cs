@@ -7,8 +7,11 @@ namespace backend.GraphQL.Types
         public CreateDishInputType()
         {
             Name = "CreateDishInput";
-            Field<NonNullGraphType<IntGraphType>>("dishId");
+            Field<NonNullGraphType<IntGraphType>>("ownerId");
+            Field<NonNullGraphType<StringGraphType>>("name");
             Field<NonNullGraphType<DecimalGraphType>>("weight");
+            Field<IntGraphType>("imageId");
+            Field<ListGraphType<CreateDishFoodInputType>>("foods");
         }
     }
 }

@@ -5,7 +5,7 @@ namespace backend.Models
         public int OwnerId { get; set; }
         public int TypeId { get; set; }
         public string Name { get; set; } = string.Empty;
-        public List<CreateDishInput>? Dishes { get; set; }
+        public List<MealDishInput>? Dishes { get; set; }
     }
 }
 

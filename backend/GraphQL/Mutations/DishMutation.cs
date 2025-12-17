@@ -2,6 +2,7 @@
 using backend.Services;
 using GraphQL;
 using GraphQL.Types;
+using Sprache;
 
 namespace backend.GraphQL.Mutations
 {
@@ -20,6 +21,9 @@ namespace backend.GraphQL.Mutations
                     var ownerId = context.GetArgument<int?>("ownerId");
                     var name = context.GetArgument<string>("name");
                     var weight = context.GetArgument<decimal>("weight");
+                    var foods = input.Foods?
+                       .Select(f => (f.FoodId, f.Weight))
+                       .ToList();
                     return await dishService.CreateDishAsync(ownerId, name, weight, null);
                 });
 
