@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import type { Food } from "../../store/types/foodTypes.ts";
-import { useAppDispatch, useAppSelector } from "../../store";
-import { createFoodRequest } from "../../store/slices/foodsSlice.ts";
+import { useAppSelector } from "../../store";
 
 interface CreateIngredientModalProps {
     isOpen: boolean;
@@ -23,7 +22,6 @@ export default function CreateIngredientModal({
         fat: "",
         carbohydrate: ""
     });
-    const dispatch = useAppDispatch();
     const { user } = useAppSelector(state => state.auth);
 
     useEffect(() => {
@@ -48,24 +46,16 @@ export default function CreateIngredientModal({
         const createdFood: Food = {
             id: foodToEdit?.id ?? Date.now(),
             name: ingredient.name,
-            ownerId: 1,
-            calories: parseNumberOrNull(ingredient.calories) ?? 0,
-            protein: parseNumberOrNull(ingredient.protein) ?? 0,
-            fat: parseNumberOrNull(ingredient.fat) ?? 0,
-            carbohydrate: parseNumberOrNull(ingredient.carbohydrate) ?? 0,
+            ownerId: user?.id ?? null,
+            calories: parseNumberOrNull(ingredient.calories) ?? null,
+            protein: parseNumberOrNull(ingredient.protein) ?? null,
+            fat: parseNumberOrNull(ingredient.fat) ?? null,
+            carbohydrate: parseNumberOrNull(ingredient.carbohydrate) ?? null,
             createdAt: foodToEdit?.createdAt ?? new Date().toISOString(),
             updatedAt: new Date().toISOString(),
         };
 
-        dispatch(createFoodRequest({
-            ownerId: user?.id ?? null,
-            name: createdFood.name,
-            calories: parseNumberOrNull(ingredient.calories),
-            protein: parseNumberOrNull(ingredient.protein),
-            fat: parseNumberOrNull(ingredient.fat),
-            carbohydrate: parseNumberOrNull(ingredient.carbohydrate),
-        }));
-
+        // Only call callback, don't dispatch here - FoodsPage handles it
         onCreateIngredient(createdFood);
 
         setIngredient({ name: "", calories: "", protein: "", fat: "", carbohydrate: "" });
