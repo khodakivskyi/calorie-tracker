@@ -402,7 +402,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"query\": \"mutation CreateDish($ownerId: Int, $name: String!, $weight: Decimal!) {\\n    createDish(ownerId: $ownerId, name: $name, weight: $weight) {\\n      id\\n      name\\n      ownerId\\n      weight\\n      calories\\n      protein\\n      fat\\n      carbohydrate\\n      imageId\\n      createdAt\\n      updatedAt\\n    }\\n  }\",\n  \"variables\": {\n    \"ownerId\": {{userId}},\n    \"name\": \"Test Dish\",\n    \"weight\": 200\n  }\n}"
+              "raw": "{\n  \"query\": \"mutation CreateDish($input: CreateDishInput!) {\\n    createDish(input: $input) {\\n      id\\n      name\\n      ownerId\\n      weight\\n      calories\\n      protein\\n      fat\\n      carbohydrate\\n      imageId\\n      createdAt\\n      updatedAt\\n    }\\n  }\",\n  \"variables\": {\n    \"input\": {\n      \"ownerId\": {{userId}},\n      \"name\": \"Test Dish\",\n      \"weight\": 200,\n      \"foods\": [{\n        \"foodId\": {{foodId}},\n        \"weight\": 100\n      }]\n    }\n  }\n}"
             },
             "url": {
               "raw": "{{graphqlEndpoint}}",
@@ -665,7 +665,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"query\": \"mutation CreateMeal($ownerId: Int!, $typeId: Int!, $name: String!) {\\n    createMeal(ownerId: $ownerId, typeId: $typeId, name: $name) {\\n      id\\n      name\\n      createdAt\\n    }\\n  }\",\n  \"variables\": {\n    \"ownerId\": {{userId}},\n    \"typeId\": 5,\n    \"name\": \"Test Meal\"\n  }\n}"
+              "raw": "{\n  \"query\": \"mutation CreateMeal($input: CreateMealInput!) {\\n    createMeal(input: $input) {\\n      id\\n      name\\n      ownerId\\n      typeId\\n      calories\\n      protein\\n      carbohydrate\\n      fat\\n      createdAt\\n      updatedAt\\n    }\\n  }\",\n  \"variables\": {\n    \"input\": {\n      \"ownerId\": {{userId}},\n      \"typeId\": 5,\n      \"name\": \"Test Meal\",\n      \"dishes\": [{\n        \"dishId\": {{dishId}},\n        \"weight\": 1\n      }]\n    }\n  }\n}"
             },
             "url": {
               "raw": "{{graphqlEndpoint}}",
