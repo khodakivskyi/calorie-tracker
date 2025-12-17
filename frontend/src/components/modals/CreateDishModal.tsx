@@ -1,7 +1,7 @@
 import type {Dish, DishFood, DishWithFoods} from "../../store/types/dishTypes.ts";
-import {useState, useMemo, useCallback, useEffect} from "react";
+import {useState, useMemo, useCallback, useEffect, useRef} from "react";
 import {useAppDispatch, useAppSelector} from "../../store";
-import {createDishRequest} from "../../store/slices/dishesSlice.ts";
+import {createDishRequest, clearLastCreatedDish} from "../../store/slices/dishesSlice.ts";
 import SelectIngredientModal from "./SelectIngredientModal.tsx";
 import CreateIngredientModal from "./CreateIngredientModal.tsx";
 import type {Food} from "../../store/types/foodTypes.ts";
@@ -25,6 +25,7 @@ export default function CreateDishModal({
     const {user} = useAppSelector(state => state.auth);
     const {foods} = useAppSelector(state => state.food);
     const {loading, success, error, lastCreatedDish} = useAppSelector(state => state.dish);
+    const processedDishIdRef = useRef<number | null>(null);
 
     // Dish data
     const [dishName, setDishName] = useState("");
@@ -67,17 +68,21 @@ export default function CreateDishModal({
 
     // Handle successful dish creation - wait for backend response and pass correct dish object to callback
     useEffect(() => {
-        if (success && !loading && lastCreatedDish) {
-            const dishWithFoods: DishWithFoods = {
-                ...lastCreatedDish,
-                foods: ingredients
-            };
-            
-            onSuccess?.(dishWithFoods, ingredients);
-            resetForm();
-            onClose();
+        if (success && !loading && lastCreatedDish && isOpen) {
+            if (processedDishIdRef.current !== lastCreatedDish.id) {
+                processedDishIdRef.current = lastCreatedDish.id;
+                const dishWithFoods: DishWithFoods = {
+                    ...lastCreatedDish,
+                    foods: ingredients
+                };
+                
+                onSuccess?.(dishWithFoods, ingredients);
+                resetForm();
+                dispatch(clearLastCreatedDish());
+                onClose();
+            }
         }
-    }, [success, loading, lastCreatedDish, ingredients, onSuccess, onClose]);
+    }, [success, loading, lastCreatedDish, isOpen, ingredients, onSuccess, onClose, dispatch]);
 
     // Create dish
     const handleCreate = useCallback(() => {
@@ -106,6 +111,7 @@ export default function CreateDishModal({
         setIngredients([]);
         setShowSelectIngredient(false);
         setShowCreateIngredient(false);
+        processedDishIdRef.current = null;
     };
 
     if (!isOpen) return null;

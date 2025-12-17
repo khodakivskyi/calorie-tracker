@@ -122,6 +122,9 @@ const foodSlice = createSlice({
             state.error = action.payload;
             state.success = null;
         },
+        clearLastCreatedFood(state) {
+            state.lastCreatedFood = null;
+        },
 
     }
 });
@@ -138,7 +141,8 @@ export const {
     updateFoodFailure,
     deleteFoodRequest,
     deleteFoodSuccess,
-    deleteFoodFailure
+    deleteFoodFailure,
+    clearLastCreatedFood
 } = foodSlice.actions;
 
 export default foodSlice.reducer;

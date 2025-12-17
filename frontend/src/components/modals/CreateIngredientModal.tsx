@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import type { Food } from "../../store/types/foodTypes.ts";
 import { useAppDispatch, useAppSelector } from "../../store";
-import { createFoodRequest } from "../../store/slices/foodsSlice.ts";
+import { createFoodRequest, clearLastCreatedFood } from "../../store/slices/foodsSlice.ts";
 
 interface CreateIngredientModalProps {
     isOpen: boolean;
@@ -26,10 +26,12 @@ export default function CreateIngredientModal({
     const dispatch = useAppDispatch();
     const { user } = useAppSelector(state => state.auth);
     const { loading, success, error, lastCreatedFood } = useAppSelector(state => state.food);
+    const processedFoodIdRef = useRef<number | null>(null);
 
     useEffect(() => {
         if (!isOpen) {
             setIngredient({ name: "", calories: "", protein: "", fat: "", carbohydrate: "" });
+            processedFoodIdRef.current = null;
         } else if (foodToEdit) {
             setIngredient({
                 name: foodToEdit.name ?? "",
@@ -43,12 +45,16 @@ export default function CreateIngredientModal({
 
     // Handle successful food creation - wait for backend response and pass correct food object to callback
     useEffect(() => {
-        if (success && !loading && lastCreatedFood) {
-            onCreateIngredient(lastCreatedFood);
-            setIngredient({ name: "", calories: "", protein: "", fat: "", carbohydrate: "" });
-            onClose();
+        if (success && !loading && lastCreatedFood && isOpen) {
+            if (processedFoodIdRef.current !== lastCreatedFood.id) {
+                processedFoodIdRef.current = lastCreatedFood.id;
+                onCreateIngredient(lastCreatedFood);
+                setIngredient({ name: "", calories: "", protein: "", fat: "", carbohydrate: "" });
+                dispatch(clearLastCreatedFood());
+                onClose();
+            }
         }
-    }, [success, loading, lastCreatedFood, onCreateIngredient, onClose]);
+    }, [success, loading, lastCreatedFood, isOpen, onCreateIngredient, onClose, dispatch]);
 
     const parseNumberOrNull = (value: string) => value === "" ? null : parseFloat(value);
 

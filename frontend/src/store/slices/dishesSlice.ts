@@ -111,6 +111,9 @@ const dishesSlice = createSlice({
             state.error = action.payload;
             state.success = null;
         },
+        clearLastCreatedDish(state) {
+            state.lastCreatedDish = null;
+        },
 
     },
 });
@@ -127,7 +130,8 @@ export const {
     updateDishFailure,
     deleteDishRequest,
     deleteDishSuccess,
-    deleteDishFailure
+    deleteDishFailure,
+    clearLastCreatedDish
 } = dishesSlice.actions;
 
 export default dishesSlice.reducer;
