@@ -100,7 +100,7 @@ export default function CreateDishModal({
         }));
 
         setLastCreatedName(dishName.trim());
-    }, [dishName, totalWeight, user, dispatch]);
+    }, [dishName, totalWeight, user, ingredients, dispatch]);
 
     // Close and reset
     const handleClose = useCallback(() => {

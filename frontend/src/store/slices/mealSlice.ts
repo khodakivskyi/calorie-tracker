@@ -24,7 +24,7 @@ const mealSlice = createSlice({
             _action: PayloadAction<{ 
                 ownerId: number; 
                 typeId: number; 
-                name?: string; 
+                name: string; 
                 dishes?: Array<{ dishId: number; weight: number }> 
             }>
         ) {

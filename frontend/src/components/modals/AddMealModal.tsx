@@ -139,21 +139,18 @@ export default function AddMealModal({isOpen, onClose, mealType}: AddMealModalPr
         const payload: {
             ownerId: number;
             typeId: number;
-            name?: string;
+            name: string;
             dishes: Array<{ dishId: number; weight: number }>;
         } = {
             ownerId: user.id,
             typeId,
+            // For custom meals (typeId === 5), use the provided name
+            name: typeId === 5 ? mealType : "",
             dishes: mealDishes.map(dish => ({
                 dishId: dish.dishId,
                 weight: dish.weight,
             })),
         };
-
-        // Only include name for Custom meals (typeId === 5)
-        if (typeId === 5) {
-            payload.name = mealType;
-        }
 
         dispatch(createMealRequest(payload));
     }, [user, mealType, mealDishes, dispatch]);
