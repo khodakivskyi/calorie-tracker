@@ -90,35 +90,35 @@ namespace backend.Services
             return await _mealRepository.DeleteAllMealsByUserAsync(userId);
         }
 
-        public async Task<bool> AddDishToMealAsync(int userId, int mealId, int dishId, decimal quantity)
+        public async Task<bool> AddDishToMealAsync(int userId, int mealId, int dishId, decimal weight)
         {
-            if (quantity <= 0)
-                throw new ValidationException("Quantity must be greater than 0");
+            if (weight <= 0)
+                throw new ValidationException("Weight must be greater than 0");
 
             var meal = await GetMealByIdAsync(mealId);
 
             if (meal.OwnerId != userId)
                 throw new ValidationException("You can only modify your own meals");
 
-            var success = await _mealRepository.AddDishToMealAsync(mealId, dishId, quantity);
+            var success = await _mealRepository.AddDishToMealAsync(mealId, dishId, weight);
             if (!success)
                 throw new InvalidOperationException("Failed to add dish to meal");
             return success;
         }
 
-        public async Task<bool> UpdateDishQuantityInMealAsync(int userId, int mealId, int dishId, decimal quantity)
+        public async Task<bool> UpdateDishWeightInMealAsync(int userId, int mealId, int dishId, decimal weight)
         {
-            if (quantity <= 0)
-                throw new ValidationException("Quantity must be greater than 0");
+            if (weight <= 0)
+                throw new ValidationException("Weight must be greater than 0");
 
             var meal = await GetMealByIdAsync(mealId);
 
             if (meal.OwnerId != userId)
                 throw new ValidationException("You can only modify your own meals");
 
-            var success = await _mealRepository.UpdateDishQuantityInMealAsync(mealId, dishId, quantity);
+            var success = await _mealRepository.UpdateDishWeightInMealAsync(mealId, dishId, weight);
             if (!success)
-                throw new InvalidOperationException("Failed to update dish quantity in meal");
+                throw new InvalidOperationException("Failed to update dish weight in meal");
             return success;
         }
 

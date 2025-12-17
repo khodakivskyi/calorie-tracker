@@ -119,10 +119,10 @@ namespace backend.Services
         }
 
 
-        public async Task<bool> AddFoodToDishAsync(int userId, int dishId, int foodId, decimal quantity)
+        public async Task<bool> AddFoodToDishAsync(int userId, int dishId, int foodId, decimal weight)
         {
-            if (quantity <= 0)
-                throw new ValidationException("Quantity must be greater than 0");
+            if (weight <= 0)
+                throw new ValidationException("Weight must be greater than 0");
 
             var dish = await this.GetDishByIdAsync(dishId, userId);
 
@@ -132,17 +132,17 @@ namespace backend.Services
             if (dish.OwnerId != userId)
                 throw new ValidationException("You can only modify your own dishes");
 
-            var success = await _dishRepository.AddFoodAsync(dishId, foodId, quantity);
+            var success = await _dishRepository.AddFoodAsync(dishId, foodId, weight);
             if (!success)
                 throw new InvalidOperationException("Failed to add food to dish");
 
             return true;
         }
 
-        public async Task<bool> UpdateFoodQuantityInDishAsync(int userId, int dishId, int foodId, decimal quantity)
+        public async Task<bool> UpdateFoodWeightInDishAsync(int userId, int dishId, int foodId, decimal weight)
         {
-            if (quantity <= 0)
-                throw new ValidationException("Quantity must be greater than 0");
+            if (weight <= 0)
+                throw new ValidationException("Weight must be greater than 0");
 
             var dish = await this.GetDishByIdAsync(dishId, userId);
 
@@ -152,9 +152,9 @@ namespace backend.Services
             if (dish.OwnerId != userId)
                 throw new ValidationException("You can only modify your own dishes");
 
-            var success = await _dishRepository.UpdateFoodQuantityAsync(dishId, foodId, quantity);
+            var success = await _dishRepository.UpdateFoodWeightAsync(dishId, foodId, weight);
             if (!success)
-                throw new NotFoundException("Food not found in dish or failed to update quantity");
+                throw new NotFoundException("Food not found in dish or failed to update weight");
 
             return true;
         }
@@ -176,7 +176,7 @@ namespace backend.Services
             return true;
         }
 
-        public async Task<IEnumerable<(Food food, decimal quantity)>> GetAllFoodsByDishAsync(int userId, int dishId)
+        public async Task<IEnumerable<(Food food, decimal weight)>> GetAllFoodsByDishAsync(int userId, int dishId)
         {
             await this.GetDishByIdAsync(dishId, userId);
             return await _dishRepository.GetAllFoodsByDishAsync(dishId);

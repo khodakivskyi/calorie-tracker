@@ -36,6 +36,7 @@ namespace backend
             builder.Services.AddScoped<IMealTypeRepository, MealTypeRepository>(provider => new MealTypeRepository(connectionString!));
             builder.Services.AddScoped<ICaloriesRepository, CaloriesRepository>(provider => new CaloriesRepository(connectionString!));
             builder.Services.AddScoped<INutrientsRepository, NutrientsRepository>(provider => new NutrientsRepository(connectionString!));
+            builder.Services.AddScoped<ICalorieLimitRepository, CalorieLimitRepository>(provider => new CalorieLimitRepository(connectionString!));
 
             builder.Services.Configure<ImageSettings>(builder.Configuration.GetSection("ImageSettings"));
             builder.Services.AddScoped<IImageRepository, ImageRepository>(provider => new ImageRepository(connectionString!));
@@ -63,6 +64,7 @@ namespace backend
             builder.Services.AddScoped<MealService>();
             builder.Services.AddScoped<NutrientsService>();
             builder.Services.AddScoped<CaloriesService>();
+            builder.Services.AddScoped<CalorieLimitService>();
             builder.Services.AddScoped<ImageService>();
             builder.Services.AddScoped<TokenService>();
 
@@ -73,6 +75,7 @@ namespace backend
             builder.Services.AddScoped<GraphQL.Types.MealType>();
             builder.Services.AddScoped<NutrientsType>();
             builder.Services.AddScoped<CaloriesType>();
+            builder.Services.AddScoped<CalorieLimitType>();
             builder.Services.AddScoped<DishFoodType>();
             builder.Services.AddScoped<MealDishType>();
             builder.Services.AddScoped<CaloriesDataType>();

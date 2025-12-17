@@ -3,31 +3,31 @@ import PageHeader from "../components/PageHeader.tsx";
 import SearchBar from "../components/SearchBar.tsx";
 import RecipeItemCard from "../components/RecipeItemCard.tsx";
 import CreateDishModal from "../components/modals/CreateDishModal.tsx";
-import SelectIngredientModal from "../components/modals/SelectIngredientModal.tsx";
-import CreateIngredientModal from "../components/modals/CreateIngredientModal.tsx";
-import type {DishFood, Dish} from "../store/types/dishTypes.ts";
-import type {Food} from "../store/types/foodTypes.ts";
+import UpdateDishModal from "../components/modals/UpdateDishModal.tsx";
+import type {Dish} from "../store/types/dishTypes.ts";
 import {useAppDispatch, useAppSelector} from "../store";
-import {createDishRequest, getDishesByUserRequest} from "../store/slices/dishesSlice.ts";
-import { getFoodsByUserRequest } from '../store/slices/foodsSlice.ts';
+import {getDishesByUserRequest} from "../store/slices/dishesSlice.ts";
+import {getFoodsByUserRequest} from '../store/slices/foodsSlice.ts';
 
+/**
+ * Page for managing user's dishes.
+ * Shows list of dishes and allows creating new ones.
+ */
 export default function DishesPage() {
     const dispatch = useAppDispatch();
 
-    const { user } = useAppSelector(state => state.auth);
-    const { foods } = useAppSelector(state => state.food)
-    const { dishes, loading, error } = useAppSelector(state => state.dish);
+    const {user} = useAppSelector(state => state.auth);
+    const {dishes, loading, error} = useAppSelector(state => state.dish);
 
-    const [isCreateIngredientOpen, setIsCreateIngredientOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [isCreateDishOpen, setIsCreateDishOpen] = useState(false);
-    const [isSelectIngredientOpen, setIsSelectIngredientOpen] = useState(false);
-    const [newDishIngredients, setNewDishIngredients] = useState<DishFood[]>([]);
+    const [dishToEdit, setDishToEdit] = useState<Dish | null>(null);
 
+    // Load dishes and foods on mount
     useEffect(() => {
         if (user) {
-            dispatch(getDishesByUserRequest({ ownerId: user.id }));
-            dispatch(getFoodsByUserRequest({ ownerId: user.id }));
+            dispatch(getDishesByUserRequest({ownerId: user.id}));
+            dispatch(getFoodsByUserRequest({ownerId: user.id}));
         }
     }, [dispatch, user]);
 
@@ -39,41 +39,20 @@ export default function DishesPage() {
         setIsCreateDishOpen(true);
     };
 
-    const handleItemClick = (_dish: Dish) => {
-        // TODO: navigate to dish detail page or open edit modal
+    const handleItemClick = (dish: Dish) => {
+        if (dish.ownerId && user && dish.ownerId === user.id) {
+            setDishToEdit(dish);
+        }
     };
 
-    const handleSelectIngredient = (food: Food, quantity = 1) => {
-        setNewDishIngredients(prev => [...prev, { foodId: food.id, quantity, food }]);
-        setIsSelectIngredientOpen(false);
-    };
-
-    const handleCreateIngredient = (food: Food) => {
-        setNewDishIngredients(prev => [...prev, { foodId: food.id, quantity: 1, food }]);
-        setIsCreateIngredientOpen(false);
-    };
-
+    // Filter dishes by search query
     const filteredDishes = searchQuery.trim()
         ? dishes.filter(dish => dish.name.toLowerCase().includes(searchQuery.toLowerCase()))
         : dishes;
 
-    const resetModals = () => {
-        setIsCreateDishOpen(false);
-        setIsSelectIngredientOpen(false);
-        setIsCreateIngredientOpen(false);
-        setNewDishIngredients([]);
-    };
-
-    const handleCreateDish = (dish: Dish) => {
-        if (user) {
-            dispatch(createDishRequest({ ...dish, ownerId: user.id }));
-        }
-        resetModals();
-    };
-
     return (
         <div className="min-h-screen bg-green-100">
-            <PageHeader title="Dishes" />
+            <PageHeader title="Dishes"/>
 
             <div className="px-4">
                 <SearchBar
@@ -106,35 +85,17 @@ export default function DishesPage() {
                 </div>
             </div>
 
+            {/* Create dish modal - fully self-contained */}
             <CreateDishModal
                 isOpen={isCreateDishOpen}
-                onClose={resetModals}
-                onCreateDish={handleCreateDish}
-                onAddIngredient={() => setIsSelectIngredientOpen(true)}
-                ingredients={newDishIngredients}
-                onRemoveIngredient={(index) =>
-                    setNewDishIngredients(prev => prev.filter((_, idx) => idx !== index))
-                }
+                onClose={() => setIsCreateDishOpen(false)}
             />
 
-            <SelectIngredientModal
-                isOpen={isSelectIngredientOpen}
-                onClose={() => setIsSelectIngredientOpen(false)}
-                onSelectIngredient={handleSelectIngredient}
-                onCreateIngredient={() => {
-                    setIsSelectIngredientOpen(false);
-                    setIsCreateIngredientOpen(true);
-                }}
-                readyFoods={foods}
-            />
-
-            <CreateIngredientModal
-                isOpen={isCreateIngredientOpen}
-                onClose={() => setIsCreateIngredientOpen(false)}
-                onCreateIngredient={handleCreateIngredient}
+            <UpdateDishModal
+                isOpen={!!dishToEdit}
+                dish={dishToEdit}
+                onClose={() => setDishToEdit(null)}
             />
         </div>
     );
 }
-
-

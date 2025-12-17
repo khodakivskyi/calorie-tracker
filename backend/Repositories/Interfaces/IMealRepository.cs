@@ -13,8 +13,8 @@ namespace backend.Repositories.Interfaces
         Task<bool> DeleteAllMealsByUserAsync(int userId);
 
         // Meal-Dish relationship
-        Task<bool> AddDishToMealAsync(int mealId, int dishId, decimal quantity);
-        Task<bool> UpdateDishQuantityInMealAsync(int mealId, int dishId, decimal quantity);
+        Task<bool> AddDishToMealAsync(int mealId, int dishId, decimal weight);
+        Task<bool> UpdateDishWeightInMealAsync(int mealId, int dishId, decimal weight);
         Task<bool> RemoveDishFromMealAsync(int mealId, int dishId);
         Task<IEnumerable<MealDishDto>> GetDishesByMealAsync(int mealId);
 
