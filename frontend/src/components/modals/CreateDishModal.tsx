@@ -92,7 +92,11 @@ export default function CreateDishModal({
         dispatch(createDishRequest({
             name: dishName.trim(),
             ownerId: user.id!,
-            weight: totalWeight
+            weight: totalWeight,
+            foods: ingredients.map(ing => ({
+                foodId: ing.foodId,
+                weight: ing.weight || 0
+            }))
         }));
 
         setLastCreatedName(dishName.trim());

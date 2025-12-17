@@ -60,15 +60,54 @@ namespace backend.Repositories
                                  ORDER BY created_at DESC";
             return await connection.QueryAsync<Dish>(sql, new { UserId = userId });
         }
-        public async Task<Dish?> CreateDishAsync(Dish dish)
+        public async Task<Dish?> CreateDishAsync(Dish dish, IEnumerable<(int foodId, decimal weight)>? foodsList = null)
         {
             using var connection = new SqlConnection(_connectionString);
-            const string sql = @"INSERT INTO dishes (owner_id, name, weight, image_id, is_external)
+            await connection.OpenAsync();
+            using var transaction = connection.BeginTransaction();
+
+            try
+            {
+                const string dishSql = @"INSERT INTO dishes (owner_id, name, weight, image_id, is_external)
                                 OUTPUT INSERTED.id, INSERTED.owner_id AS OwnerId, INSERTED.name, INSERTED.weight, 
                                        INSERTED.image_id AS ImageId, INSERTED.created_at AS CreatedAt, 
                                        INSERTED.updated_at AS UpdatedAt, INSERTED.is_external AS IsExternal
                                 VALUES (@OwnerId, @Name, @Weight, @ImageId, @IsExternal);";
-            return await connection.QueryFirstOrDefaultAsync<Dish>(sql, dish);
+
+                var createdDish = await connection.QueryFirstOrDefaultAsync<Dish>(
+                    dishSql,
+                    dish,
+                    transaction);
+
+                if (createdDish == null)
+                {
+                    transaction.Rollback();
+                    throw new InvalidOperationException("Failed to create dish");
+                }
+
+                if (foodsList != null && foodsList.Any())
+                {
+                    const string foodsSql = @"INSERT INTO dishes_foods (dish_id, food_id, weight)
+                                     VALUES (@DishId, @FoodId, @Weight);";
+
+                    var foodsParams = foodsList.Select(f => new
+                    {
+                        DishId = createdDish.Id,
+                        FoodId = f.foodId,
+                        Weight = f.weight
+                    });
+
+                    await connection.ExecuteAsync(foodsSql, foodsParams, transaction);
+                }
+
+                transaction.Commit();
+                return createdDish;
+            }
+            catch
+            {
+                transaction.Rollback();
+                throw;
+            }
         }
         public async Task<Dish?> UpdateDishAsync(Dish dish)
         {

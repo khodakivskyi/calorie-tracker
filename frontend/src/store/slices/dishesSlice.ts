@@ -1,5 +1,5 @@
-import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import type { Dish } from '../types/dishTypes.ts';
+import {createSlice, type PayloadAction} from '@reduxjs/toolkit';
+import type {Dish} from '../types/dishTypes.ts';
 
 type DishesState = {
     dishes: Dish[];
@@ -21,7 +21,10 @@ const dishesSlice = createSlice({
     reducers: {
         createDishRequest(
             state,
-            _action: PayloadAction<{ ownerId?: number; name: string; weight: number,  imageId?: number | null; }>
+            _action: PayloadAction<{
+                ownerId?: number; name: string; weight: number, imageId?: number | null;
+                foods?: Array<{ foodId: number; weight: number }>
+            }>
         ) {
             state.loading = true;
             state.error = null;

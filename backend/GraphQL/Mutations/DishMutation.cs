@@ -1,4 +1,5 @@
 ﻿using backend.GraphQL.Types;
+using backend.Models;
 using backend.Services;
 using GraphQL;
 using GraphQL.Types;
@@ -13,18 +14,15 @@ namespace backend.GraphQL.Mutations
             Name = "DishMutations";
 
             Field<NonNullGraphType<DishType>>("createDish")
-                .Argument<IntGraphType>("ownerId")
-                .Argument<NonNullGraphType<DecimalGraphType>>("weight")
-                .Argument<NonNullGraphType<StringGraphType>>("name")
+                 .Argument<NonNullGraphType<CreateDishInputType>>("input")
                 .ResolveAsync(async context =>
                 {
-                    var ownerId = context.GetArgument<int?>("ownerId");
-                    var name = context.GetArgument<string>("name");
-                    var weight = context.GetArgument<decimal>("weight");
+                    var input = context.GetArgument<CreateDishInput>("input");
+
                     var foods = input.Foods?
                        .Select(f => (f.FoodId, f.Weight))
                        .ToList();
-                    return await dishService.CreateDishAsync(ownerId, name, weight, null);
+                    return await dishService.CreateDishAsync(input.OwnerId, input.Name, input.Weight, input.ImageId, foods);
                 });
 
             Field<NonNullGraphType<DishType>>("updateDish")
