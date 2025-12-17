@@ -81,7 +81,6 @@ namespace backend.Repositories
 
                 if (createdDish == null)
                 {
-                    transaction.Rollback();
                     throw new InvalidOperationException("Failed to create dish");
                 }
 

@@ -49,9 +49,17 @@ namespace backend.Services
 
             var tasks = meals.Select(async meal =>
             {
-                var calories = await _caloriesService.GetOrCalculateCaloriesForMealAsync(meal.Id);
+                try
+                {
+                    var calories = await _caloriesService.GetOrCalculateCaloriesForMealAsync(meal.Id);
+                    meal.Calories = calories;
+                }
+                catch (NotFoundException)
+                {
+                    meal.Calories = null;
+                }
+
                 var nutrients = await _nutrientsService.GetNutrientsByMealAsync(meal.Id);
-                meal.Calories = calories;
                 if (nutrients != null)
                 {
                     meal.Protein = nutrients.Protein;
