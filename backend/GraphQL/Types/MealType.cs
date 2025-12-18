@@ -11,22 +11,13 @@ public class MealType : ObjectGraphType<Meal>
     {
         Field(x => x.Id);
         Field(x => x.OwnerId);
+        Field(x => x.TypeId);
         Field(x => x.Name);
+        Field(x => x.Calories);
+        Field(x => x.Protein);
+        Field(x => x.Carbohydrate);
+        Field(x => x.Fat);
         Field(x => x.CreatedAt);
         Field(x => x.UpdatedAt);
-
-        Field<DecimalGraphType, decimal>("calories")
-            .ResolveAsync(async context =>
-            {
-                var meal = context.Source;
-                return await caloriesService.GetOrCalculateCaloriesForMealAsync(meal.Id);
-            });
-
-        Field<NutrientsType, Nutrients?>("nutrients")
-            .ResolveAsync(async context =>
-            {
-                var meal = context.Source;
-                return await nutrientsService.GetNutrientsByMealAsync(meal.Id);
-            });
     }
 }

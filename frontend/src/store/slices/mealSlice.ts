@@ -21,7 +21,12 @@ const mealSlice = createSlice({
     reducers: {
         createMealRequest(
             state,
-            _action: PayloadAction<{ ownerId: number; typeId: number; name: string}>//type
+            _action: PayloadAction<{ 
+                ownerId: number; 
+                typeId: number; 
+                name: string; 
+                dishes?: Array<{ dishId: number; weight: number }> 
+            }>
         ) {
             state.loading = true;
             state.error = null;

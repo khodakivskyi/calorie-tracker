@@ -6,6 +6,7 @@ type FoodState = {
     loading: boolean;
     error: string | null;
     success: string | null;
+    lastCreatedFood: Food | null;
 };
 
 const initialState: FoodState = {
@@ -13,6 +14,7 @@ const initialState: FoodState = {
     loading: false,
     error: null,
     success: null,
+    lastCreatedFood: null,
 };
 
 const foodSlice = createSlice({
@@ -35,12 +37,14 @@ const foodSlice = createSlice({
             state.loading = true;
             state.error = null;
             state.success = null;
+            state.lastCreatedFood = null;
         },
         createFoodSuccess: (state, action: PayloadAction<Food>) => {
             state.loading = false;
             state.error = null;
             state.success = 'Food added successfully';
             state.foods = [action.payload, ...state.foods];
+            state.lastCreatedFood = action.payload;
         },
         createFoodFailure: (state, action: PayloadAction<string>) => {
             state.loading = false;
@@ -118,6 +122,9 @@ const foodSlice = createSlice({
             state.error = action.payload;
             state.success = null;
         },
+        clearLastCreatedFood(state) {
+            state.lastCreatedFood = null;
+        },
 
     }
 });
@@ -134,7 +141,8 @@ export const {
     updateFoodFailure,
     deleteFoodRequest,
     deleteFoodSuccess,
-    deleteFoodFailure
+    deleteFoodFailure,
+    clearLastCreatedFood
 } = foodSlice.actions;
 
 export default foodSlice.reducer;

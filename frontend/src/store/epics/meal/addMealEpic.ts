@@ -7,11 +7,16 @@ import type {RootEpicAction} from '../rootEpic.ts';
 import type {RootState} from "../../slices/rootReducer.ts";
 
 const createMealMutation = `
-    mutation CreateMeal($ownerId: Int!, $typeId: Int!, $name: String!) {
-        createMeal(ownerId: $ownerId, typeId: $typeId, name: $name) {
+    mutation CreateMeal($input: CreateMealInput!) {
+        createMeal(input: $input) {
             id
             ownerId
+            typeId
             name
+            calories
+            protein
+            carbohydrate
+            fat
             createdAt
             updatedAt
         }
@@ -22,7 +27,12 @@ type CreateMealResponse = {
     createMeal: {
         id: number;
         ownerId: number;
+        typeId: number;
         name: string;
+        calories: number | null;
+        protein: number | null;
+        carbohydrate: number | null;
+        fat: number | null;
         createdAt: string;
         updatedAt: string;
     };
@@ -34,7 +44,7 @@ export const addMealEpic: Epic<RootEpicAction, RootEpicAction, RootState> = acti
     action$.pipe(
         ofType(createMealRequest.type),
         mergeMap((action: CreateMealRequestAction) =>
-            from(graphqlRequest<CreateMealResponse>(createMealMutation, action.payload)).pipe(
+            from(graphqlRequest<CreateMealResponse>(createMealMutation, {input: action.payload})).pipe(
                 map(res => createMealSuccess({
                     ...res.createMeal,
                     createdAt: new Date(res.createMeal.createdAt).toISOString(),

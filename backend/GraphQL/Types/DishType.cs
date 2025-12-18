@@ -20,24 +20,6 @@ namespace backend.GraphQL.Types
             Field(x => x.Carbohydrate);
             Field(x => x.Fat);
             Field(x => x.IsExternal, nullable: true);
-
-            /*Field<StringGraphType, string?>("image")
-                .ResolveAsync(async context =>
-                {
-                    var dish = context.Source;
-                    if (dish.ImageId == null)
-                        return null;
-
-                    try
-                    {
-                        var image = await imageService.GetImageByIdAsync(dish.ImageId.Value);
-                        return image.Url;
-                    }
-                    catch
-                    {
-                        return null;
-                    }
-                });*/
         }
     }
 }

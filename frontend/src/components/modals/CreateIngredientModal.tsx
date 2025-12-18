@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import type { Food } from "../../store/types/foodTypes.ts";
 import { useAppDispatch, useAppSelector } from "../../store";
-import { createFoodRequest } from "../../store/slices/foodsSlice.ts";
+import { createFoodRequest, clearLastCreatedFood } from "../../store/slices/foodsSlice.ts";
 
 interface CreateIngredientModalProps {
     isOpen: boolean;
@@ -25,10 +25,13 @@ export default function CreateIngredientModal({
     });
     const dispatch = useAppDispatch();
     const { user } = useAppSelector(state => state.auth);
+    const { loading, success, error, lastCreatedFood } = useAppSelector(state => state.food);
+    const processedFoodIdRef = useRef<number | null>(null);
 
     useEffect(() => {
         if (!isOpen) {
             setIngredient({ name: "", calories: "", protein: "", fat: "", carbohydrate: "" });
+            processedFoodIdRef.current = null;
         } else if (foodToEdit) {
             setIngredient({
                 name: foodToEdit.name ?? "",
@@ -40,36 +43,32 @@ export default function CreateIngredientModal({
         }
     }, [isOpen, foodToEdit]);
 
+    // Handle successful food creation - wait for backend response and pass correct food object to callback
+    useEffect(() => {
+        if (success && !loading && lastCreatedFood && isOpen) {
+            if (processedFoodIdRef.current !== lastCreatedFood.id) {
+                processedFoodIdRef.current = lastCreatedFood.id;
+                onCreateIngredient(lastCreatedFood);
+                setIngredient({ name: "", calories: "", protein: "", fat: "", carbohydrate: "" });
+                dispatch(clearLastCreatedFood());
+                onClose();
+            }
+        }
+    }, [success, loading, lastCreatedFood, isOpen, onCreateIngredient, onClose, dispatch]);
+
     const parseNumberOrNull = (value: string) => value === "" ? null : parseFloat(value);
 
     const handleCreate = () => {
         if (!ingredient.name) return;
 
-        const createdFood: Food = {
-            id: foodToEdit?.id ?? Date.now(),
-            name: ingredient.name,
-            ownerId: 1,
-            calories: parseNumberOrNull(ingredient.calories) ?? 0,
-            protein: parseNumberOrNull(ingredient.protein) ?? 0,
-            fat: parseNumberOrNull(ingredient.fat) ?? 0,
-            carbohydrate: parseNumberOrNull(ingredient.carbohydrate) ?? 0,
-            createdAt: foodToEdit?.createdAt ?? new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-        };
-
         dispatch(createFoodRequest({
             ownerId: user?.id ?? null,
-            name: createdFood.name,
+            name: ingredient.name,
             calories: parseNumberOrNull(ingredient.calories),
             protein: parseNumberOrNull(ingredient.protein),
             fat: parseNumberOrNull(ingredient.fat),
             carbohydrate: parseNumberOrNull(ingredient.carbohydrate),
         }));
-
-        onCreateIngredient(createdFood);
-
-        setIngredient({ name: "", calories: "", protein: "", fat: "", carbohydrate: "" });
-        onClose();
     };
 
     const handleClose = () => {
@@ -85,9 +84,21 @@ export default function CreateIngredientModal({
                 <h3 className="text-xl font-bold mb-2">
                     {foodToEdit ? "Edit ingredient" : "Create new ingredient"}
                 </h3>
-                <p className="text-sm text-gray-500 mb-4">
+                    <p className="text-sm text-gray-500 mb-4">
                     Set nutrition per 100g and reuse it in dishes.
                 </p>
+
+                {error && (
+                    <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+                        {error}
+                    </div>
+                )}
+
+                {loading && (
+                    <div className="mb-4 p-3 bg-blue-100 border border-blue-400 text-blue-700 rounded">
+                        Creating ingredient...
+                    </div>
+                )}
 
                 <div className="space-y-4">
                     <div>
@@ -155,7 +166,8 @@ export default function CreateIngredientModal({
                     </button>
                     <button
                         onClick={handleCreate}
-                        className="flex-1 bg-primary-500 text-white px-4 py-2 rounded-lg"
+                        disabled={loading || !ingredient.name.trim()}
+                        className="flex-1 bg-primary-500 hover:bg-primary-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white px-4 py-2 rounded-lg"
                     >
                         {foodToEdit ? "Save" : "Create"}
                     </button>
