@@ -46,7 +46,7 @@ export default function DailyMealsList() {
     }
 
     return (
-        <div className="mt-4 px-4 flex flex-col gap-4">
+        <div className="mt-4 flex flex-col gap-4">
             <h3 className="text-lg font-semibold">Today Meals</h3>
             {mealsForDay.map(meal => (
                 <DailyMealCard
