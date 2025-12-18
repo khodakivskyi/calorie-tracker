@@ -1,5 +1,4 @@
 import {useEffect, useState} from 'react';
-import PageHeader from "../components/PageHeader.tsx";
 import SearchBar from "../components/SearchBar.tsx";
 import RecipeItemCard from "../components/RecipeItemCard.tsx";
 import CreateIngredientModal from "../components/modals/CreateIngredientModal.tsx";
@@ -88,37 +87,33 @@ export default function FoodsPage() {
 
 
     return (
-        <div className="min-h-screen bg-green-100">
-            <PageHeader title="Foods"/>
+        <div className="min-h-screen">
+            <SearchBar
+                placeholder="Search foods..."
+                onSearch={setSearchQuery}
+                onAddClick={handleAddClick}
+            />
 
-            <div className="px-4">
-                <SearchBar
-                    placeholder="Search foods..."
-                    onSearch={setSearchQuery}
-                    onAddClick={handleAddClick}
-                />
+            {loading && <p className="text-center py-4">Loading...</p>}
+            {error && <p className="text-red-500 text-center py-4">{error}</p>}
 
-                {loading && <p className="text-center py-4">Loading...</p>}
-                {error && <p className="text-red-500 text-center py-4">{error}</p>}
-
-                <div className="pb-24">
-                    {filteredFoods.length > 0 ? (
-                        filteredFoods.map((food) => (
-                            <RecipeItemCard
-                                key={food.id}
-                                id={food.id}
-                                name={food.name}
-                                calories={food.calories ?? 0}
-                                onEdit={() => handleEditClick(food)}
-                                onDelete={() => handleDeleteFood(food.id)}
-                            />
-                        ))
-                    ) : (
-                        <div className="bg-white rounded-2xl p-8 text-center">
-                            <p className="text-gray-500">No foods found</p>
-                        </div>
-                    )}
-                </div>
+            <div className="pb-24">
+                {filteredFoods.length > 0 ? (
+                    filteredFoods.map((food) => (
+                        <RecipeItemCard
+                            key={food.id}
+                            id={food.id}
+                            name={food.name}
+                            calories={food.calories ?? 0}
+                            onEdit={() => handleEditClick(food)}
+                            onDelete={() => handleDeleteFood(food.id)}
+                        />
+                    ))
+                ) : (
+                    <div className="bg-white rounded-2xl p-8 text-center">
+                        <p className="text-gray-500">No foods found</p>
+                    </div>
+                )}
             </div>
 
             <CreateIngredientModal

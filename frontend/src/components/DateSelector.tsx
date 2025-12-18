@@ -6,21 +6,21 @@ export default function DateSelector() {
     const dispatch = useAppDispatch();
     const selectedDate = useAppSelector(state => state.date.selectedDate);
 
-    // today стабільний
+    // Stable "today" reference (midnight)
     const today = useMemo(() => {
         const d = new Date();
         d.setHours(0, 0, 0, 0);
         return d;
     }, []);
 
-    // при першому завантаженні — вибираємо сьогодні
+    // On first load — select today
     useEffect(() => {
         if (!selectedDate) {
             dispatch(setSelectedDate(today.toISOString()));
         }
     }, [dispatch, selectedDate, today]);
 
-    // будуємо список днів
+    // Build list of days (-3 ... +3)
     const days = useMemo(() => {
         const baseDate = new Date(today);
         const result = [];
@@ -37,13 +37,24 @@ export default function DateSelector() {
                 selectedDate &&
                 date.getTime() === new Date(selectedDate).setHours(0, 0, 0, 0);
 
-            result.push({ date, dayName, day, isToday, isSelected });
+            const isFuture = date.getTime() > today.getTime();
+
+            result.push({
+                date,
+                dayName,
+                day,
+                isToday,
+                isSelected,
+                isFuture
+            });
         }
 
         return result;
     }, [today, selectedDate]);
 
-    const handleDateClick = (date: Date) => {
+    const handleDateClick = (date: Date, isFuture: boolean) => {
+        if (isFuture) return;
+
         const normalized = new Date(date);
         normalized.setHours(0, 0, 0, 0);
         dispatch(setSelectedDate(normalized.toISOString()));
@@ -54,10 +65,16 @@ export default function DateSelector() {
             {days.map((dayInfo, index) => (
                 <button
                     key={index}
-                    onClick={() => handleDateClick(dayInfo.date)}
+                    onClick={() => handleDateClick(dayInfo.date, dayInfo.isFuture)}
+                    disabled={dayInfo.isFuture}
                     className={`
                         flex flex-col items-center justify-center flex-1 p-2 rounded-2xl
-                        transition-all duration-200 transform hover:scale-105 active:scale-95
+                        transition-all duration-200 transform
+                        ${
+                        dayInfo.isFuture
+                            ? "bg-gray-100 text-gray-400 cursor-not-allowed opacity-60"
+                            : "hover:scale-105 active:scale-95"
+                    }
                         ${
                         dayInfo.isSelected
                             ? "bg-gradient-to-br from-primary-500 to-accent-600 text-white shadow-lg shadow-primary-500/50"

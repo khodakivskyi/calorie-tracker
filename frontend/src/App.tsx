@@ -17,14 +17,14 @@ function App() {
             <Route path="/" element={<RegisterPage />} />
             <Route path="/verify-email" element={<VerifyEmailPage />} />
             <Route path="/login" element={<LoginPage />} />
-            <Route path="/add-meal" element={<AddMealPage />} />
-            <Route path="/recipes/dishes" element={<DishesPage />} />
-            <Route path="/recipes/foods" element={<FoodsPage />} />
             <Route element={<BaseLayout/>}>
                 <Route path="/home" element={<MainPage />} />
                 <Route path="/recipes" element={<RecipesPage />} />
                 <Route path="/profile" element={<ProfilePage />} />
                 <Route path="/analytics" element={<AnalyticsPage />} />
+                <Route path="/recipes/dishes" element={<DishesPage />} />
+                <Route path="/recipes/foods" element={<FoodsPage />} />
+                <Route path="/add-meal" element={<AddMealPage />} />
             </Route>
         </Routes>
     )
