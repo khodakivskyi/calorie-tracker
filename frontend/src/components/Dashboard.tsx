@@ -119,7 +119,7 @@ export default function Dashboard({ onSetLimitClick }: DashboardProps) {
 
     const calorieLimit = useAppSelector(state => state.calorieLimit.limit);
     const loading = useAppSelector(state => state.calorieLimit.loading);
-    const ownerId = 1; // TODO: замінити на auth.userId
+    const ownerId = 1; // in the future it will change to the real user id
 
     useEffect(() => {
         dispatch(getLimitRequest({ ownerId }));
