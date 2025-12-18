@@ -1,5 +1,6 @@
 import type {Food} from "./foodTypes.ts";
-import {createDishFailure,
+import {
+    createDishFailure,
     createDishRequest,
     createDishSuccess,
     getDishesByUserRequest,
@@ -10,7 +11,8 @@ import {createDishFailure,
     updateDishFailure,
     deleteDishRequest,
     deleteDishSuccess,
-    deleteDishFailure} from "../slices/dishesSlice.ts";
+    deleteDishFailure, getFoodsByDishSuccess, getFoodsByDishRequest, getFoodsByDishFailure
+} from "../slices/dishesSlice.ts";
 
 export type Dish = {
     id: number;
@@ -49,4 +51,7 @@ export type DishAction =
     | ReturnType<typeof updateDishFailure>
     | ReturnType<typeof deleteDishRequest>
     | ReturnType<typeof deleteDishSuccess>
-    | ReturnType<typeof deleteDishFailure>;
+    | ReturnType<typeof deleteDishFailure>
+    | ReturnType<typeof getFoodsByDishRequest>
+    | ReturnType<typeof getFoodsByDishSuccess>
+    | ReturnType<typeof getFoodsByDishFailure>;

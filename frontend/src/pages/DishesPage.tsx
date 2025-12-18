@@ -6,8 +6,11 @@ import CreateDishModal from "../components/modals/CreateDishModal.tsx";
 import UpdateDishModal from "../components/modals/UpdateDishModal.tsx";
 import type {Dish} from "../store/types/dishTypes.ts";
 import {useAppDispatch, useAppSelector} from "../store";
-import {getDishesByUserRequest} from "../store/slices/dishesSlice.ts";
+import {getDishesByUserRequest,  getFoodsByDishRequest,
+    deleteDishRequest} from "../store/slices/dishesSlice.ts";
 import {getFoodsByUserRequest} from '../store/slices/foodsSlice.ts';
+
+import DishInfoModal from "../components/modals/DishInfoModal.tsx";
 
 /**
  * Page for managing user's dishes.
@@ -21,6 +24,7 @@ export default function DishesPage() {
 
     const [searchQuery, setSearchQuery] = useState('');
     const [isCreateDishOpen, setIsCreateDishOpen] = useState(false);
+    const [dishToView, setDishToView] = useState<Dish | null>(null);
     const [dishToEdit, setDishToEdit] = useState<Dish | null>(null);
 
     // Load dishes and foods on mount
@@ -31,6 +35,17 @@ export default function DishesPage() {
         }
     }, [dispatch, user]);
 
+    useEffect(() => {
+        if (dishToView && user) {
+            dispatch(
+                getFoodsByDishRequest({
+                    ownerId: user.id,
+                    dishId: dishToView.id,
+                })
+            );
+        }
+    }, [dishToView, user, dispatch]);
+
     const handleSearch = (query: string) => {
         setSearchQuery(query);
     };
@@ -40,10 +55,9 @@ export default function DishesPage() {
     };
 
     const handleItemClick = (dish: Dish) => {
-        if (dish.ownerId && user && dish.ownerId === user.id) {
-            setDishToEdit(dish);
-        }
+        setDishToView(dish);
     };
+
 
     // Filter dishes by search query
     const filteredDishes = searchQuery.trim()
@@ -84,6 +98,27 @@ export default function DishesPage() {
                     )}
                 </div>
             </div>
+            <DishInfoModal
+                isOpen={!!dishToView}
+                dish={dishToView as Dish}
+                onClose={() => setDishToView(null)}
+                onEdit={() => {
+                    setDishToEdit(dishToView);
+                    setDishToView(null);
+                }}
+                onDelete={() => {
+                    if (!dishToView || !user) return;
+
+                    dispatch(
+                        deleteDishRequest({
+                            dishId: dishToView.id,
+                            ownerId: user.id,
+                        })
+                    );
+
+                    setDishToView(null);
+                }}
+            />
 
             {/* Create dish modal - fully self-contained */}
             <CreateDishModal

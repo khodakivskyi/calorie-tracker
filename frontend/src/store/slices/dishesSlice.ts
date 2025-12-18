@@ -3,17 +3,21 @@ import type { Dish } from '../types/dishTypes.ts';
 
 type DishesState = {
     dishes: Dish[];
-    loading: boolean;
+    loading: boolean;        // для CRUD страв
+    foodsLoading: boolean;   // ТІЛЬКИ для getFoodsByDish
     error: string | null;
     success: string | null;
 };
 
+
 const initialState: DishesState = {
     dishes: [],
     loading: false,
+    foodsLoading: false,
     error: null,
     success: null,
 };
+
 
 const dishesSlice = createSlice({
     name: 'dishes',
@@ -104,6 +108,29 @@ const dishesSlice = createSlice({
             state.error = action.payload;
             state.success = null;
         },
+        getFoodsByDishRequest(
+            state,
+            _action: PayloadAction<{ ownerId: number; dishId: number }>
+        ) {
+            state.foodsLoading = true;
+            state.error = null;
+        },
+
+
+        getFoodsByDishSuccess(state, action) {
+            state.foodsLoading = false;
+
+            const dish = state.dishes.find(d => d.id === action.payload.dishId);
+            if (dish) {
+                dish.foods = action.payload.foods;
+            }
+        },
+
+        getFoodsByDishFailure(state, action) {
+            state.foodsLoading = false;
+            state.error = action.payload;
+        },
+
 
     },
 });
@@ -120,7 +147,10 @@ export const {
     updateDishFailure,
     deleteDishRequest,
     deleteDishSuccess,
-    deleteDishFailure
+    deleteDishFailure,
+    getFoodsByDishRequest,
+    getFoodsByDishSuccess,
+    getFoodsByDishFailure
 } = dishesSlice.actions;
 
 export default dishesSlice.reducer;

@@ -64,6 +64,9 @@ export type RootAction =
     | ReturnType<typeof dishActions.deleteDishRequest>
     | ReturnType<typeof dishActions.deleteDishSuccess>
     | ReturnType<typeof dishActions.deleteDishFailure>
+    | ReturnType<typeof dishActions.getFoodsByDishRequest>
+    | ReturnType<typeof dishActions.getFoodsByDishSuccess>
+    | ReturnType<typeof dishActions.getFoodsByDishFailure>
     | ReturnType<typeof caloriesChartActions.fetchChartDataRequest>
     | ReturnType<typeof caloriesChartActions.fetchChartDataSuccess>
     | ReturnType<typeof caloriesChartActions.fetchChartDataFailure>

@@ -10,6 +10,10 @@ namespace backend.GraphQL.Types
             Field<IntGraphType>("id");
             Field<StringGraphType>("name");
             Field<DecimalGraphType>("weight");
+            Field<DecimalGraphType>("calories");
+            Field<DecimalGraphType>("protein");
+            Field<DecimalGraphType>("fat");
+            Field<DecimalGraphType>("carbohydrate");
         }
     }
 }

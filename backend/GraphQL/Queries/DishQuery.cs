@@ -1,4 +1,5 @@
 ﻿using backend.GraphQL.Types;
+using backend.Models;
 using backend.Services;
 using GraphQL;
 using GraphQL.Types;
@@ -41,14 +42,35 @@ namespace backend.GraphQL.Queries
                 });
 
             Field<ListGraphType<DishFoodType>>("getFoodsByDish")
-                .Argument<NonNullGraphType<IntGraphType>>("dishId")
-                .ResolveAsync(async context =>
-                {
-                    var dishId = context.GetArgument<int>("dishId");
-                    var userId = 0; //we will get userId from jwt soon
-                    var foods = await dishService.GetAllFoodsByDishAsync(userId, dishId);
-                    return foods.Select(f => new { id = f.food.Id, name = f.food.Name, weight = f.weight });
-                });
+    .Argument<NonNullGraphType<IntGraphType>>("ownerId")
+    .Argument<NonNullGraphType<IntGraphType>>("dishId")
+    .ResolveAsync(async context =>
+    {
+        var dishId = context.GetArgument<int>("dishId");
+        var userId = context.GetArgument<int>("ownerId");
+
+        var foods = await dishService.GetAllFoodsByDishAsync(userId, dishId);
+
+        // Приводимо до типу DishFood
+        return foods.Select(f =>
+        {
+            var factor = f.weight / 100m;
+            return new
+            {
+                id = f.food.Id,
+                name = f.food.Name,
+                weight = f.weight,
+                calories = f.food.Calories * factor,
+                protein = f.food.Protein * factor,
+                fat = f.food.Fat * factor,
+                carbohydrate = f.food.Carbohydrate * factor
+            };
+        });
+
+
+    });
+
+
         }
     }
 }
