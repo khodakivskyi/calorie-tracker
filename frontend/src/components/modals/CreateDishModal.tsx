@@ -1,7 +1,7 @@
-import type {Dish, DishFood} from "../../store/types/dishTypes.ts";
-import {useState, useMemo, useCallback} from "react";
+import type {Dish, DishFood, DishWithFoods} from "../../store/types/dishTypes.ts";
+import {useState, useMemo, useCallback, useEffect, useRef} from "react";
 import {useAppDispatch, useAppSelector} from "../../store";
-import {createDishRequest} from "../../store/slices/dishesSlice.ts";
+import {createDishRequest, clearLastCreatedDish} from "../../store/slices/dishesSlice.ts";
 import SelectIngredientModal from "./SelectIngredientModal.tsx";
 import CreateIngredientModal from "./CreateIngredientModal.tsx";
 import type {Food} from "../../store/types/foodTypes.ts";
@@ -24,6 +24,8 @@ export default function CreateDishModal({
     const dispatch = useAppDispatch();
     const {user} = useAppSelector(state => state.auth);
     const {foods} = useAppSelector(state => state.food);
+    const {loading, success, error, lastCreatedDish} = useAppSelector(state => state.dish);
+    const processedDishIdRef = useRef<number | null>(null);
 
     // Dish data
     const [dishName, setDishName] = useState("");
@@ -64,33 +66,39 @@ export default function CreateDishModal({
         );
     }, []);
 
+    // Handle successful dish creation - wait for backend response and pass correct dish object to callback
+    useEffect(() => {
+        if (success && !loading && lastCreatedDish && isOpen) {
+            if (processedDishIdRef.current !== lastCreatedDish.id) {
+                processedDishIdRef.current = lastCreatedDish.id;
+                const dishWithFoods: DishWithFoods = {
+                    ...lastCreatedDish,
+                    foods: ingredients
+                };
+                
+                onSuccess?.(dishWithFoods, ingredients);
+                resetForm();
+                dispatch(clearLastCreatedDish());
+                onClose();
+            }
+        }
+    }, [success, loading, lastCreatedDish, isOpen, ingredients, onSuccess, onClose, dispatch]);
+
     // Create dish
     const handleCreate = useCallback(() => {
         if (!dishName.trim() || totalWeight <= 0 || !user) return;
 
-        const newDish: Dish = {
-            id: Date.now(),
-            name: dishName.trim(),
-            ownerId: user.id ?? null,
-            weight: totalWeight,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-        };
-
         // Dispatch to Redux
         dispatch(createDishRequest({
-            name: newDish.name,
+            name: dishName.trim(),
             ownerId: user.id!,
-            weight: newDish.weight
+            weight: totalWeight,
+            foods: ingredients.map(ing => ({
+                foodId: ing.foodId,
+                weight: ing.weight || 0
+            }))
         }));
-
-        // Call success callback if provided
-        onSuccess?.(newDish, ingredients);
-
-        // Reset and close
-        resetForm();
-        onClose();
-    }, [dishName, totalWeight, user, ingredients, dispatch, onSuccess, onClose]);
+    }, [dishName, totalWeight, user, ingredients, dispatch]);
 
     // Close and reset
     const handleClose = useCallback(() => {
@@ -103,6 +111,7 @@ export default function CreateDishModal({
         setIngredients([]);
         setShowSelectIngredient(false);
         setShowCreateIngredient(false);
+        processedDishIdRef.current = null;
     };
 
     if (!isOpen) return null;
@@ -114,6 +123,18 @@ export default function CreateDishModal({
                     className="bg-white p-6 rounded-2xl shadow-2xl border border-gray-100 w-[520px] max-h-[85vh] overflow-y-auto">
                     <h3 className="text-xl font-bold mb-1">Create New Dish</h3>
                     <p className="text-sm text-gray-500 mb-4">Name your dish and add ingredients with weights.</p>
+
+                    {error && (
+                        <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+                            {error}
+                        </div>
+                    )}
+
+                    {loading && (
+                        <div className="mb-4 p-3 bg-blue-100 border border-blue-400 text-blue-700 rounded">
+                            Creating dish...
+                        </div>
+                    )}
 
                     <div className="space-y-4">
                         {/* Dish name */}
@@ -197,7 +218,7 @@ export default function CreateDishModal({
                         </button>
                         <button
                             onClick={handleCreate}
-                            disabled={!dishName.trim() || totalWeight <= 0}
+                            disabled={loading || !dishName.trim() || totalWeight <= 0}
                             className="flex-1 bg-primary-500 hover:bg-primary-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white px-4 py-2 rounded transition-colors"
                         >
                             Create

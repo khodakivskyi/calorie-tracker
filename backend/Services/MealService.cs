@@ -49,9 +49,17 @@ namespace backend.Services
 
             var tasks = meals.Select(async meal =>
             {
-                var calories = await _caloriesService.GetOrCalculateCaloriesForMealAsync(meal.Id);
+                try
+                {
+                    var calories = await _caloriesService.GetOrCalculateCaloriesForMealAsync(meal.Id);
+                    meal.Calories = calories;
+                }
+                catch (NotFoundException)
+                {
+                    meal.Calories = null;
+                }
+
                 var nutrients = await _nutrientsService.GetNutrientsByMealAsync(meal.Id);
-                meal.Calories = calories;
                 if (nutrients != null)
                 {
                     meal.Protein = nutrients.Protein;
@@ -68,7 +76,7 @@ namespace backend.Services
         public async Task<Meal> CreateMealAsync(
             int userId,
             int typeId,
-            string name,
+            string? name,
             IEnumerable<(int dishId, decimal weight)> dishes)
         {
             var mealType = await _mealTypeRepository.GetMealTypeByIdAsync(typeId);
@@ -77,10 +85,6 @@ namespace backend.Services
 
             if (string.IsNullOrWhiteSpace(name) && typeId == 5)
                 throw new ValidationException("Meal name cannot be empty");
-
-            if (!string.IsNullOrWhiteSpace(name) && typeId != 5)
-                throw new ValidationException("Name cannot be provided for system meal types");
-
 
             var dishesList = dishes.ToList();
             foreach (var (dishId, weight) in dishesList)
@@ -93,7 +97,7 @@ namespace backend.Services
             {
                 OwnerId = userId,
                 TypeId = typeId,
-                Name = typeId == 5 ? name : mealType.Name,
+                Name = typeId == 5 ? name! : mealType.Name,
             };
 
             var createdMeal = await _mealRepository.CreateMealAsync(newMeal, dishesList);

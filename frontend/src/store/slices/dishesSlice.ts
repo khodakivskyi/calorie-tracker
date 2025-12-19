@@ -1,11 +1,12 @@
-import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import type { Dish } from '../types/dishTypes.ts';
+import {createSlice, type PayloadAction} from '@reduxjs/toolkit';
+import type {Dish} from '../types/dishTypes.ts';
 
 type DishesState = {
     dishes: Dish[];
     loading: boolean;
     error: string | null;
     success: string | null;
+    lastCreatedDish: Dish | null;
 };
 
 const initialState: DishesState = {
@@ -13,6 +14,7 @@ const initialState: DishesState = {
     loading: false,
     error: null,
     success: null,
+    lastCreatedDish: null,
 };
 
 const dishesSlice = createSlice({
@@ -21,17 +23,22 @@ const dishesSlice = createSlice({
     reducers: {
         createDishRequest(
             state,
-            _action: PayloadAction<{ ownerId?: number; name: string; weight: number,  imageId?: number | null; }>
+            _action: PayloadAction<{
+                ownerId?: number; name: string; weight: number, imageId?: number | null;
+                foods?: Array<{ foodId: number; weight: number }>
+            }>
         ) {
             state.loading = true;
             state.error = null;
             state.success = null;
+            state.lastCreatedDish = null;
         },
         createDishSuccess: (state, action: PayloadAction<Dish>) => {
             state.loading = false;
             state.error = null;
             state.success = 'Dish added successfully';
             state.dishes.unshift(action.payload);
+            state.lastCreatedDish = action.payload;
         },
         createDishFailure: (state, action: PayloadAction<string>) => {
             state.loading = false;
@@ -104,6 +111,9 @@ const dishesSlice = createSlice({
             state.error = action.payload;
             state.success = null;
         },
+        clearLastCreatedDish(state) {
+            state.lastCreatedDish = null;
+        },
 
     },
 });
@@ -120,7 +130,8 @@ export const {
     updateDishFailure,
     deleteDishRequest,
     deleteDishSuccess,
-    deleteDishFailure
+    deleteDishFailure,
+    clearLastCreatedDish
 } = dishesSlice.actions;
 
 export default dishesSlice.reducer;

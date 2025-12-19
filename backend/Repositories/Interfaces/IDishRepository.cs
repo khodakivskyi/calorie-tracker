@@ -13,7 +13,7 @@ namespace backend.Repositories.Interfaces
 
         // Only for private dishes
         Task<IEnumerable<Dish>> GetPrivateDishesByUserAsync(int userId);
-        Task<Dish?> CreateDishAsync(Dish dish);
+        Task<Dish?> CreateDishAsync(Dish dish, IEnumerable<(int foodId, decimal weight)>? foods = null);
         Task<Dish?> UpdateDishAsync(Dish dish);
         Task<bool> DeleteDishAsync(int dishId);
         Task<bool> DeleteAllDishesByUserAsync(int userId);

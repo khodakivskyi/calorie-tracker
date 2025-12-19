@@ -27,6 +27,18 @@ export type Dish = {
     foods?: DishFood[];
 };
 
+export type CreateDishInput = {
+    name: string;
+    ownerId?: number | null;
+    weight: number;
+    calories?: number | null;
+    protein?: number | null;
+    fat?: number | null;
+    carbohydrate?: number | null;
+    imageId?: number | null;
+};
+
+
 export type DishFood = {
     foodId: number;
     weight?: number;

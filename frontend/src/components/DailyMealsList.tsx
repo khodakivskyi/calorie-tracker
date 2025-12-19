@@ -34,8 +34,8 @@ export default function DailyMealsList() {
 
     if (mealsForDay.length === 0) {
         return (
-            <div className="mt-8 px-4 flex flex-col gap-4">
-                <h2 className="text-2xl font-semibold mb-4">Today Meals</h2>
+            <div className="mt-8 flex flex-col gap-4">
+                <h2 className="text-2xl font-semibold">Today Meals</h2>
                 <Link to="/add-meal">
                     <button className="w-full bg-primary-500 hover:bg-primary-600 text-white font-semibold py-3 px-6 rounded-full transition shadow-md hover:shadow-lg">
                         + Add Meals
@@ -46,8 +46,8 @@ export default function DailyMealsList() {
     }
 
     return (
-        <div className="mt-4 px-4 flex flex-col gap-4">
-            <h3 className="text-lg font-semibold">Today Meals</h3>
+        <div className="mt-4 flex flex-col gap-4">
+            <h2 className="text-2xl font-semibold">Today Meals</h2>
             {mealsForDay.map(meal => (
                 <DailyMealCard
                     key={meal.id}

@@ -57,7 +57,12 @@ namespace backend.Services
             return await _dishRepository.GetGlobalDishesAsync();
         }
 
-        public async Task<Dish> CreateDishAsync(int? userId, string name, decimal weight, int? imageId = null)
+        public async Task<Dish> CreateDishAsync(
+              int? userId,
+              string name,
+              decimal weight,
+              int? imageId = null,
+              IEnumerable<(int foodId, decimal weight)>? foods = null)
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new ValidationException("Dish name cannot be empty");
@@ -66,7 +71,8 @@ namespace backend.Services
                 throw new ValidationException("Dish weight must be greater than 0");
 
             var dish = new Dish(userId, name, weight, imageId, false);
-            var createdDish = await _dishRepository.CreateDishAsync(dish);
+            var foodsList = foods?.ToList() ?? new List<(int foodId, decimal weight)>();
+            var createdDish = await _dishRepository.CreateDishAsync(dish, foodsList);
 
             if (createdDish == null)
                 throw new InvalidOperationException("Failed to create dish");

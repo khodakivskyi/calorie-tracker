@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import type { Food } from "../../store/types/foodTypes.ts";
 import { useAppDispatch, useAppSelector } from "../../store";
-import { createFoodRequest } from "../../store/slices/foodsSlice.ts";
+import { createFoodRequest, clearLastCreatedFood } from "../../store/slices/foodsSlice.ts";
 
 interface CreateIngredientModalProps {
     isOpen: boolean;
@@ -25,13 +25,13 @@ export default function CreateIngredientModal({
     });
     const dispatch = useAppDispatch();
     const { user } = useAppSelector(state => state.auth);
-    const { foods, loading, success, error } = useAppSelector(state => state.food);
-    const [lastCreatedName, setLastCreatedName] = useState<string | null>(null);
+    const { loading, success, error, lastCreatedFood } = useAppSelector(state => state.food);
+    const processedFoodIdRef = useRef<number | null>(null);
 
     useEffect(() => {
         if (!isOpen) {
             setIngredient({ name: "", calories: "", protein: "", fat: "", carbohydrate: "" });
-            setLastCreatedName(null);
+            processedFoodIdRef.current = null;
         } else if (foodToEdit) {
             setIngredient({
                 name: foodToEdit.name ?? "",
@@ -45,18 +45,16 @@ export default function CreateIngredientModal({
 
     // Handle successful food creation - wait for backend response and pass correct food object to callback
     useEffect(() => {
-        if (success && !loading && lastCreatedName) {
-            // New food is added at the beginning of the array in createFoodSuccess
-            // Find it by name (should be the first one if names match)
-            const createdFood = foods.find(f => f.name === lastCreatedName);
-            if (createdFood) {
-                onCreateIngredient(createdFood);
+        if (success && !loading && lastCreatedFood && isOpen) {
+            if (processedFoodIdRef.current !== lastCreatedFood.id) {
+                processedFoodIdRef.current = lastCreatedFood.id;
+                onCreateIngredient(lastCreatedFood);
                 setIngredient({ name: "", calories: "", protein: "", fat: "", carbohydrate: "" });
-                setLastCreatedName(null);
+                dispatch(clearLastCreatedFood());
                 onClose();
             }
         }
-    }, [success, loading, foods, lastCreatedName, onCreateIngredient, onClose]);
+    }, [success, loading, lastCreatedFood, isOpen, onCreateIngredient, onClose, dispatch]);
 
     const parseNumberOrNull = (value: string) => value === "" ? null : parseFloat(value);
 
@@ -71,8 +69,6 @@ export default function CreateIngredientModal({
             fat: parseNumberOrNull(ingredient.fat),
             carbohydrate: parseNumberOrNull(ingredient.carbohydrate),
         }));
-
-        setLastCreatedName(ingredient.name);
     };
 
     const handleClose = () => {

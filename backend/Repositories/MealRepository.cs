@@ -55,7 +55,6 @@ namespace backend.Repositories
 
                 if (createdMeal == null)
                 {
-                    transaction.Rollback();
                     throw new InvalidOperationException("Failed to create meal");
                 }
 

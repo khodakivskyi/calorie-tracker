@@ -112,8 +112,8 @@ export default function ProfilePage() {
                 <CalorieGoalModal
                     isOpen={isCalorieModalOpen}
                     onClose={() => setIsCalorieModalOpen(false)}
-                    currentLimit={calorieLimit?.limitValue ?? 2500} // передаємо актуальний ліміт
-                    onSave={handleSaveLimit} // передаємо функцію збереження
+                    currentLimit={calorieLimit?.limitValue ?? 0}
+                    onSave={handleSaveLimit}
                 />
 
                 <div className="mb-8">

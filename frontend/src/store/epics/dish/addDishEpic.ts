@@ -1,26 +1,18 @@
-import { type Epic, ofType } from 'redux-observable';
-import { from, of } from 'rxjs';
-import { mergeMap, map, catchError } from 'rxjs/operators';
+import {type Epic, ofType} from 'redux-observable';
+import {from, of} from 'rxjs';
+import {mergeMap, map, catchError} from 'rxjs/operators';
 import {
     createDishRequest,
     createDishSuccess,
     createDishFailure,
 } from '../../slices/dishesSlice.ts';
-import { graphqlRequest } from '../../../config/graphqlClient.ts';
-import type { RootEpicAction } from '../rootEpic.ts';
-import type { RootState } from '../../slices/rootReducer.ts';
+import {graphqlRequest} from '../../../config/graphqlClient.ts';
+import type {RootEpicAction} from '../rootEpic.ts';
+import type {RootState} from '../../slices/rootReducer.ts';
 
 const createDishMutation = `
-  mutation CreateDish(
-    $ownerId: Int
-    $weight: Decimal!
-    $name: String!
-  ) {
-    createDish(
-      ownerId: $ownerId
-      weight: $weight
-      name: $name
-    ) {
+  mutation CreateDish($input: CreateDishInput!) {
+    createDish(input: $input) {
       id
       name
       ownerId
@@ -66,7 +58,7 @@ export const createDishEpic: Epic<
             from(
                 graphqlRequest<CreateDishResponse>(
                     createDishMutation,
-                    action.payload
+                    {input: action.payload}
                 )
             ).pipe(
                 map((res) =>
