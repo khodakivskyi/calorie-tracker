@@ -12,10 +12,10 @@ export default function AddMeal() {
     const mealsFromRedux = useAppSelector(state => state.meal.meals);
     const selectedDate = useAppSelector(state => state.date.selectedDate);
 
-    const [_meals, setMeals] = useState<Meal[] | null>(null); // null = ще не завантажено
+    const [_meals, setMeals] = useState<Meal[] | null>(null);
 
     useEffect(() => {
-        setMeals(mealsFromRedux); // синхронізація з Redux
+        setMeals(mealsFromRedux);
     }, [mealsFromRedux]);
 
     const [isModalOpen, setModalOpen] = useState(false);
@@ -41,10 +41,6 @@ export default function AddMeal() {
 
     const hasMealOfTypeToday = (type: number) => mealsForDay.some(m => m.typeId === type);
 
-    const handleAddMeal = (meal: Meal) => {
-        setMeals(prev => prev ? [...prev, meal] : [meal]);
-    };
-
     const handleOpenModal = (meal: { id: string; name: string }) => {
         setSelectedMeal(meal);
         setModalOpen(true);
@@ -60,7 +56,7 @@ export default function AddMeal() {
         { id: 'lunch', type: 2, name: 'Lunch', imagePosition: 'left', imageUrl: Lunch },
         { id: 'snack', type: 3, name: 'Snack', imagePosition: 'right', imageUrl: Snack },
         { id: 'dinner', type: 4, name: 'Dinner', imagePosition: 'left', imageUrl: Dinner },
-        { id: 'custom', type: 0, name: 'Custom', imagePosition: 'right', imageUrl: Dinner }
+        { id: 'custom', type: 5, name: 'Custom', imagePosition: 'right', imageUrl: Dinner }
     ] as const;
 
     const allImagesLoaded = loadedImagesCount >= mealTypes.length;
@@ -133,7 +129,6 @@ export default function AddMeal() {
             <AddMealModal
                 isOpen={isModalOpen}
                 onClose={handleCloseModal}
-                onAddMeal={handleAddMeal}
                 mealType={selectedMeal?.name || ''}
             />
         </>

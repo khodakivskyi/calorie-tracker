@@ -1,4 +1,4 @@
-import type {Meal, MealDish} from "../../store/types/mealTypes.ts";
+import type {MealDish} from "../../store/types/mealTypes.ts";
 import type {Dish, DishWithFoods, DishFood} from "../../store/types/dishTypes.ts";
 import {useState, useEffect, useCallback} from "react";
 import SelectDishModal from "./SelectDishModal.tsx";
@@ -12,14 +12,13 @@ import {createMealRequest} from "../../store/slices/mealSlice.ts";
 interface AddMealModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onAddMeal: (meal: Meal) => void;
     mealType: string;
 }
 
 export default function AddMealModal({isOpen, onClose, mealType}: AddMealModalProps) {
     const dispatch = useAppDispatch();
     const {user} = useAppSelector(state => state.auth);
-    const {foods} = useAppSelector(state => state.food);
+    //const {foods} = useAppSelector(state => state.food);
     const {dishes} = useAppSelector(state => state.dish);
     const {loading, error, success} = useAppSelector(state => state.meal);
 
@@ -32,10 +31,10 @@ export default function AddMealModal({isOpen, onClose, mealType}: AddMealModalPr
 
     useEffect(() => {
         if (isOpen && user) {
-            if (foods.length === 0) dispatch(getFoodsByUserRequest({ownerId: user.id}));
-            if (dishes.length === 0) dispatch(getDishesByUserRequest({ownerId: user.id}));
+            dispatch(getFoodsByUserRequest({ ownerId: user.id }));
+            dispatch(getDishesByUserRequest({ ownerId: user.id }));
         }
-    }, [isOpen, user, dispatch, foods.length, dishes.length]);
+    }, [isOpen, user, dispatch]);
 
     useEffect(() => {
         if (!isOpen) {

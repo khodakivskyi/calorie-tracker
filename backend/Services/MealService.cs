@@ -90,7 +90,7 @@ namespace backend.Services
 
             var todaysMeals = await _mealRepository.GetMealsByDateAsync(userId, today);
 
-            if (todaysMeals.Any(m => m.TypeId == typeId && typeId!=5))
+            if (todaysMeals.Any(m => m.TypeId == typeId && typeId != 5))
                 throw new ValidationException("This meal type already exists for today");
 
             var dishesList = dishes.ToList();
