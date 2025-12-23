@@ -2,11 +2,9 @@
 //import FoodItemIcon from "../assets/icons/food-item.svg?react";
 
 interface DailyMealCardProps {
-    id: number;
     name: string;
     calories: number | null;
     onClick?: () => void;
-    onEdit?: () => void;
 }
 
 export default function DailyMealCard({
