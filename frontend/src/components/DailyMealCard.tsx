@@ -7,7 +7,6 @@ interface DailyMealCardProps {
     calories: number | null;
     onClick?: () => void;
     onEdit?: () => void;
-    onDelete?: () => void;
 }
 
 export default function DailyMealCard({

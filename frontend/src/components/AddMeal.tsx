@@ -39,7 +39,10 @@ export default function AddMeal() {
         return mealDate.toDateString() === selDate.toDateString();
     });
 
-    const hasMealOfTypeToday = (type: number) => mealsForDay.some(m => m.typeId === type);
+    const hasMealOfTypeToday = (type: number) => {
+        if (type === 5 || type === 4) return false;
+        return mealsForDay.some(m => m.typeId === type);
+    };
 
     const handleOpenModal = (meal: { id: string; name: string }) => {
         setSelectedMeal(meal);
@@ -54,8 +57,8 @@ export default function AddMeal() {
     const mealTypes = [
         { id: 'breakfast', type: 1, name: 'Breakfast', imagePosition: 'right', imageUrl: Breakfast },
         { id: 'lunch', type: 2, name: 'Lunch', imagePosition: 'left', imageUrl: Lunch },
-        { id: 'snack', type: 3, name: 'Snack', imagePosition: 'right', imageUrl: Snack },
-        { id: 'dinner', type: 4, name: 'Dinner', imagePosition: 'left', imageUrl: Dinner },
+        { id: 'dinner', type: 3, name: 'Dinner', imagePosition: 'left', imageUrl: Dinner },
+        { id: 'snack', type: 4, name: 'Snack', imagePosition: 'right', imageUrl: Snack },
         { id: 'custom', type: 5, name: 'Custom', imagePosition: 'right', imageUrl: Dinner }
     ] as const;
 

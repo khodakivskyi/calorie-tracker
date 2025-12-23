@@ -12,25 +12,16 @@ export default function DailyMealsList() {
 
     useEffect(() => {
         if (user) {
-            console.log("Dispatching getMealsByUserRequest for user:", user.id);
             dispatch(getMealsByUserRequest({ ownerId: user.id }));
         }
     }, [dispatch, user]);
-
-    console.log("All meals from state:", meals);
-    console.log("Selected date:", selectedDate);
 
     const mealsForDay = meals.filter(meal => {
         const mealDate = new Date(meal.createdAt);
         const selDate = new Date(selectedDate);
 
-        const match = mealDate.toDateString() === selDate.toDateString();
-
-        console.log(`Comparing meal ${meal.id} date ${mealDate.toDateString()} with selected ${selDate.toDateString()}:`, match);
-        return match;
+        return mealDate.toDateString() === selDate.toDateString();
     });
-
-    console.log("Meals for selected day:", mealsForDay);
 
     if (mealsForDay.length === 0) {
         return (
@@ -55,7 +46,6 @@ export default function DailyMealsList() {
                     name={meal.name}
                     calories={meal.calories}
                     onEdit={() => console.log("Edit meal", meal.id)}
-                    onDelete={() => console.log("Delete meal", meal.id)}
                 />
             ))}
         </div>
