@@ -86,6 +86,13 @@ namespace backend.Services
             if (string.IsNullOrWhiteSpace(name) && typeId == 5)
                 throw new ValidationException("Meal name cannot be empty");
 
+            var today = DateTime.UtcNow.Date;
+
+            var todaysMeals = await _mealRepository.GetMealsByDateAsync(userId, today);
+
+            if (todaysMeals.Any(m => m.TypeId == typeId && typeId != 5))
+                throw new ValidationException("This meal type already exists for today");
+
             var dishesList = dishes.ToList();
             foreach (var (dishId, weight) in dishesList)
             {

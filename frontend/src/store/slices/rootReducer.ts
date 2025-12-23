@@ -7,6 +7,7 @@ import dishReducer, * as dishActions from './dishesSlice.ts';
 import caloriesChartReducer, * as caloriesChartActions from './caloriesChartSlice';
 import activityHeatmapReducer, * as activityHeatmapActions from './activityHeatmapSlice';
 import calorieLimitReducer, * as calorieLimitActions from './calorieLimitSlice.ts';
+import dateReducer from './dateSlice';
 
 export const rootReducer = combineReducers({
     auth: authReducer,
@@ -16,7 +17,8 @@ export const rootReducer = combineReducers({
     dish: dishReducer,
     caloriesChart: caloriesChartReducer,
     activityHeatmap: activityHeatmapReducer,
-    calorieLimit: calorieLimitReducer
+    calorieLimit: calorieLimitReducer,
+    date: dateReducer
 });
 
 export type RootState = ReturnType<typeof rootReducer>;
@@ -78,4 +80,10 @@ export type RootAction =
     | ReturnType<typeof calorieLimitActions.setLimitFailure>
     | ReturnType<typeof calorieLimitActions.removeLimitRequest>
     | ReturnType<typeof calorieLimitActions.removeLimitSuccess>
-    | ReturnType<typeof calorieLimitActions.removeLimitFailure>;
+    | ReturnType<typeof calorieLimitActions.removeLimitFailure>
+    | ReturnType<typeof mealActions.getMealsByUserRequest>
+    | ReturnType<typeof mealActions.getMealsByUserSuccess>
+    | ReturnType<typeof mealActions.getMealsByUserFailure>
+    | ReturnType<typeof mealActions.getDishesByMealRequest>
+    | ReturnType<typeof mealActions.getDishesByMealSuccess>
+    | ReturnType<typeof mealActions.getDishesByMealFailure>;

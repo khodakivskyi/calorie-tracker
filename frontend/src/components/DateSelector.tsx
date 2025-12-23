@@ -1,52 +1,106 @@
-import { useState } from 'react';
+import { useEffect, useMemo } from "react";
+import { useAppDispatch, useAppSelector } from "../store";
+import { setSelectedDate } from "../store/slices/dateSlice";
 
 export default function DateSelector() {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const [selectedDate, setSelectedDate] = useState<Date>(today);
+    const dispatch = useAppDispatch();
+    const selectedDate = useAppSelector(state => state.date.selectedDate);
 
-    const days = [];
-    const baseDate = new Date();
+    // Stable "today" reference (midnight)
+    const today = useMemo(() => {
+        const d = new Date();
+        d.setHours(0, 0, 0, 0);
+        return d;
+    }, []);
 
-    for (let i = -3; i <= 3; i++) {
-        const date = new Date(baseDate);
-        date.setDate(baseDate.getDate() + i);
-        date.setHours(0, 0, 0, 0);
+    // On first load — select today
+    useEffect(() => {
+        if (!selectedDate) {
+            dispatch(setSelectedDate(today.toISOString()));
+        }
+    }, [dispatch, selectedDate, today]);
 
-        const dayName = date.toLocaleDateString("en-US", { weekday: "short" });
-        const day = date.getDate();
-        const isToday = date.getTime() === today.getTime();
-        const isSelected = date.getTime() === selectedDate.getTime();
+    // Build list of days (-3 ... +3)
+    const days = useMemo(() => {
+        const baseDate = new Date(today);
+        const result = [];
 
-        days.push({ date, dayName, day, isToday, isSelected });
-    }
+        for (let i = -3; i <= 3; i++) {
+            const date = new Date(baseDate);
+            date.setDate(baseDate.getDate() + i);
 
-    const handleDateClick = (date: Date) => {
-        setSelectedDate(date);
+            const dayName = date.toLocaleDateString("en-US", { weekday: "short" });
+            const day = date.getDate();
+
+            const isToday = date.getTime() === today.getTime();
+            const isSelected =
+                selectedDate &&
+                date.getTime() === new Date(selectedDate).setHours(0, 0, 0, 0);
+
+            const isFuture = date.getTime() > today.getTime();
+
+            result.push({
+                date,
+                dayName,
+                day,
+                isToday,
+                isSelected,
+                isFuture
+            });
+        }
+
+        return result;
+    }, [today, selectedDate]);
+
+    const handleDateClick = (date: Date, isFuture: boolean) => {
+        if (isFuture) return;
+
+        const normalized = new Date(date);
+        normalized.setHours(0, 0, 0, 0);
+        dispatch(setSelectedDate(normalized.toISOString()));
     };
 
     return (
-        <div className="flex flex-row gap-2 pt-8">
+        <div className="flex gap-2 pt-8">
             {days.map((dayInfo, index) => (
                 <button
                     key={index}
-                    onClick={() => handleDateClick(dayInfo.date)}
-                    className={`flex flex-col items-center justify-center flex-1 p-2 rounded-2xl cursor-pointer transition-all duration-200 transform hover:scale-105 active:scale-95 ${
+                    onClick={() => handleDateClick(dayInfo.date, dayInfo.isFuture)}
+                    disabled={dayInfo.isFuture}
+                    className={`
+                        flex flex-col items-center justify-center flex-1 p-2 rounded-2xl
+                        transition-all duration-200 transform
+                        ${
+                        dayInfo.isFuture
+                            ? "bg-gray-100 text-gray-400 cursor-not-allowed opacity-60"
+                            : "hover:scale-105 active:scale-95"
+                    }
+                        ${
                         dayInfo.isSelected
-                            ? 'bg-gradient-to-br from-primary-500 to-accent-600 text-white shadow-lg shadow-primary-500/50'
+                            ? "bg-gradient-to-br from-primary-500 to-accent-600 text-white shadow-lg shadow-primary-500/50"
                             : dayInfo.isToday
-                            ? 'bg-primary-50 border-2 border-primary-300 text-primary-700 hover:bg-primary-100'
-                            : 'bg-white border-2 border-gray-200 text-gray-700 hover:border-primary-300 hover:bg-gray-50'
-                    }`}
+                                ? "bg-primary-50 border-2 border-primary-300 text-primary-700 hover:bg-primary-100"
+                                : "bg-white border-2 border-gray-200 text-gray-700 hover:border-primary-300 hover:bg-gray-50"
+                    }
+                    `}
                 >
-                    <span className={`text-xs font-medium mb-1 ${
-                        dayInfo.isSelected ? 'text-white/90' : 'text-gray-500'
-                    }`}>
+                    <span
+                        className={`text-xs font-medium mb-1 ${
+                            dayInfo.isSelected ? "text-white/90" : "text-gray-500"
+                        }`}
+                    >
                         {dayInfo.dayName}
                     </span>
-                    <span className={`text-lg font-bold ${
-                        dayInfo.isSelected ? 'text-white' : dayInfo.isToday ? 'text-primary-700' : 'text-gray-800'
-                    }`}>
+
+                    <span
+                        className={`text-lg font-bold ${
+                            dayInfo.isSelected
+                                ? "text-white"
+                                : dayInfo.isToday
+                                    ? "text-primary-700"
+                                    : "text-gray-800"
+                        }`}
+                    >
                         {dayInfo.day}
                     </span>
                 </button>
