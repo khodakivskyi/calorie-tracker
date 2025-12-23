@@ -31,9 +31,7 @@ namespace backend.Repositories
                                         created_at AS CreatedAt, updated_at AS UpdatedAt, is_external AS IsExternal 
                                  FROM dishes 
                                  WHERE owner_id = @UserId OR owner_id IS NULL
-                                 ORDER BY 
-                                    CASE WHEN owner_id = @UserId THEN 0 ELSE 1 END,
-                                    created_at DESC";
+                                 ORDER BY created_at DESC";
             return await connection.QueryAsync<Dish>(sql, new { UserId = userId });
         }
 

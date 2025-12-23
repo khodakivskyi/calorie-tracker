@@ -79,6 +79,7 @@ export default function RecipesPage() {
                                     src={tile.imageUrl}
                                     alt={tile.name}
                                     onLoad={() => handleImageLoad(index)}
+                                    onError={() => handleImageLoad(index)}
                                     className={`
                                         ${tile.imagePosition === 'right' ? 'bottom-10 left-10' : 'top-10 right-12'}
                                         relative  

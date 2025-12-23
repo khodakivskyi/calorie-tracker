@@ -8,11 +8,19 @@ import { useEffect, useState } from "react";
 import type { Meal } from "../store/types/mealTypes.ts";
 import { useAppSelector } from "../store";
 
+const mealTypes = [
+    { id: 'breakfast', type: 1, name: 'Breakfast', imagePosition: 'right', imageUrl: Breakfast },
+    { id: 'lunch', type: 2, name: 'Lunch', imagePosition: 'left', imageUrl: Lunch },
+    { id: 'dinner', type: 3, name: 'Dinner', imagePosition: 'left', imageUrl: Dinner },
+    { id: 'snack', type: 4, name: 'Snack', imagePosition: 'right', imageUrl: Snack },
+    { id: 'custom', type: 5, name: 'Custom', imagePosition: 'right', imageUrl: Dinner }
+] as const;
+
 export default function AddMeal() {
     const mealsFromRedux = useAppSelector(state => state.meal.meals);
     const selectedDate = useAppSelector(state => state.date.selectedDate);
 
-    const [_meals, setMeals] = useState<Meal[] | null>(null);
+    const [meals, setMeals] = useState<Meal[] | null>(null);
 
     useEffect(() => {
         setMeals(mealsFromRedux);
@@ -22,18 +30,23 @@ export default function AddMeal() {
     const [selectedMeal, setSelectedMeal] = useState<{ id: string; name: string } | null>(null);
     const [loadedImagesCount, setLoadedImagesCount] = useState(0);
 
-    if (!_meals) {
+    const allImagesLoaded = loadedImagesCount >= mealTypes.length;
+
+    if (!allImagesLoaded || !meals) {
         return (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-md">
-                <div className="flex flex-col items-center gap-4">
-                    <div className="w-12 h-12 border-4 border-white/30 border-t-white rounded-full animate-spin" />
-                    <span className="text-white text-sm opacity-80">Loading meals...</span>
+            <>
+                {/* LOADER */}
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-md">
+                    <div className="flex flex-col items-center gap-4">
+                        <div className="w-12 h-12 border-4 border-white/30 border-t-white rounded-full animate-spin"/>
+                        <span className="text-white text-sm opacity-80">Loading meals...</span>
+                    </div>
                 </div>
-            </div>
-        );
+            </>
+        )
     }
 
-    const mealsForDay = _meals.filter(meal => {
+    const mealsForDay = meals.filter(meal => {
         const mealDate = new Date(meal.createdAt);
         const selDate = new Date(selectedDate);
         return mealDate.toDateString() === selDate.toDateString();
@@ -54,28 +67,9 @@ export default function AddMeal() {
         setModalOpen(false);
     };
 
-    const mealTypes = [
-        { id: 'breakfast', type: 1, name: 'Breakfast', imagePosition: 'right', imageUrl: Breakfast },
-        { id: 'lunch', type: 2, name: 'Lunch', imagePosition: 'left', imageUrl: Lunch },
-        { id: 'dinner', type: 3, name: 'Dinner', imagePosition: 'left', imageUrl: Dinner },
-        { id: 'snack', type: 4, name: 'Snack', imagePosition: 'right', imageUrl: Snack },
-        { id: 'custom', type: 5, name: 'Custom', imagePosition: 'right', imageUrl: Dinner }
-    ] as const;
-
-    const allImagesLoaded = loadedImagesCount >= mealTypes.length;
 
     return (
         <>
-            {/* LOADER картинок */}
-            {!allImagesLoaded && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-md">
-                    <div className="flex flex-col items-center gap-4">
-                        <div className="w-12 h-12 border-4 border-white/30 border-t-white rounded-full animate-spin" />
-                        <span className="text-white text-sm opacity-80">Loading meals...</span>
-                    </div>
-                </div>
-            )}
-
             {/* MAIN CONTENT */}
             <div className={allImagesLoaded ? '' : 'pointer-events-none select-none'}>
                 {mealTypes.map(meal => {
